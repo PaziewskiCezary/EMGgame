@@ -50,7 +50,9 @@ class Simple_Game(object):
         for i, bin_ in enumerate(bins):
             pos_x = bin_w * i
             pos_x += offset * (i + 1)
-            bin_.pos = (pos_x, pos_y)
+            bin_.x = pos_x
+            bin_.y = pos_y
+            print(bin_.pos)
 
         while play:
 
@@ -66,7 +68,7 @@ class Simple_Game(object):
             thrash_w, thrash_h = thrash.pos 
 
             translation_x = w * speed_rate
-            thrash.pos = thrash_w, thrash_h +  translation_x
+            thrash.x, thrash.y = thrash_w, thrash_h +  translation_x
 
             if thrash.bottom > pos_y:
                 print("at bins")
@@ -74,7 +76,6 @@ class Simple_Game(object):
                 # TODO collison with bins
 
                 for (i, bin_) in enumerate(bins):
-                    breakpoint()
                     if bin_.image.colliderect(thrash.image):
                         print(i)
 
@@ -189,7 +190,12 @@ class Thrash(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (int(size[0]*scale), int(size[1]*scale)))
         self.size = self.image.get_size()
 
-        self.pos = pos
+        self.x, self.y = pos
+
+    @property
+    def pos(self):
+        return self.x, self.y
+    
 
     @property
     def bottom(self):
@@ -219,7 +225,11 @@ class ThrashBin(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (int(size[0]*scale), int(size[1]*scale)))
         self.size = self.image.get_size()
 
-        self.pos = pos
+        self.x, self.y = pos
+
+    @property
+    def pos(self):
+        return self.x, self.y
 
 
     def draw(self):
