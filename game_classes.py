@@ -1,5 +1,5 @@
 import pygame
-import sys
+import os
 
 class Simple_Game(object):
     """dSimple_Game"""
@@ -43,7 +43,13 @@ class Simple_Game(object):
         offset = round( w * offset )
 
         # bins = [ThrashBin(( offset + ( w - offset ) // number_of_bins * (i), y) ) for i in range(5)] 
-        bins = [ThrashBin(width=w*ThrashBin.precent) for i in range(5) ] 
+        bins = []
+        for root, dirs, files in os.walk("static/thrash/bins"):
+            for name in files:
+                path = os.path.join(root, name)
+                bins.append(ThrashBin(width=w*ThrashBin.precent, img_path=path))
+        
+
         bin_w, bin_h = bin_size = bins[0].size
 
         pos_y = h - bin_h
@@ -86,7 +92,7 @@ class Simple_Game(object):
                     # if bin_.image.colliderect(thrash.image):
                     #     print(i)
                     pass
-                sys.exit()
+                pygame.quit()
 
             # ploting stuff
             self.screen.fill(self.bgcolour)
@@ -184,13 +190,14 @@ class Button(object):
 class Thrash(pygame.sprite.Sprite):
     """docstring for Trash"""
 
-    precent = 0.07
+    precent = 0.05
 
     def __init__(self, pos=(0, 0), *,  width):
 
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.image.load("static/thrash/plastic_metal/blank-shampoo-bottle-1415298.png").convert()
-
+        self.image.set_colorkey((0,0,0))
+        
         w, h = size = self.image.get_size()
 
         scale = width / w
@@ -225,18 +232,23 @@ class Thrash(pygame.sprite.Sprite):
 class ThrashBin(pygame.sprite.Sprite):
     """docstring for Trash"""
 
-    precent = 0.15
+    precent = 0.1
 
-    def __init__(self, pos=(0, 0), *,  width):
+    def __init__(self, pos=(0, 0), img_path="static/trash.png", *, width):
         pygame.sprite.Sprite.__init__(self)
+        
+    
 
-        self.image = pygame.image.load("static/trash.png").convert()
+
+
+        self.image = pygame.image.load(img_path).convert()
         w, h = size = self.image.get_size()
 
         scale = width / w
 
         self.image = pygame.transform.scale(self.image, (int(size[0]*scale), int(size[1]*scale)))
         self.size = self.image.get_size()
+        self.image.set_colorkey((173,170,218))
 
         self.x, self.y = pos
 
