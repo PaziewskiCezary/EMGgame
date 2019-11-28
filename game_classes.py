@@ -1,6 +1,12 @@
 import pygame
 import os
 
+from utils import *
+
+def debug():
+    import ipdb; ipdb.set_trace()
+
+
 class Simple_Game(object):
     """dSimple_Game"""
     def __init__(self, size,):
@@ -27,27 +33,20 @@ class Simple_Game(object):
     def play(self):
 
         lifes = 10
-        score = 0 
+        self.score = 0 
         speed_rate = 0.0003
 
-        play = True
 
         w, h = self.size
 
-        thrash = Thrash((100, 100), width=Thrash.precent*w)
+        bins = [TrashBin(width=w*TrashBin.precent, img_path=path, type=type) for (type, path) in get_bins()]
 
-        number_of_bins = 5
-        bin_widht = w * ThrashBin.precent
+        number_of_bins = len(bins)
+        bin_widht = w * bins[0].precent
 
-        offset = ( 1 - number_of_bins * ThrashBin.precent ) / ( number_of_bins + 1 )
+        offset = ( 1 - number_of_bins * TrashBin.precent ) / ( number_of_bins + 1 )
         offset = round( w * offset )
 
-        # bins = [ThrashBin(( offset + ( w - offset ) // number_of_bins * (i), y) ) for i in range(5)] 
-        bins = []
-        for root, dirs, files in os.walk("static/thrash/bins"):
-            for name in files:
-                path = os.path.join(root, name)
-                bins.append(ThrashBin(width=w*ThrashBin.precent, img_path=path))
         
 
         bin_w, bin_h = bin_size = bins[0].size
@@ -59,91 +58,106 @@ class Simple_Game(object):
             pos_x += offset * (i + 1)
             bin_.x = pos_x
             bin_.y = pos_y
-            print(bin_.pos)
 
-        while play:
+        trashes = [Trash(width=w*Trash.precent, img_path=path, type=type) for (type, path) in get_trashes()] 
+        # debug()
+        play = True
+        new_trash = True
+        print(bool(trashes))
+        while trashes and play and lifes > 0:
+            print("while")
 
+            if new_trash:
+                print("new trash")
+                trash = trashes.pop()
+                # recalcualte x to be in center
+                trash.x = w//2 - trash.size[1]//2
+                trash.y = 100
+                new_trash = False
+                this_trash = True
 
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    play = False
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
+            if not lifes:
+                play = False
+
+            while this_trash:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
                         play = False
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            play = False
 
-                    if event.key == pygame.K_LEFT:
-                        thrash.x += -10
+                        if event.key == pygame.K_LEFT:
+                            trash.x += -10
 
-                    if event.key == pygame.K_RIGHT:
-                        thrash.x += 10
+                        if event.key == pygame.K_RIGHT:
+                            trash.x += 10
 
-            thrash_x, thrash_y = thrash.pos 
+                trash_x, trash_y = trash.pos 
 
-            translation_y = w * speed_rate
-            thrash.x, thrash.y = thrash_x, thrash_y +  translation_y
+                translation_y = w * speed_rate
+                trash.x, trash.y = trash_x, trash_y +  translation_y
 
-            if thrash.bottom > pos_y:
-                print("at bins")
+                if trash.bottom > pos_y:
 
-                # TODO collison with bins
+                    for (i, bin_) in enumerate(bins):
+                        # if bin_.image.colliderect(trash.image):
+                        #     print(i)
+                        if collide_in(trash, bin_):
 
-                for (i, bin_) in enumerate(bins):
-                    # import ipdb; ipdb.set_trace()
-                    # if bin_.image.colliderect(thrash.image):
-                    #     print(i)
-                    pass
-                pygame.quit()
+                            if bin_.type == trash.type:
+                                print('same')
 
-            # ploting stuff
-            self.screen.fill(self.bgcolour)
-            for bin_ in bins:
-                self.screen.blit(bin_.image, bin_.pos)
-            self.screen.blit(thrash.image, thrash.pos)
-            pygame.display.update()
+                                self.score += 100
+                            else:
+                                print("wrong")
+                                self.score += 10   
+                            print(self.score)
+
+                        else:
+                            print("miss")
+
+                            lifes -= 1
+                            print(lifes, 'lifes left')
+                    new_trash = True
+                    this_trash = False
 
 
-            self.clock.tick(60)
 
+                # if trash.top > self.size[1]:
+                #     pygame.quit()
+
+                # ploting stuff
+                self.screen.fill(self.bgcolour)
+                for bin_ in bins:
+                    self.screen.blit(bin_.image, bin_.pos)
+                self.screen.blit(trash.image, trash.pos)
+                pygame.display.update()
+
+
+                self.clock.tick(60)
+
+    def game_score(self):
+        '''game finish screen with score, get player name and push to scores DB'''
+        print(self.score)
+        pass
 
     def calibrate(self):
         pass
 
-    def stear(self, obj):
+    @property
+    def can_stear(self, obj):
         if self.allow_stearing:
             pass
 
 
     def menu(self):
+        # remove when menu is finished
         self.play()
+        print('done')
 
+        return False
 
-        play_button = Button([0, 255, 0], 450, 100, 100, 50, "Graj")
-        exit_button = Button([255, 0, 0], 450, 200, 100, 50, "Wyjdź")
-         
-
-
-        while True:
-
-            pygame.draw.rect(self.screen, [255, 0, 0], play_button)  
-            pygame.draw.rect(self.screen, [255, 0, 0], exit_button)  
-
-
-            for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        return False
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            return False
-
-                    if event.type == pygame.MOUSEBUTTONDOWN:
-                        mouse_pos = event.pos 
-
-
-                        if play_button.collidepoint(mouse_pos):
-                           self.play()
-                        
-                        if exit_button.collidepoint(mouse_pos):
-                            return False
 
 
 # buttonText = pygame.font.SysFont('', 20)
@@ -187,16 +201,17 @@ class Button(object):
     #     surface.blit(self._surface, self._rect.topleft)
 
 
-class Thrash(pygame.sprite.Sprite):
+class Trash(pygame.sprite.Sprite):
     """docstring for Trash"""
 
     precent = 0.05
 
-    def __init__(self, pos=(0, 0), *,  width):
+    def __init__(self, pos=(0, 0), *, img_path=None ,type=None, width):
 
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.image.load("static/thrash/plastic_metal/blank-shampoo-bottle-1415298.png").convert()
-        self.image.set_colorkey((0,0,0))
+        self.type = type
+        self.image = pygame.image.load("static/trash/plastic_metal/blank-shampoo-bottle-1415298.png").convert()
+        self.image.set_colorkey((255,255,255))
         
         w, h = size = self.image.get_size()
 
@@ -221,6 +236,7 @@ class Thrash(pygame.sprite.Sprite):
         return self.image.get_rect()[1] + self.pos[1]
 
 
+    @property
     def corrners(self):
         w, h = self.size
         p1, p2 = (self.x, self.y), (self.x + w, self.y + h)
@@ -229,19 +245,21 @@ class Thrash(pygame.sprite.Sprite):
     def draw(self):
         pass
  
-class ThrashBin(pygame.sprite.Sprite):
+class TrashBin(pygame.sprite.Sprite):
     """docstring for Trash"""
 
     precent = 0.1
 
-    def __init__(self, pos=(0, 0), img_path="static/trash.png", *, width):
+    def __init__(self, pos=(0, 0), img_path="static/trash.png", type=None, *, width):
         pygame.sprite.Sprite.__init__(self)
         
     
-
+        self.type = type
 
 
         self.image = pygame.image.load(img_path).convert()
+        self.image.set_colorkey((255,255,255))
+
         w, h = size = self.image.get_size()
 
         scale = width / w
@@ -257,6 +275,7 @@ class ThrashBin(pygame.sprite.Sprite):
         return self.x, self.y
 
 
+    @property
     def corrners(self):
         w, h = self.size
         p1, p2 = (self.x, self.y), (self.x + w, self.y + h)
