@@ -64,11 +64,16 @@ class Simple_Game(object):
                     if event.key == pygame.K_ESCAPE:
                         play = False
 
+                    if event.key == pygame.K_LEFT:
+                        thrash.x += -10
 
-            thrash_w, thrash_h = thrash.pos 
+                    if event.key == pygame.K_RIGHT:
+                        thrash.x += 10
 
-            translation_x = w * speed_rate
-            thrash.x, thrash.y = thrash_w, thrash_h +  translation_x
+            thrash_x, thrash_y = thrash.pos 
+
+            translation_y = w * speed_rate
+            thrash.x, thrash.y = thrash_x, thrash_y +  translation_y
 
             if thrash.bottom > pos_y:
                 print("at bins")
@@ -76,9 +81,11 @@ class Simple_Game(object):
                 # TODO collison with bins
 
                 for (i, bin_) in enumerate(bins):
-                    if bin_.image.colliderect(thrash.image):
-                        print(i)
-
+                    # import ipdb; ipdb.set_trace()
+                    # if bin_.image.colliderect(thrash.image):
+                    #     print(i)
+                    pass
+                exit()
 
             # ploting stuff
             self.screen.fill(self.bgcolour)
@@ -206,6 +213,11 @@ class Thrash(pygame.sprite.Sprite):
         return self.image.get_rect()[1] + self.pos[1]
 
 
+    def corrners(self):
+        w, h = self.size
+        p1, p2 = (self.x, self.y), (self.x + w, self.y + h)
+        return p1, p2
+
     def draw(self):
         pass
  
@@ -232,6 +244,19 @@ class ThrashBin(pygame.sprite.Sprite):
         return self.x, self.y
 
 
+    def corrners(self):
+        w, h = self.size
+        p1, p2 = (self.x, self.y), (self.x + w, self.y + h)
+        return p1, p2
+
     def draw(self):
         pass
         
+    @property
+    def bottom(self):
+        return self.image.get_rect()[3] + self.pos[1]
+
+    @property
+    def top(self):
+        return self.image.get_rect()[1] + self.pos[1]
+
