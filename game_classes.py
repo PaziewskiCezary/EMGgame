@@ -1,4 +1,5 @@
 import pygame
+import sys
 
 class Simple_Game(object):
     """dSimple_Game"""
@@ -85,7 +86,7 @@ class Simple_Game(object):
                     # if bin_.image.colliderect(thrash.image):
                     #     print(i)
                     pass
-                exit()
+                sys.exit()
 
             # ploting stuff
             self.screen.fill(self.bgcolour)
