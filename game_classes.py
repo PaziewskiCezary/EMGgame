@@ -6,9 +6,8 @@ from utils import *
 def debug():
     import ipdb; ipdb.set_trace()
 
-
 class Simple_Game(object):
-    """dSimple_Game"""
+    """Simple_Game"""
     def __init__(self, size,):
         pygame.init()
         self.bgcolour = 0x2F, 0x4F, 0x4F  # darkslategrey   
@@ -29,13 +28,11 @@ class Simple_Game(object):
             play = self.menu()
 
 
-
     def play(self):
 
         lifes = 10
         self.score = 0 
         speed_rate = 0.0003
-
 
         w, h = self.size
 
@@ -46,8 +43,6 @@ class Simple_Game(object):
 
         offset = ( 1 - number_of_bins * TrashBin.precent ) / ( number_of_bins + 1 )
         offset = round( w * offset )
-
-        
 
         bin_w, bin_h = bin_size = bins[0].size
 
@@ -60,16 +55,17 @@ class Simple_Game(object):
             bin_.y = pos_y
 
         trashes = [Trash(width=w*Trash.precent, img_path=path, type=type) for (type, path) in get_trashes()] 
-        # debug()
         play = True
         new_trash = True
-        print(bool(trashes))
+        # debug()
+
         while trashes and play and lifes > 0:
             print("while")
 
             if new_trash:
                 print("new trash")
                 trash = trashes.pop()
+                print(trash.type)
                 # recalcualte x to be in center
                 trash.x = w//2 - trash.size[1]//2
                 trash.y = 100
@@ -99,7 +95,7 @@ class Simple_Game(object):
                 trash.x, trash.y = trash_x, trash_y +  translation_y
 
                 if trash.bottom > pos_y:
-
+                    collsion = False
                     for (i, bin_) in enumerate(bins):
                         # if bin_.image.colliderect(trash.image):
                         #     print(i)
@@ -109,25 +105,27 @@ class Simple_Game(object):
                                 print('same')
 
                                 self.score += 100
+                                collsion = True
                             else:
                                 print("wrong")
                                 self.score += 10   
+                                collsion = True
                             print(self.score)
+                            
+                    if not collsion:   
+                        print("miss")
+                        lifes -= 1
+                        print(lifes, 'lifes left')
 
-                        else:
-                            print("miss")
-
-                            lifes -= 1
-                            print(lifes, 'lifes left')
                     new_trash = True
                     this_trash = False
-
 
 
                 # if trash.top > self.size[1]:
                 #     pygame.quit()
 
                 # ploting stuff
+
                 self.screen.fill(self.bgcolour)
                 for bin_ in bins:
                     self.screen.blit(bin_.image, bin_.pos)
@@ -210,7 +208,7 @@ class Trash(pygame.sprite.Sprite):
 
         pygame.sprite.Sprite.__init__(self)
         self.type = type
-        self.image = pygame.image.load("static/trash/plastic_metal/blank-shampoo-bottle-1415298.png").convert()
+        self.image = pygame.image.load(img_path).convert()
         self.image.set_colorkey((255,255,255))
         
         w, h = size = self.image.get_size()
@@ -291,4 +289,3 @@ class TrashBin(pygame.sprite.Sprite):
     @property
     def top(self):
         return self.image.get_rect()[1] + self.pos[1]
-

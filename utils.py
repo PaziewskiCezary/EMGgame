@@ -26,6 +26,6 @@ def get_trashes(path="static/trash/"):
     for root, dirs, files in os.walk(path):
         for name in files:
             path = os.path.join(root, name)
-            bin_type = name.split('/')[-1]
-            yield bin_type, path
+            trash_type = root.split('/')[-1]
+            yield trash_type, path
 
