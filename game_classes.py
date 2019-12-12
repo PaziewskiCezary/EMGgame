@@ -41,7 +41,7 @@ class Simple_Game(object):
         self.missed = 0 
         self.background = None
         self.bgn_idx = 0
-        speed_rate = 0.03
+        speed_rate = 0.003
 
         w, h = self.size
 
