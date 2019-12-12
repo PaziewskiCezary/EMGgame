@@ -1,5 +1,6 @@
 import pygame
 import os
+import math
 
 from utils import *
 
@@ -12,6 +13,8 @@ class Simple_Game(object):
         pygame.init()
         self.bgcolour = 0x2F, 0x4F, 0x4F  # darkslategrey   
         self.size = size
+        self.max_lifes = 10
+        self.max_missed = 10
         # self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
         self.screen = pygame.display.set_mode(self.size)
 
@@ -20,6 +23,9 @@ class Simple_Game(object):
         pygame.display.flip()
 
         self.clock = pygame.time.Clock()
+
+        self.backgrounds = sorted([x for x in get_backgrounds()])
+        self.backgrounds = [pygame.image.load(x) for x in self.backgrounds]
 
     def main(self):
         play = True
@@ -30,9 +36,12 @@ class Simple_Game(object):
 
     def play(self):
 
-        lifes = 10
+        self.lifes = self.max_lifes
         self.score = 0 
-        speed_rate = 0.0003
+        self.missed = 0 
+        self.background = None
+        self.bgn_idx = 0
+        speed_rate = 0.03
 
         w, h = self.size
 
@@ -58,12 +67,10 @@ class Simple_Game(object):
         play = True
         new_trash = True
         # debug()
-
-        while trashes and play and lifes > 0:
-            print("while")
+        self.update_background()
+        while trashes and play and self.lifes > 0:
 
             if new_trash:
-                print("new trash")
                 trash = trashes.pop()
                 print(trash.type)
                 # recalcualte x to be in center
@@ -72,7 +79,7 @@ class Simple_Game(object):
                 new_trash = False
                 this_trash = True
 
-            if not lifes:
+            if not self.lifes:
                 play = False
 
             while this_trash:
@@ -94,28 +101,30 @@ class Simple_Game(object):
                 translation_y = w * speed_rate
                 trash.x, trash.y = trash_x, trash_y +  translation_y
 
+                # if trash.bottom > pos_y:
+
+
+
                 if trash.bottom > pos_y:
                     collsion = False
                     for (i, bin_) in enumerate(bins):
-                        # if bin_.image.colliderect(trash.image):
-                        #     print(i)
+
                         if collide_in(trash, bin_):
 
                             if bin_.type == trash.type:
-                                print('same')
 
                                 self.score += 100
                                 collsion = True
                             else:
-                                print("wrong")
                                 self.score += 10   
                                 collsion = True
+                                self.missed += 1
                             print(self.score)
                             
                     if not collsion:   
-                        print("miss")
-                        lifes -= 1
-                        print(lifes, 'lifes left')
+                        self.lifes -= 1
+                        print(self.lifes, 'lifes left')
+                        
 
                     new_trash = True
                     this_trash = False
@@ -125,13 +134,12 @@ class Simple_Game(object):
                 #     pygame.quit()
 
                 # ploting stuff
-
                 self.screen.fill(self.bgcolour)
+                self.update_background()
                 for bin_ in bins:
                     self.screen.blit(bin_.image, bin_.pos)
                 self.screen.blit(trash.image, trash.pos)
                 pygame.display.update()
-
 
                 self.clock.tick(60)
 
@@ -139,6 +147,30 @@ class Simple_Game(object):
         '''game finish screen with score, get player name and push to scores DB'''
         print(self.score)
         pass
+
+    def update_background(self):
+        
+        idx = math.log2(self.max_lifes - self.lifes + self.missed + 1)
+        print(self.lifes, self.missed, idx)
+        idx = int(idx)
+
+        idx = min(idx, len(self.backgrounds)-1)
+        img = self.backgrounds[idx]
+        self.screen.blit(img,[0,0])
+
+
+    # def update_background(self):
+        
+    #     x = (self.max_lifes + self.max_missed) / (len(self.backgrounds) - 1)
+    #     idx = (len(self.backgrounds) - 1 - (self.max_lifes - self.lifes + self.max_missed - min(self.max_missed,self.missed)) // x)
+    #     idx = int(idx)
+    #     print(x, 
+    #         (self.max_lifes + self.max_missed) / (len(self.backgrounds) - 1),
+    #         (len(self.backgrounds) - 1 - (self.max_lifes - self.lifes + self.max_missed - min(self.max_missed,self.missed)) // x)            
+    #         )
+    #     idx = min(idx, len(self.backgrounds))
+    #     img = self.backgrounds[idx]
+    #     self.screen.blit(img,[0,0])
 
     def calibrate(self):
         pass

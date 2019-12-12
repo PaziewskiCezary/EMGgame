@@ -2,7 +2,7 @@ import os
 
 import pygame
 
-__all__ = ['collide_in', 'get_bins', 'get_trashes']
+__all__ = ['collide_in', 'get_bins', 'get_trashes', 'get_backgrounds']
 
 def collide_in(obj1, obj2):
     ((obj1_x1, obj1_y1), (obj1_x2, obj1_y2)) = obj1.corrners
@@ -29,3 +29,9 @@ def get_trashes(path="static/trash/"):
             trash_type = root.split('/')[-1]
             yield trash_type, path
 
+
+def get_backgrounds(path="static/backgrounds"):
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            path = os.path.join(root, name)
+            yield path
