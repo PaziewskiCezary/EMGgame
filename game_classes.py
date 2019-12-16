@@ -26,12 +26,21 @@ class Simple_Game(object):
 
         self.backgrounds = sorted([x for x in get_backgrounds()])
         self.backgrounds = [pygame.image.load(x) for x in self.backgrounds]
+        self.max_shift = 10
+
+
+    def move_thrash(self, arg):
+        if not self.trash:
+            raise ValueError('self.thrash not set')
+        if abs(arg) > 1:
+            raise ValueError('arg must be between -1 and 1')
+        self.trash.x += self.max_shift * arg
 
     def main(self):
         play = True
 
-        while play:
-            play = self.menu()
+        # while play:
+        play = self.menu()
 
 
     def play(self):
@@ -41,7 +50,7 @@ class Simple_Game(object):
         self.missed = 0 
         self.background = None
         self.bgn_idx = 0
-        speed_rate = 0.003
+        speed_rate = 0.0003
 
         w, h = self.size
 
@@ -71,11 +80,11 @@ class Simple_Game(object):
         while trashes and play and self.lifes > 0:
 
             if new_trash:
-                trash = trashes.pop()
-                print(trash.type)
+                print("new")
+                self.trash = trashes.pop()
                 # recalcualte x to be in center
-                trash.x = w//2 - trash.size[1]//2
-                trash.y = 100
+                self.trash.x = w//2 - self.trash.size[1]//2
+                self.trash.y = 100
                 new_trash = False
                 this_trash = True
 
@@ -91,27 +100,25 @@ class Simple_Game(object):
                             play = False
 
                         if event.key == pygame.K_LEFT:
-                            trash.x += -10
+                            self.move_thrash(-1)
 
                         if event.key == pygame.K_RIGHT:
-                            trash.x += 10
+                            self.move_thrash(1)
 
-                trash_x, trash_y = trash.pos 
+                trash_x, trash_y = self.trash.pos 
 
                 translation_y = w * speed_rate
-                trash.x, trash.y = trash_x, trash_y +  translation_y
+                self.trash.x, self.trash.y = trash_x, trash_y +  translation_y
 
                 # if trash.bottom > pos_y:
 
-
-
-                if trash.bottom > pos_y:
+                if self.trash.bottom > pos_y:
                     collsion = False
                     for (i, bin_) in enumerate(bins):
 
-                        if collide_in(trash, bin_):
+                        if collide_in(self.trash, bin_):
 
-                            if bin_.type == trash.type:
+                            if bin_.type == self.trash.type:
 
                                 self.score += 100
                                 collsion = True
@@ -138,7 +145,7 @@ class Simple_Game(object):
                 self.update_background()
                 for bin_ in bins:
                     self.screen.blit(bin_.image, bin_.pos)
-                self.screen.blit(trash.image, trash.pos)
+                self.screen.blit(self.trash.image, self.trash.pos)
                 pygame.display.update()
 
                 self.clock.tick(60)
@@ -151,7 +158,7 @@ class Simple_Game(object):
     def update_background(self):
         
         idx = math.log2(self.max_lifes - self.lifes + self.missed + 1)
-        print(self.lifes, self.missed, idx)
+        # print(self.lifes, self.missed, idx)
         idx = int(idx)
 
         idx = min(idx, len(self.backgrounds)-1)
