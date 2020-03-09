@@ -1,5 +1,6 @@
 import pygame
 import os
+import sys
 
 from utils import *
 
@@ -153,52 +154,115 @@ class Simple_Game(object):
 
     def menu(self):
         # remove when menu is finished
-        self.play()
-        print('done')
+        #self.play()
+        #print('done')
+        
+        self.bgcolour = (232,98,203)
+        
+        self.screen.fill(self.bgcolour)
+        
+        pygame.display.set_caption('Segreguj smieci')
+        #screen = pygame.display.set_mode((600,400), 0, 32)
+        #screen.fill((154, 7, 118))
+        
+        x_screen, y_screen = self.size
+        x_button = 300
+        y_button = 150
+        button_colour = (255,239,148) #(237, 168, 19) #(173, 170, 218)
+        text_colour = (232,98,203) #(122, 73, 122) #(218, 170, 214)
+        
+        #(self, screen, label, pos, dims, button_color, label_color=(255,255,255))
+    
+        b_s = Button(self.screen, 'Start', (x_screen/2,y_screen/2-1.5*y_button), (x_button, y_button), button_colour, text_colour, self.play)
+        b_w = Button(self.screen, 'Wyniki', (x_screen/2,y_screen/2), (x_button, y_button), button_colour, text_colour, self.game_score)
+        b_e = Button(self.screen, 'Wyjdź', (x_screen/2,y_screen/2+1.5*y_button), (x_button, y_button), button_colour, text_colour, pygame.quit)
+ 
+        pygame.display.update()
+        while True:
+            for event in pygame.event.get():
+                b_s.onClick(event)
+                b_w.onClick(event)
+                b_e.onClick(event)
+                if event.type == pygame.QUIT:
+                    pygame.quit(); sys.exit();
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit(); sys.exit();
+        pygame.display.update()
 
         return False
 
 
 
-# buttonText = pygame.font.SysFont('', 20)
- 
 class Button(object):
-    def __init__ (self, colour, x, y, width, height, label):
-        self.__colour = colour
-        self.__x = x
-        self.__y = y
-        self.__width = width
-        self.__height = height
-        self.__label = label
- 
-    @property
-    def colour(self):
-        return self.colour
- 
-    @property
-    def x(self):
-        return self.x
- 
-    @property
-    def y(self):
-        return self.y
-
-    @property
-    def width(self):
-        return self.width
- 
-    @property
-    def height(self):
-        return self.height
- 
-    @property
-    def label(self):
-        return self.label
+    def __init__(self, screen, label, pos, dims, button_color, label_color, func):
+        
+        self.screen = screen
+        self.label = label
+        self.pos = pos
+        self.dims = dims
+        self.button_color = button_color
+        self.label_color = label_color
+        self.font = pygame.font.SysFont('Arial', 25)
+        self.func = func
+        
+        
+        self.addRect()
+        self.addText()
 
 
-    # def draw(self, surface):
-    #     self._render()
-    #     surface.blit(self._surface, self._rect.topleft)
+
+    def addRect(self):
+        pos_x, pos_y = self.pos
+        weight, height = self.dims
+        self.rect = pygame.draw.rect(self.screen, self.button_color, (pos_x-weight/2, pos_y-height/2, weight, height), 0)
+
+
+    def addText(self):
+        l = self.label
+        pos_x, pos_y = self.pos
+        weight, height = self.dims
+        text_width, text_height = self.font.size(l)
+        self.screen.blit(self.font.render(l, True, self.label_color), (pos_x-text_width/2, pos_y-text_height/2))
+        
+        
+    def onClick(self, event):
+        
+        func = self.func
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = event.pos  # gets mouse position
+
+            # checks if mouse position is over the button
+
+            if self.rect.collidepoint(mouse_pos):
+                # prints current location of mouse
+                #print('button was pressed at {0}'.format(mouse_pos))
+                func()
+                
+    def scores(self, event):
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = event.pos  # gets mouse position
+
+            # checks if mouse position is over the button
+
+            if self.rect.collidepoint(mouse_pos):
+                # prints current location of mouse
+                print('Wyniki')
+                
+                
+    def get_out(self, event):
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = event.pos  # gets mouse position
+
+            # checks if mouse position is over the button
+
+            if self.rect.collidepoint(mouse_pos):
+                # prints current location of mouse
+                #print('button was pressed at {0}'.format(mouse_pos))
+                pygame.quit(); sys.exit();
 
 
 class Trash(pygame.sprite.Sprite):
