@@ -1,6 +1,13 @@
 import pygame
 import os
 import math
+import time
+
+from scipy.signal import butter, lfilter,iirnotch,lfilter_zi, filtfilt
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.signal as ss
+from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
 from utils import *
 
@@ -11,6 +18,12 @@ class Simple_Game(object):
     """Simple_Game"""
     def __init__(self, size,):
         pygame.init()
+        try:
+            self.amp = Amplifier(512, [0, 1])
+        except ValueError as e:
+            print('123', e)
+            exit(1)
+		
         self.bgcolour = 0x2F, 0x4F, 0x4F  # darkslategrey   
         self.size = size
         self.max_lifes = 10
@@ -42,15 +55,55 @@ class Simple_Game(object):
         # while play:
         play = self.menu()
 
+    def muscle_move(self, x):
+		
+        d = self.calib_max - self.calib_min
+        d /= 3
+        
+        if x <= self.calib_min:
+            return -1
+        elif x >= self.calib_max:
+            return 1
+        else:
+            if x - self.calib_min <= d:
+                return - 0.5
+            elif d < x - self.calib_min <= 2 * d:
+                return 0
+            elif d * 2 < x - self.calib_min <= 3 * d:
+                return  0.5
+
+
+    def calibrate(self):
+        print("kalibracja")
+		
+        time.sleep(2)
+        print("rozluznij reke")
+        time.sleep(1)
+        self.calib_min = self.amp.calib()
+        # self.calib_min = 10
+        time.sleep(2)
+        print("zacisnij reke")
+        time.sleep(1)
+        self.calib_max = self.amp.calib()
+        # self.calib_max = 400
+        if self.calib_min >= self.calib_max or  self.calib_max - self.calib_min < 50:
+            print("powtarzam kalibrację")
+            self.calibrate()
+        
+        			
+			
 
     def play(self):
-
+        self.calibrate()
+        self.amp.amp.start_sampling()        
+        time.sleep(1)	
+		
         self.lifes = self.max_lifes
         self.score = 0 
         self.missed = 0 
         self.background = None
         self.bgn_idx = 0
-        speed_rate = 0.0003
+        speed_rate = 0.003
 
         w, h = self.size
 
@@ -77,6 +130,7 @@ class Simple_Game(object):
         new_trash = True
         # debug()
         self.update_background()
+
         while trashes and play and self.lifes > 0:
 
             if new_trash:
@@ -104,6 +158,11 @@ class Simple_Game(object):
 
                         if event.key == pygame.K_RIGHT:
                             self.move_thrash(1)
+                predupa = self.amp.get_signal(self.amp.fs//3)
+                print(self.calib_min, predupa, self.calib_max)
+                dupa = self.muscle_move(predupa)
+                print(dupa)
+                self.move_thrash(dupa)
 
                 trash_x, trash_y = self.trash.pos 
 
@@ -149,6 +208,8 @@ class Simple_Game(object):
                 pygame.display.update()
 
                 self.clock.tick(60)
+                
+        self.amp.amp.stop_sampling()
 
     def game_score(self):
         '''game finish screen with score, get player name and push to scores DB'''
@@ -179,8 +240,6 @@ class Simple_Game(object):
     #     img = self.backgrounds[idx]
     #     self.screen.blit(img,[0,0])
 
-    def calibrate(self):
-        pass
 
     @property
     def can_stear(self, obj):
@@ -328,3 +387,65 @@ class TrashBin(pygame.sprite.Sprite):
     @property
     def top(self):
         return self.image.get_rect()[1] + self.pos[1]
+        
+class Amplifier(object):
+    def __init__(self, Fs, channels):
+        if len(channels) != 2:
+            raise ValueError("tylko2  kanały chcemy!!!!!!!!1111")
+        amps = TmsiCppAmplifier.get_available_amplifiers('usb')
+        if not amps:
+            raise ValueError("Nie ma wzmacniacza")
+			
+        self.amp = TmsiCppAmplifier(amps[0])
+        self.amp.sampling_rate = Fs
+        self.gains = np.array(self.amp.current_description.channel_gains)
+        self.offsets = np.array(self.amp.current_description.channel_offsets)
+        self.channels = channels
+        self.b1,self.a1 = butter(1,1/(Fs/2),'highpass')
+        
+    @property
+    def fs(self):
+        return self.amp.sampling_rate
+
+    def samples(self,d,p = 100):
+        '''Return array of signals in microvolts'''
+        t = time.time()
+        s = self.amp.get_samples(5*Fs).samples * self.gains + self.offsets
+        s = s[:,self.channels[0]] - s[:,self.channels[1]]
+        b,a = butter(2,1/(self.amp.sampling_rate/2),'highpass')
+        s = filtfilt(b,a,s)
+        s = s[-d:]
+        if np.mean(s) > p:
+            x = 1
+        else:
+            x = 0
+            print(time.time()-t)
+            return s, x
+	
+    def calib(self, t=5):
+        
+        czas_kalibracji = t
+   
+        t = time.time()
+        l = czas_kalibracji
+        self.amp.start_sampling()
+        
+        while time.time() - t < czas_kalibracji + 1:
+            if np.round(time.time() - t,3) == (czas_kalibracji - l) and np.round(time.time() - t,3) < czas_kalibracji + 1:
+                print(l)
+                l -= 1
+                
+        scim = self.get_signal(int(czas_kalibracji * self.amp.sampling_rate))
+        self.amp.stop_sampling()
+        return scim
+
+    def get_signal(self, n):
+        Fs = self.amp.sampling_rate
+        
+        s = self.amp.get_samples(int(n)).samples * self.gains + self.offsets
+        
+        s = s[:,self.channels[0]] - s[:,self.channels[1]]
+        s-=np.mean(s)
+        s = filtfilt(self.b1,self.a1,s)
+        scim = np.mean(np.abs(s))
+        return scim
