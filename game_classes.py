@@ -2,6 +2,8 @@ import pygame
 import os
 import math
 import time
+import sys
+import pickle
 
 from scipy.signal import butter, lfilter,iirnotch,lfilter_zi, filtfilt
 import numpy as np
@@ -25,10 +27,10 @@ class Simple_Game(object):
             print('123', e)
             exit(1)
 
-        self.bgcolour = 0x2F, 0x4F, 0x4F  # darkslategrey   
+        self.bgcolour = (232,98,203) # 0x2F, 0x4F, 0x4F  # darkslategrey   
         self.size = size
-        self.max_lifes = 10
-        self.max_missed = 10
+        self.max_lifes = 4
+        self.max_missed = 4
         # self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
         self.screen = pygame.display.set_mode(self.size)
 
@@ -77,65 +79,59 @@ class Simple_Game(object):
     def calibrate(self):
 
         self.bgcolour = (232,98,203)
+        # x_screen, y_screen = self.size
+        text_colour = (232,98,203)
         
-        #self.screen.fill(self.bgcolour)
-        x_screen, y_screen = self.size
-
-        display_surface = pygame.display.set_mode((x_screen, y_screen))
-        display_surface.fill(self.bgcolour)
-        font = pygame.font.Font('freesansbold.ttf', 70)
-        text = font.render('Kalibracja', True, (255,239,148)) 
-        textRect = text.get_rect()
-        textRect.center = (x_screen // 2, y_screen // 2)
-        display_surface.blit(text, textRect)
-
-        pygame.display.update()
-
+        self.screen.fill(self.bgcolour)
         print("kalibracja")
-		
+        pygame.display.set_caption('Kalibracja') 
+  
+        self.text('KALIBRACJA')
         time.sleep(2)
-
-        display_surface.fill(self.bgcolour)
-        text = font.render('Rozluźnij rękę', True, (255,239,148)) 
-        textRect = text.get_rect()
-        textRect.center = (x_screen // 2, y_screen // 2)
-        display_surface.blit(text, textRect)
-        pygame.display.update()
-
+        
         print("rozluznij reke")
+
+        self.text('ROZLUŹNIJ RĘKĘ')
+
         time.sleep(1)
         self.calib_min = self.amp.calib()
         # self.calib_min = 10
         time.sleep(2)
-
-        display_surface.fill(self.bgcolour)
-        text = font.render('Zaciśnij rękę', True, (255,239,148)) 
-        textRect = text.get_rect()
-        textRect.center = (x_screen // 2, y_screen // 2)
-        display_surface.blit(text, textRect)
-        pygame.display.update()
-
         print("zacisnij reke")
+        
+        self.text('ZACIŚNIJ RĘKĘ')
+
         time.sleep(1)
         self.calib_max = self.amp.calib()
         # self.calib_max = 400
         if self.calib_min >= self.calib_max or  self.calib_max - self.calib_min < 50:
-            display_surface.fill(self.bgcolour)
-            text = font.render('Powtarzam kalibrację', True, (255,239,148)) 
-            textRect = text.get_rect()
-            textRect.center = (x_screen // 2, y_screen // 2)
-            display_surface.blit(text, textRect)
-            pygame.display.update()
             print("powtarzam kalibrację")
+            self.text('POWTORZAM KALIBRACJĘ') 
+
             self.calibrate()
-        self.play()
+
+        print('koniec kalibracji')
+        self.text('KONIEC KALIBRACJI') 
+
         
-        			
+    def text(self, napis):
+        self.bgcolour = (232,98,203)
+        x_screen, y_screen = self.size
+        text_colour = (232,98,203)
+        display_surface = pygame.display.set_mode((x_screen, y_screen ))
+
+        font = pygame.font.Font('freesansbold.ttf', 32) 
+        text = font.render(napis, True, text_colour) 
+
+        textRect = text.get_rect()  
+        textRect.center = (x_screen // 2, y_screen // 2) 
+        display_surface.blit(text, textRect)
+        pygame.display.update()  			
 
 
     def play(self):
-        #self.calibrate()
-        #debug()
+        self.calibrate()
+        # debug()
         self.amp.amp.start_sampling()        
         time.sleep(1)	
 		
@@ -168,17 +164,27 @@ class Simple_Game(object):
             bin_.x = pos_x
             bin_.y = pos_y
 
-        trashes = [Trash(width=w*Trash.precent, img_path=path, type=type) for (type, path) in get_trashes()] 
+        trashes = []
+        for i, (type, path) in enumerate(get_trashes()):
+            # print(type, path)
+            t = Trash(width=w*Trash.precent, img_path=path, type=type)
+            trashes.append(t)
+
+        np.random.shuffle(trashes)
+        trashes = trashes[:2]
+
         play = True
         new_trash = True
         # debug()
         self.update_background()
 
         while trashes and play and self.lifes > 0:
-
             if new_trash:
                 print("new")
+                print(len(trashes))
+
                 self.trash = trashes.pop()
+                print(id(self.trash.image))
                 # recalcualte x to be in center
                 self.trash.x = w//2 - self.trash.size[1]//2
                 self.trash.y = 100
@@ -189,22 +195,27 @@ class Simple_Game(object):
                 play = False
 
             while this_trash:
+                break_loop = False
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        play = False
+                        sys.exit()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             play = False
+                            break_loop = True
 
                         if event.key == pygame.K_LEFT:
                             self.move_thrash(-1)
 
                         if event.key == pygame.K_RIGHT:
                             self.move_thrash(1)
+                if break_loop:
+                    break
+                exit_btn = Button(self.screen, 'Koniec', (200 , 200), (100, 200), (0xff, 0xff, 0xff), (0,0,0) , self.menu)
                 predupa = self.amp.get_signal(self.amp.fs//3)
-                print(self.calib_min, predupa, self.calib_max)
+                # print(self.calib_min, predupa, self.calib_max)
                 dupa = self.muscle_move(predupa)
-                print(dupa)
+                # print(dupa)
                 self.move_thrash(dupa)
 
                 trash_x, trash_y = self.trash.pos 
@@ -243,34 +254,18 @@ class Simple_Game(object):
                 #     pygame.quit()
 
                 # ploting stuff
-                x_screen, y_screen = self.size
-                x_button = 100
-                y_button = 50
-                button_colour = (255,239,148)
-                text_colour = (232,98,203)
-
                 self.screen.fill(self.bgcolour)
                 self.update_background()
                 for bin_ in bins:
                     self.screen.blit(bin_.image, bin_.pos)
                 self.screen.blit(self.trash.image, self.trash.pos)
-                b_m = Button(self.screen, 'Menu', (x_button/2,y_button/2), (x_button, y_button), button_colour, text_colour, self.menu)
-                #pygame.display.update(b_m)
-                
-                while True:
-                    for event in pygame.event.get():
-                        b_m.onClick(event)
-                        if event.type == pygame.QUIT:
-                            pygame.quit(); sys.exit();
-                        if event.type == pygame.KEYDOWN:
-                            if event.key == pygame.K_ESCAPE:
-                                pygame.quit(); sys.exit();
-                pygame.display.update(b_m)
-                
+                pygame.display.update()
 
                 self.clock.tick(60)
                 
         self.amp.amp.stop_sampling()
+        self.save_score()
+        self.menu()
 
     def game_score(self):
         '''game finish screen with score, get player name and push to scores DB'''
@@ -292,6 +287,27 @@ class Simple_Game(object):
     def can_stear(self, obj):
         if self.allow_stearing:
             pass
+
+    def save_score(self):
+        if not os.path.isfile("wyniki.pkl"):
+            scores = []
+            pickle.dump( scores, open( "wyniki.pkl", "wb" ) )
+
+        scores = pickle.load( open( "wyniki.pkl", "rb" ) )
+        scores.append((self.score, 'imie'))
+        pickle.dump( scores, open( "wyniki.pkl", "wb" ) )
+
+    def scores(self):
+        try:
+            scores = pickle.load( open( "wyniki.pkl", "rb" ) )
+            
+        except FileNotFoundError:
+            scores = []
+        print('wyniki', scores)
+
+        del scores 
+
+
 
 
     def menu(self):
@@ -315,8 +331,8 @@ class Simple_Game(object):
         
         #(self, screen, label, pos, dims, button_color, label_color=(255,255,255))
     
-        b_s = Button(self.screen, 'Start', (x_screen/2,y_screen/2-1.5*y_button), (x_button, y_button), button_colour, text_colour, self.calibrate) #self.play)
-        b_w = Button(self.screen, 'Wyniki', (x_screen/2,y_screen/2), (x_button, y_button), button_colour, text_colour, self.game_score)
+        b_s = Button(self.screen, 'Start', (x_screen/2,y_screen/2-1.5*y_button), (x_button, y_button), button_colour, text_colour, self.play)
+        b_w = Button(self.screen, 'Wyniki', (x_screen/2,y_screen/2), (x_button, y_button), button_colour, text_colour, self.scores)
         b_e = Button(self.screen, 'Wyjdź', (x_screen/2,y_screen/2+1.5*y_button), (x_button, y_button), button_colour, text_colour, pygame.quit)
  
         pygame.display.update()
@@ -448,6 +464,7 @@ class Simple_Game(object):
 #################################################################
 
 
+
 class Button(object):
     def __init__(self, screen, label, pos, dims, button_color, label_color, func):
         
@@ -499,11 +516,11 @@ class Trash(pygame.sprite.Sprite):
 
     precent = 0.05
 
-    def __init__(self, pos=(0, 0), *, img_path=None ,type=None, width):
+    def __init__(self, pos=(0, 0), *, img_path ,type, width):
 
         pygame.sprite.Sprite.__init__(self)
         self.type = type
-        self.image = pygame.image.load("static/trash/plastic_metal/blank-shampoo-bottle-1415298.png").convert()
+        self.image = pygame.image.load(img_path).convert()
         self.image.set_colorkey((255,255,255))
         
         w, h = size = self.image.get_size()
@@ -649,4 +666,3 @@ class Amplifier(object):
         #fcalibs = filtfilt(self.b1,self.a1,s)
         scim = np.mean(np.abs(s))
         return scim
-
