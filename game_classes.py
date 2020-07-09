@@ -4,6 +4,7 @@ import math
 import time
 import sys
 import pickle
+import pygame_textinput
 
 from scipy.signal import butter, lfilter,iirnotch,lfilter_zi, filtfilt
 import numpy as np
@@ -29,8 +30,8 @@ class Simple_Game(object):
 
         self.bgcolour = (232,98,203) # 0x2F, 0x4F, 0x4F  # darkslategrey   
         self.size = size
-        self.max_lifes = 4
-        self.max_missed = 4
+        self.max_lifes = 1
+        self.max_missed = 1
         # self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
         self.screen = pygame.display.set_mode(self.size)
 
@@ -77,64 +78,131 @@ class Simple_Game(object):
 
 
     def calibrate(self):
-
-        self.bgcolour = (232,98,203)
-        # x_screen, y_screen = self.size
+        self.bgcolour = (255,239,148)
+        x_screen, y_screen = self.size
         text_colour = (232,98,203)
         
         self.screen.fill(self.bgcolour)
         print("kalibracja")
         pygame.display.set_caption('Kalibracja') 
+        pygame.display.update()
   
-        self.text('KALIBRACJA')
+        self.screen.fill(self.bgcolour)
+        self.text('KALIBRACJA', x_screen // 2, y_screen // 2)
+        pygame.display.update()
         time.sleep(2)
         
         print("rozluznij reke")
 
-        self.text('ROZLUŹNIJ RĘKĘ')
-
+        self.screen.fill(self.bgcolour)
+        self.text('ROZLUŹNIJ RĘKĘ', x_screen // 2, y_screen // 2)
+        pygame.display.update()
         time.sleep(1)
         self.calib_min = self.amp.calib()
         # self.calib_min = 10
         time.sleep(2)
         print("zacisnij reke")
         
-        self.text('ZACIŚNIJ RĘKĘ')
+        self.screen.fill(self.bgcolour)
+        self.text('ZACIŚNIJ RĘKĘ', x_screen // 2, y_screen // 2)
+        pygame.display.update()
 
         time.sleep(1)
         self.calib_max = self.amp.calib()
         # self.calib_max = 400
         if self.calib_min >= self.calib_max or  self.calib_max - self.calib_min < 50:
             print("powtarzam kalibrację")
-            self.text('POWTORZAM KALIBRACJĘ') 
-
+            self.screen.fill(self.bgcolour)
+            self.text('POWTORZAM KALIBRACJĘ', x_screen // 2, y_screen // 2)
+            pygame.display.update() 
+            time.sleep(2)
             self.calibrate()
 
         print('koniec kalibracji')
-        self.text('KONIEC KALIBRACJI') 
+        self.screen.fill(self.bgcolour)
+        self.text('KONIEC KALIBRACJI', x_screen // 2, y_screen // 2) 
+        pygame.display.update()
 
+    def get_name(self):
         
-    def text(self, napis):
-        self.bgcolour = (232,98,203)
-        x_screen, y_screen = self.size
+        self.bgcolour = (255,239,148)
         text_colour = (232,98,203)
-        display_surface = pygame.display.set_mode((x_screen, y_screen ))
+	    
+        textinput = pygame_textinput.TextInput()
+
+        #textinput.cursor_color = (232,98,203)
+        textinput.text_color = (232,98,203)
+        
+        self.screen = pygame.display.set_mode(self.size)
+        clock = pygame.time.Clock()
+        
+        x_screen, y_screen = self.size
+
 
         font = pygame.font.Font('freesansbold.ttf', 32) 
+        text = font.render("PODAJ SWÓJ NICK:", True, text_colour) 
+        #display_surface = pygame.display.set_mode((x_screen, y_screen ))
+
+        #textRect = text.get_rect()  
+        #textRect.center = (x_screen // 2, y_screen // 4) 
+        #self.screen.blit(text, textRect)
+        #pygame.display.update()  	
+        
+        d = True
+        while d:
+            self.screen.fill(self.bgcolour)
+            textRect = text.get_rect()  
+            textRect.center = (x_screen // 2, y_screen // 4) 
+            self.screen.blit(text, textRect)
+            events = pygame.event.get()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    exit()
+
+	        
+            textinput.update(events)
+            a = textinput.font_object.size(textinput.get_text())
+            #print(a)
+            self.screen.blit(textinput.get_surface(), ((x_screen - a[0]) // 2 , y_screen // 2))
+
+            pygame.display.update()
+            clock.tick(30)
+            
+            for event in events:
+                if event.type == pygame.KEYDOWN:
+                    print(event.key, pygame.K_RETURN)
+                    if event.key == pygame.K_RETURN:
+                        self.name = textinput.get_text()
+                        print(self.name)
+                        d = False
+                        break
+    
+
+    def text(self, napis, x_pos, y_pos, *, text='DejaVu Sans Mono', font_size=32):
+        x_screen, y_screen = self.size
+        text_colour = (232,98,203)
+        self.bgcolour = (255,239,148)
+        # self.screen = pygame.display.set_mode((x_screen, y_screen ))
+        # self.screen.fill(self.bgcolour)
+
+        font = pygame.font.SysFont(text, font_size)
         text = font.render(napis, True, text_colour) 
 
         textRect = text.get_rect()  
-        textRect.center = (x_screen // 2, y_screen // 2) 
-        display_surface.blit(text, textRect)
-        pygame.display.update()  			
+        textRect.center = (x_pos, y_pos) 
+        self.screen.blit(text, textRect)
+        # pygame.display.update()  			
 
 
-    def play(self):
+    def main_loop(self):
+        self.get_name()
         self.calibrate()
-        # debug()
+        self.play()
+        
+    def play(self):
         self.amp.amp.start_sampling()        
         time.sleep(1)	
-		
+        
         self.lifes = self.max_lifes
         self.score = 0 
         self.missed = 0 
@@ -171,7 +239,6 @@ class Simple_Game(object):
             trashes.append(t)
 
         np.random.shuffle(trashes)
-        trashes = trashes[:2]
 
         play = True
         new_trash = True
@@ -236,7 +303,7 @@ class Simple_Game(object):
                                 self.score += 100
                                 collsion = True
                             else:
-                                self.score += 10   
+                                self.score += -10   
                                 collsion = True
                                 self.missed += 1
                             print(self.score)
@@ -262,10 +329,70 @@ class Simple_Game(object):
                 pygame.display.update()
 
                 self.clock.tick(60)
-                
+        
+
+
+        
         self.amp.amp.stop_sampling()
         self.save_score()
-        self.menu()
+
+        # show score
+        try:
+            scores = pickle.load( open( "wyniki.pkl", "rb" ) )
+            
+        except FileNotFoundError:
+            scores = []
+
+        # sorting scores with keeping indexes
+        index = range(len(scores))
+        scores, index = zip(*reversed(sorted(zip(scores, index), key=lambda x : x[0][0])))
+
+        place = np.argmax(index) + 1
+        play = False
+
+        x_screen, y_screen = self.size
+        self.screen.fill(self.bgcolour)
+        pygame.display.update()
+        x_button ,y_button = 60, 30
+
+        self.bgcolour = (255,239,148)
+        text_colour = (232,98,203)
+
+        return_btn = Button(self.screen, 'Menu', (x_button, y_button), (x_button*2, y_button*2), 
+                            button_color=text_colour, label_color=self.bgcolour, func=self.menu)
+        again_btn = Button(self.screen, 'Zagraj jeszcze raz!', (x_screen // 2, 7 * y_screen // 8), (x_button*7, y_button*3), 
+                            button_color=text_colour, label_color=self.bgcolour, func=self.play)
+                  
+        self.text('WYNIK', x_screen // 2, y_screen // 4, font_size = 64)
+        self.text('Punkty', 3*x_screen // 4, y_screen // 2 )
+        self.text('Imię', 2*x_screen // 4, y_screen // 2 )
+        self.text('Pozycja', x_screen // 4, y_screen // 2 )
+
+        pygame.display.update()
+        time.sleep(1)  
+
+
+        self.text(str(self.score), 3*x_screen // 4, y_screen // 2 + 100 )
+        pygame.display.update()
+        time.sleep(1)
+        
+        self.text(self.name, 2*x_screen // 4, y_screen // 2 + 100)
+        pygame.display.update() 
+        time.sleep(1)  
+        
+        self.text(f'{" " + str(place) if place <10 else str(place)}.', x_screen // 4, y_screen // 2 + 100 )
+        pygame.display.update()
+
+        while True:
+            for event in pygame.event.get():
+                return_btn.onClick(event)
+                again_btn.onClick(event)
+                if event.type == pygame.QUIT:
+                    pygame.quit(); sys.exit();
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.menu()
+
 
     def game_score(self):
         '''game finish screen with score, get player name and push to scores DB'''
@@ -294,7 +421,7 @@ class Simple_Game(object):
             pickle.dump( scores, open( "wyniki.pkl", "wb" ) )
 
         scores = pickle.load( open( "wyniki.pkl", "rb" ) )
-        scores.append((self.score, 'imie'))
+        scores.append((self.score, self.name))
         pickle.dump( scores, open( "wyniki.pkl", "wb" ) )
 
     def scores(self):
@@ -303,12 +430,46 @@ class Simple_Game(object):
             
         except FileNotFoundError:
             scores = []
+
+        # sorting scores with keeping indexes
+        index = range(len(scores))
+        scores, index = zip(*reversed(sorted(zip(scores, index), key=lambda x : x[0][0])))
+
         print('wyniki', scores)
 
+        self.bgcolour = (255,239,148)
+        text_colour = (232,98,203)
+	    
+        # self.screen = pygame.display.set_mode(self.size)
+        
+        x_screen, y_screen = self.size
+        self.screen.fill(self.bgcolour)
+        pygame.display.update()
+        x_button ,y_button = 60, 30
+        return_btn = Button(self.screen, 'Wróć', (x_button, y_button), (x_button*2, y_button*2), 
+                            button_color=text_colour, label_color=self.bgcolour, func=self.menu)
+        self.text('WYNIKI', x_screen // 2, y_screen // 10  - 25, font_size = 48)
+        y_offset = 55
+        for i in range(min(len(scores), 10)):
+            self.text(f'{" " + str(i+1) if i<10 else str(i+1)}.', x_screen // 4, y_screen // 10 + (i+1)*y_offset)
+            self.text(str(scores[i][1]), 2*x_screen // 4, y_screen // 10 + (i+1)*y_offset)
+            self.text(str(scores[i][0]), 3*x_screen // 4, y_screen // 10 + (i+1)*y_offset)
+            time.sleep(0.1)        
+            pygame.display.update()
+        while True:
+            for event in pygame.event.get():
+                return_btn.onClick(event)
+                if event.type == pygame.QUIT:
+                    pygame.quit(); sys.exit();
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.menu()
+        # pygame.display.update() 
+
+
         del scores 
-
-
-
+        del index
+        
 
     def menu(self):
         # remove when menu is finished
@@ -331,7 +492,7 @@ class Simple_Game(object):
         
         #(self, screen, label, pos, dims, button_color, label_color=(255,255,255))
     
-        b_s = Button(self.screen, 'Start', (x_screen/2,y_screen/2-1.5*y_button), (x_button, y_button), button_colour, text_colour, self.play)
+        b_s = Button(self.screen, 'Start', (x_screen/2,y_screen/2-1.5*y_button), (x_button, y_button), button_colour, text_colour, self.main_loop)
         b_w = Button(self.screen, 'Wyniki', (x_screen/2,y_screen/2), (x_button, y_button), button_colour, text_colour, self.scores)
         b_e = Button(self.screen, 'Wyjdź', (x_screen/2,y_screen/2+1.5*y_button), (x_button, y_button), button_colour, text_colour, pygame.quit)
  
@@ -645,6 +806,11 @@ class Amplifier(object):
         self.amp.start_sampling()
         sample = []
         t = time.time()
+
+
+
+
+
         while time.time() - t <= czas_kalibracji:
             if np.round(time.time() - t,3) == (czas_kalibracji - l) and np.round(time.time() - t,3) < czas_kalibracji + 1:
 
