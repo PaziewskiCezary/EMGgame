@@ -42,5 +42,5 @@ if __name__ == '__main__':
         game = Simple_Game(screen_size, use_keyboard=False, 
                             lifes=args.lifes, default_name=args.name, 
                             full_screen=args.full_screen)
-    while game:
-        game.menu()
+    while game.menu():
+        pass

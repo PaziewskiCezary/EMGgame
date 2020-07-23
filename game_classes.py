@@ -6,7 +6,7 @@ import sys
 import pickle
 import pygame_textinput
 
-from scipy.signal import butter, lfilter,iirnotch,lfilter_zi, filtfilt
+from scipy.signal import butter, lfilter, iirnotch, lfilter_zi, filtfilt
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.signal as ss
@@ -102,7 +102,6 @@ class Simple_Game(object):
         pygame.display.update()
         time.sleep(1)
         self.calib_min = self.amp.calib()
-        # self.calib_min = 10
         time.sleep(2)
         
         self.screen.fill(self.bgcolour)
@@ -130,7 +129,6 @@ class Simple_Game(object):
 	    
         textinput = pygame_textinput.TextInput()
 
-        #textinput.cursor_color = (232,98,203)
         textinput.text_color = (232,98,203)
         
         self.screen = pygame.display.set_mode(self.size)
@@ -269,6 +267,8 @@ class Simple_Game(object):
 
                         if event.key == pygame.K_RIGHT:
                             self.move_thrash(1)
+                        if event.key == pygame.K_DOWN:
+                            self.trash.y += 10
                 if break_loop:
                     break
                 exit_btn = Button(self.screen, 'Koniec', (200 , 200), (100, 200), (0xff, 0xff, 0xff), (0,0,0) , self.menu)
@@ -498,7 +498,6 @@ class Simple_Game(object):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         pygame.quit(); sys.exit();
-        pygame.display.update()
 
         return False
 
