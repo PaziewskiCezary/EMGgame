@@ -82,6 +82,9 @@ class Simple_Game(object):
             elif d * 2 < s <= 3 * d:
 	            return  min((s - d * 2)/d, 1)
 
+    def update(self):
+        pygame.display.update()
+
     def calibrate(self):
         self.bgcolour = (255,239,148)
         x_screen, y_screen = self.size
@@ -89,24 +92,24 @@ class Simple_Game(object):
         
         self.screen.fill(self.bgcolour)
         pygame.display.set_caption('Kalibracja') 
-        pygame.display.update()
+        self.update()
   
         self.screen.fill(self.bgcolour)
         self.text('KALIBRACJA', x_screen // 2, y_screen // 2)
-        pygame.display.update()
+        self.update()
         time.sleep(2)
         
 
         self.screen.fill(self.bgcolour)
         self.text('ROZLUŹNIJ RĘKĘ', x_screen // 2, y_screen // 2)
-        pygame.display.update()
+        self.update()
         time.sleep(1)
         self.calib_min = self.amp.calib()
         time.sleep(2)
         
         self.screen.fill(self.bgcolour)
         self.text('ZACIŚNIJ RĘKĘ', x_screen // 2, y_screen // 2)
-        pygame.display.update()
+        self.update()
 
         time.sleep(1)
         self.calib_max = self.amp.calib()
@@ -114,13 +117,13 @@ class Simple_Game(object):
         if self.calib_min >= self.calib_max or  self.calib_max - self.calib_min < 50:
             self.screen.fill(self.bgcolour)
             self.text('POWTORZAM KALIBRACJĘ', x_screen // 2, y_screen // 2)
-            pygame.display.update() 
+            self.update() 
             time.sleep(2)
             self.calibrate()
 
         self.screen.fill(self.bgcolour)
         self.text('KONIEC KALIBRACJI', x_screen // 2, y_screen // 2) 
-        pygame.display.update()
+        self.update()
 
     def get_name(self):
         
@@ -156,7 +159,7 @@ class Simple_Game(object):
             self.screen.blit(textinput.get_surface(), 
                              ((x_screen - a[0]) // 2 , y_screen // 2))
 
-            pygame.display.update()
+            self.update()
             clock.tick(30)
             
             for event in events:
@@ -337,7 +340,7 @@ class Simple_Game(object):
                 self.text('Życia: ', 200 + len("Punkty: "+str(self.score))*font_size, 25, text='DejaVu Sans Mono', font_size = font_size) #, rectangle_color = (255,239,148))
                 self.text('❤'*self.lifes, 150 + len("Punkty: "+str(self.score))*font_size + len("Życia")*font_size, 25, text='DejaVu Sans Mono', font_size = 40) #, rectangle_color = (255,239,148))
                
-                pygame.display.update()
+                self.update()
 
                 self.clock.tick(60)
         
@@ -367,7 +370,7 @@ class Simple_Game(object):
 
         x_screen, y_screen = self.size
         self.screen.fill(self.bgcolour)
-        pygame.display.update()
+        self.update()
         x_button ,y_button = 60, 30
 
         return_btn = Button(self.screen, 'Menu', (x_button, y_button), (x_button*2, y_button*2), 
@@ -380,19 +383,19 @@ class Simple_Game(object):
         self.text('Imię',   2*x_screen // 4, y_screen // 2 )
         self.text('Pozycja',  x_screen // 4, y_screen // 2 )
 
-        pygame.display.update()
+        self.update()
         time.sleep(1)  
 
         self.text(str(self.score), 3*x_screen // 4, y_screen // 2 + 100 )
-        pygame.display.update()
+        self.update()
         time.sleep(1)
         
         self.text(self.name, 2*x_screen // 4, y_screen // 2 + 100)
-        pygame.display.update() 
+        self.update() 
         time.sleep(1)  
         
         self.text(f' {str(place) if place<10 else str(place)}.', x_screen // 4, y_screen // 2 + 100 )
-        pygame.display.update()
+        self.update()
 
         while True:
             for event in pygame.event.get():
@@ -445,7 +448,7 @@ class Simple_Game(object):
 	    
         x_screen, y_screen = self.size
         self.screen.fill(self.bgcolour)
-        pygame.display.update()
+        self.update()
         x_button ,y_button = 60, 30
         return_btn = Button(self.screen, 'Wróć', (x_button, y_button), (x_button*2, y_button*2), 
                             button_color=text_colour, label_color=self.bgcolour, func=self.menu)
@@ -456,7 +459,7 @@ class Simple_Game(object):
             self.text(str(scores[i][1]), 2*x_screen // 4, y_screen // 10 + (i+1)*y_offset)
             self.text(str(scores[i][0]), 3*x_screen // 4, y_screen // 10 + (i+1)*y_offset)
             time.sleep(0.1)        
-            pygame.display.update()
+            self.update()
         while True:
             for event in pygame.event.get():
                 return_btn.onClick(event)
@@ -487,7 +490,7 @@ class Simple_Game(object):
         b_w = Button(self.screen, 'Wyniki', (x_screen/2,y_screen/2), (x_button, y_button), button_colour, text_colour, self.scores)
         b_e = Button(self.screen, 'Wyjdź', (x_screen/2,y_screen/2+1.5*y_button), (x_button, y_button), button_colour, text_colour, pygame.quit)
  
-        pygame.display.update()
+        self.update()
         while True:
             for event in pygame.event.get():
                 b_s.onClick(event)
