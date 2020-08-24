@@ -18,28 +18,39 @@ def debug():
 
 class Simple_Game(object):
     """dSimple_Game"""
-    def __init__(self, size, use_keyboard=False, lifes=3, 
+    def __init__(self, lock, sample_array, size, use_keyboard=False, lifes=3, 
                  default_name='', full_screen=True):
+
+        self.lock = lock
+        self.sample_array = sample_array
 
         self._use_keyboard = use_keyboard
         self.default_name = default_name
         self.full_screen = full_screen
         pygame.init()
 
-        if not self.use_keyboard:
-            try:
-                from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
-                self.amp = Amplifier(512, [0, 1])
-            except ValueError as e:
-                print(e)
-                exit(1)
+        # if not self.use_keyboard:
+            # try:
+                # self.amp = Amplifier(512, [0, 1])
+            # except ValueError as e:
+                # print(e)
+                # exit(1)
 
-        self.bgcolour = (232,98,203) 
+        self.bgcolour = (255,239,148) #żółte
+        self.text_colour = (232,98,203) #różowy
+        self.button_colour = (232,98,203) #różowy
+        self.button_text_colour = (255,239,148) #żółte
         self.size = size
+        self.x_screen, self.y_screen = self.size
         self.max_lifes = lifes
-        self.max_missed = 1
+        #self.max_missed = 1   #chyba nie potrzebne 
+        
         if self.full_screen:
-            self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
+            self.screen = pygame.display.set_mode((0,0),  pygame.FULLSCREEN)  #do przemyślenienia ,pygame.RESIZABLE)
+            self.x_screen = self.screen.get_width()
+            self.y_screen = self.screen.get_height()
+            self.size = (self.x_screen, self.y_screen)
+
         else:
             self.screen = pygame.display.set_mode(self.size)
 
@@ -48,6 +59,9 @@ class Simple_Game(object):
         pygame.display.flip()
 
         self.clock = pygame.time.Clock()
+
+        self.font_style = 'Teko'
+        self.font_size = 30
 
         self.backgrounds = sorted([x for x in get_backgrounds()])
         self.backgrounds = [pygame.image.load(x) for x in 	self.backgrounds]
@@ -86,68 +100,106 @@ class Simple_Game(object):
         pygame.display.update()
 
     def calibrate(self):
-        self.bgcolour = (255,239,148)
-        x_screen, y_screen = self.size
-        text_colour = (232,98,203)
         
         self.screen.fill(self.bgcolour)
         pygame.display.set_caption('Kalibracja') 
         self.update()
   
         self.screen.fill(self.bgcolour)
-        self.text('KALIBRACJA', x_screen // 2, y_screen // 2)
+        self.text('KALIBRACJA', self.x_screen // 2, self.y_screen // 2)
         self.update()
         time.sleep(2)
         
 
         self.screen.fill(self.bgcolour)
-        self.text('ROZLUŹNIJ RĘKĘ', x_screen // 2, y_screen // 2)
+        self.text('ROZLUŹNIJ RĘKĘ', self.x_screen // 2, self.y_screen // 2)
         self.update()
         time.sleep(1)
-        self.calib_min = self.amp.calib()
+        
+        czas_kalibracji = 5
+        samples = []
+        t = time.time()
+        while time.time() - t <= czas_kalibracji:
+            self.lock.acquire()
+            signal = self.sample_array[-256:]
+            signal -= np.mean(signal)
+            signal = np.abs(signal)
+            self.lock.release()
+            samples.append(signal)
+            t0 = time.time()
+            while time.time() - t0 <= 0.5:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit(); sys.exit();
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            self.menu()
+              
+
+        self.calib_min = np.mean(samples)
+        del samples
+        
         time.sleep(2)
         
         self.screen.fill(self.bgcolour)
-        self.text('ZACIŚNIJ RĘKĘ', x_screen // 2, y_screen // 2)
+        self.text('ZACIŚNIJ RĘKĘ', self.x_screen // 2, self.y_screen // 2)
         self.update()
 
         time.sleep(1)
-        self.calib_max = self.amp.calib()
+        
+        samples = []
+        t = time.time()
+        while time.time() - t <= czas_kalibracji:
+            self.lock.acquire()
+            signal = self.sample_array[-256:]
+            signal -= np.mean(signal)
+            signal = np.abs(signal)
+            self.lock.release()
+            samples.append(signal) 
+            t0 = time.time()
+            while time.time() - t0 <= 0.5:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        pygame.quit(); sys.exit();
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_ESCAPE:
+                            self.menu()
+            
+        self.calib_max = np.mean(samples)
+        print(len(samples))
+        del samples
+        print(self.calib_min, self.calib_max)
+
         # self.calib_max = 400
         if self.calib_min >= self.calib_max or  self.calib_max - self.calib_min < 50:
             self.screen.fill(self.bgcolour)
-            self.text('POWTORZAM KALIBRACJĘ', x_screen // 2, y_screen // 2)
+            self.text('POWTORZAM KALIBRACJĘ', self.x_screen // 2, self.y_screen // 2)
             self.update() 
             time.sleep(2)
             self.calibrate()
 
         self.screen.fill(self.bgcolour)
-        self.text('KONIEC KALIBRACJI', x_screen // 2, y_screen // 2) 
+        self.text('KONIEC KALIBRACJI', self.x_screen // 2, self.y_screen // 2) 
         self.update()
 
     def get_name(self):
         
-        self.bgcolour = (255,239,148)
-        text_colour = (232,98,203)
-	    
         textinput = pygame_textinput.TextInput()
 
-        textinput.text_color = (232,98,203)
+        textinput.text_color = self.text_colour
         
-        self.screen = pygame.display.set_mode(self.size)
         clock = pygame.time.Clock()
-        
-        x_screen, y_screen = self.size
 
 
-        font = pygame.font.Font('freesansbold.ttf', 32) 
-        text = font.render("PODAJ SWÓJ NICK:", True, text_colour) 
+        #font = pygame.font.Font('freesansbold.ttf', 32) 
+        font = pygame.font.SysFont(self.font_style, self.font_size)
+        text = font.render("PODAJ SWÓJ NICK:", True, self.text_colour) 
         
         is_input = True
         while is_input:
             self.screen.fill(self.bgcolour)
             textRect = text.get_rect()  
-            textRect.center = (x_screen // 2, y_screen // 4) 
+            textRect.center = (self.x_screen // 2, self.y_screen // 4) 
             self.screen.blit(text, textRect)
             events = pygame.event.get()
             for event in events:
@@ -157,7 +209,7 @@ class Simple_Game(object):
             textinput.update(events)
             a = textinput.font_object.size(textinput.get_text())
             self.screen.blit(textinput.get_surface(), 
-                             ((x_screen - a[0]) // 2 , y_screen // 2))
+                             ((self.x_screen - a[0]) // 2 , self.y_screen // 2))
 
             self.update()
             clock.tick(30)
@@ -170,12 +222,10 @@ class Simple_Game(object):
                         break
     
 
-    def text(self, napis, x_pos, y_pos, *, text='DejaVu Sans Mono', font_size=32, rectangle_color = None):
-        x_screen, y_screen = self.size
-        text_colour = (232,98,203)
+    def text(self, napis, x_pos, y_pos, *, text='Amatic SC', font_size=30, rectangle_color = None):  #'DejaVu Sans Mono'
 
         font = pygame.font.SysFont(text, font_size)
-        text = font.render(napis, True, text_colour) 
+        text = font.render(napis, True, self.text_colour) 
 
         textRect = text.get_rect()  
         if rectangle_color:
@@ -198,32 +248,30 @@ class Simple_Game(object):
         self.play()
         
     def play(self):
-        if not self.use_keyboard:
-            self.amp.amp.start_sampling()        
-            time.sleep(1)	
+        # if not self.use_keyboard:
+            # self.amp.amp.start_sampling()        
+            # time.sleep(1)	
         
         self.lifes = self.max_lifes
         self.score = 0 
         self.missed = 0 
-        #self.background = None
         self.backgrounds = sorted([x for x in get_backgrounds()])
         self.backgrounds = [pygame.image.load(x) for x in 	self.backgrounds]
         self.bgn_idx = 0
-        speed_rate = 0.003 if not self.use_keyboard else 0.0003
+        speed_rate = 0.0003 if not self.use_keyboard else 0.0003
         trash_number = 0
-        w, h = self.size
 
-        bins = [TrashBin(width=w*TrashBin.precent, img_path=path, type=type) for (type, path) in get_bins()]
+        bins = [TrashBin(width=self.x_screen*TrashBin.precent, img_path=path, type=type) for (type, path) in get_bins()]
 
         number_of_bins = len(bins)
-        bin_widht = w * bins[0].precent
+        bin_widht = self.x_screen * bins[0].precent
 
         offset = ( 1 - number_of_bins * TrashBin.precent ) / ( number_of_bins + 1 )
-        offset = round( w * offset )
+        offset = round( self.x_screen * offset )
 
         bin_w, bin_h = bin_size = bins[0].size
 
-        pos_y = h - bin_h
+        pos_y = self.y_screen - bin_h
 
         for i, bin_ in enumerate(bins):
             pos_x = bin_w * i
@@ -233,7 +281,7 @@ class Simple_Game(object):
 
         trashes = []
         for i, (type, path) in enumerate(get_trashes()):
-            t = Trash(width=w*Trash.precent, img_path=path, type=type)
+            t = Trash(width=self.x_screen*Trash.precent, img_path=path, type=type)
             trashes.append(t)
 
         np.random.shuffle(trashes)
@@ -242,12 +290,12 @@ class Simple_Game(object):
         new_trash = True
         self.update_background()
 
-        while trashes and play and self.lifes > 0 and self.score >= 0:
+        while trashes and play and self.lifes > 0:
             if new_trash:
                 self.trash = trashes.pop()
                 trash_number += 1
                 # recalcualte x to be in center
-                self.trash.x = w//2 - self.trash.size[1]//2
+                self.trash.x = self.x_screen//2 - self.trash.size[1]//2
                 self.trash.y = 100
                 new_trash = False
                 this_trash = True
@@ -274,11 +322,16 @@ class Simple_Game(object):
                             self.trash.y += 10
                 if break_loop:
                     break
-                exit_btn = Button(self.screen, 'Koniec', (200 , 200), (100, 200), (0xff, 0xff, 0xff), (0,0,0) , self.menu)
+                #exit_btn = Button(self.screen, 'Koniec', (200 , 200), (100, 200), (0xff, 0xff, 0xff), (0,0,0) , self.menu) #czy to jest używane?????
                 
                 if not self.use_keyboard:
-                    signal = self.amp.get_signal(self.amp.fs//3)
-                    move_value = self.muscle_move(signal)
+                    #signal = self.amp.get_signal(self.amp.fs//3)
+                    self.lock.acquire()
+                    signal = self.sample_array[-256:]
+                    signal -= np.mean(signal)
+                    signal = np.abs(signal)
+                    self.lock.release()
+                    move_value = self.muscle_move(np.mean(signal)) / 10
                     self.move_thrash(move_value)
                 else:
                     for event in pygame.event.get():
@@ -297,7 +350,7 @@ class Simple_Game(object):
 
                 trash_x, trash_y = self.trash.pos 
 
-                translation_y = w * speed_rate * 1.02 ** trash_number
+                translation_y = self.x_screen * speed_rate * 1.02 ** trash_number
                 self.trash.x, self.trash.y = trash_x, trash_y +  translation_y
 
 
@@ -333,20 +386,20 @@ class Simple_Game(object):
 
                 # labes with lives and score
                 font_size = 25
-                rectangle_color = (255,239,148)
-                
-                pygame.draw.rect(self.screen, rectangle_color, (0, 0, w, 50), False)
-                self.text("Punkty: "+str(self.score), 100, 25, text='DejaVu Sans Mono', font_size = font_size) #, rectangle_color = (255,239,148))
-                self.text('Życia: ', 200 + len("Punkty: "+str(self.score))*font_size, 25, text='DejaVu Sans Mono', font_size = font_size) #, rectangle_color = (255,239,148))
-                self.text('❤'*self.lifes, 150 + len("Punkty: "+str(self.score))*font_size + len("Życia")*font_size, 25, text='DejaVu Sans Mono', font_size = 40) #, rectangle_color = (255,239,148))
+                font_size_s = 40
+                wh, hh = pygame.font.SysFont(self.font_style, font_size_s).size('❤')  #'DejaVu Sans Mono'
+                pygame.draw.rect(self.screen, self.bgcolour, (0, 0, self.x_screen, 50), False)
+                self.text("Punkty: "+str(self.score), 100, 25, text=self.font_style, font_size = font_size) 
+                self.text('Życia: ', 200 + len("Punkty: "+str(self.score))*font_size, 25, text=self.font_style, font_size = font_size) 
+                self.text('❤'*self.lifes, 65 + 0.5 * self.lifes * wh + len("Punkty: "+str(self.score))*font_size + len("Życia: ")*font_size, 25, text=self.font_style, font_size = font_size_s)
                
                 self.update()
 
                 self.clock.tick(60)
         
 
-        if not self.use_keyboard:
-            self.amp.amp.stop_sampling()
+        # if not self.use_keyboard:
+            # self.amp.amp.stop_sampling()
 
         self.score = max(0, self.score)
         self.save_score()
@@ -365,36 +418,32 @@ class Simple_Game(object):
         place = np.argmax(index) + 1
         play = False
 
-        self.bgcolour = (255,239,148)
-        text_colour = (232,98,203)
-
-        x_screen, y_screen = self.size
         self.screen.fill(self.bgcolour)
         self.update()
-        x_button ,y_button = 60, 30
+        x_button, y_button = 60, 30
 
         return_btn = Button(self.screen, 'Menu', (x_button, y_button), (x_button*2, y_button*2), 
-                            button_color=text_colour, label_color=self.bgcolour, func=self.menu)
-        again_btn = Button(self.screen, 'Zagraj jeszcze raz!', (x_screen // 2, 7 * y_screen // 8), (x_button*7, y_button*3), 
-                            button_color=text_colour, label_color=self.bgcolour, func=self.play)
+                            button_color=self.button_colour, label_color=self.button_text_colour, func=self.menu, font_size = 25)
+        again_btn = Button(self.screen, 'Zagraj jeszcze raz!', (self.x_screen // 2, 7 * self.y_screen // 8), (x_button*7, y_button*3), 
+                            button_color=self.button_colour, label_color=self.button_text_colour, func=self.play, font_size = 25)
                   
-        self.text('WYNIK',    x_screen // 2, y_screen // 4, font_size=64)
-        self.text('Punkty', 3*x_screen // 4, y_screen // 2 )
-        self.text('Imię',   2*x_screen // 4, y_screen // 2 )
-        self.text('Pozycja',  x_screen // 4, y_screen // 2 )
+        self.text('WYNIK',    self.x_screen // 2, self.y_screen // 4, font_size=64)
+        self.text('Punkty', 3*self.x_screen // 4, self.y_screen // 2 )
+        self.text('Imię',   2*self.x_screen // 4, self.y_screen // 2 )
+        self.text('Pozycja',  self.x_screen // 4, self.y_screen // 2 )
 
         self.update()
         time.sleep(1)  
 
-        self.text(str(self.score), 3*x_screen // 4, y_screen // 2 + 100 )
+        self.text(str(self.score), 3*self.x_screen // 4, self.y_screen // 2 + 100 )
         self.update()
         time.sleep(1)
         
-        self.text(self.name, 2*x_screen // 4, y_screen // 2 + 100)
+        self.text(self.name, 2*self.x_screen // 4, self.y_screen // 2 + 100)
         self.update() 
         time.sleep(1)  
         
-        self.text(f' {str(place) if place<10 else str(place)}.', x_screen // 4, y_screen // 2 + 100 )
+        self.text(f' {str(place) if place<10 else str(place)}.', self.x_screen // 4, self.y_screen // 2 + 100 )
         self.update()
 
         while True:
@@ -443,21 +492,17 @@ class Simple_Game(object):
         index = range(len(scores))
         scores, index = zip(*reversed(sorted(zip(scores, index), key=lambda x : x[0][0])))
 
-        self.bgcolour = (255,239,148)
-        text_colour = (232,98,203)
-	    
-        x_screen, y_screen = self.size
         self.screen.fill(self.bgcolour)
         self.update()
         x_button ,y_button = 60, 30
         return_btn = Button(self.screen, 'Wróć', (x_button, y_button), (x_button*2, y_button*2), 
-                            button_color=text_colour, label_color=self.bgcolour, func=self.menu)
-        self.text('WYNIKI', x_screen // 2, y_screen // 10  - 25, font_size = 48)
+                            button_color=self.button_colour, label_color=self.button_text_colour, func=self.menu, font_size = 25)
+        self.text('WYNIKI', self.x_screen // 2, self.y_screen // 10  - 25, font_size = 48)
         y_offset = 55
         for i in range(min(len(scores), 10)):
-            self.text(f'{" " + str(i+1) if i<10 else str(i+1)}.', x_screen // 4, y_screen // 10 + (i+1)*y_offset)
-            self.text(str(scores[i][1]), 2*x_screen // 4, y_screen // 10 + (i+1)*y_offset)
-            self.text(str(scores[i][0]), 3*x_screen // 4, y_screen // 10 + (i+1)*y_offset)
+            self.text(f'{" " + str(i+1) if i<10 else str(i+1)}.', self.x_screen // 4, self.y_screen // 10 + (i+1)*y_offset)
+            self.text(str(scores[i][1]), 2*self.x_screen // 4, self.y_screen // 10 + (i+1)*y_offset)
+            self.text(str(scores[i][0]), 3*self.x_screen // 4, self.y_screen // 10 + (i+1)*y_offset)
             time.sleep(0.1)        
             self.update()
         while True:
@@ -474,21 +519,17 @@ class Simple_Game(object):
 
     def menu(self):
         
-        self.bgcolour = (232,98,203) # needed?
-        
         self.screen.fill(self.bgcolour)
         
         pygame.display.set_caption('Segreguj smieci')
 
-        x_screen, y_screen = self.size
-        x_button = 300
-        y_button = 150
-        button_colour = (255,239,148) #(237, 168, 19) #(173, 170, 218)
-        text_colour = (232,98,203) #(122, 73, 122) #(218, 170, 214)
+        x_button = self.x_screen/4
+        y_button = self.y_screen/5
+        font_size = int(x_button//4)
         
-        b_s = Button(self.screen, 'Start', (x_screen/2,y_screen/2-1.5*y_button), (x_button, y_button), button_colour, text_colour, self.main_loop)
-        b_w = Button(self.screen, 'Wyniki', (x_screen/2,y_screen/2), (x_button, y_button), button_colour, text_colour, self.scores)
-        b_e = Button(self.screen, 'Wyjdź', (x_screen/2,y_screen/2+1.5*y_button), (x_button, y_button), button_colour, text_colour, pygame.quit)
+        b_s = Button(self.screen, 'Start', (self.x_screen/2,self.y_screen/2-1.5*y_button), (x_button, y_button), self.button_colour, self.button_text_colour, self.main_loop, font_size = font_size)
+        b_w = Button(self.screen, 'Wyniki', (self.x_screen/2,self.y_screen/2), (x_button, y_button), self.button_colour, self.button_text_colour, self.scores, font_size = font_size)
+        b_e = Button(self.screen, 'Wyjdź', (self.x_screen/2,self.y_screen/2+1.5*y_button), (x_button, y_button), self.button_colour, self.button_text_colour, pygame.quit, font_size = font_size)
  
         self.update()
         while True:
@@ -506,7 +547,7 @@ class Simple_Game(object):
 
 
 class Button(object):
-    def __init__(self, screen, label, pos, dims, button_color, label_color, func):
+    def __init__(self, screen, label, pos, dims, button_color, label_color, func, font_size):
         
         self.screen = screen
         self.label = label
@@ -514,7 +555,7 @@ class Button(object):
         self.dims = dims
         self.button_color = button_color
         self.label_color = label_color
-        self.font = pygame.font.SysFont('Arial', 25)
+        self.font = pygame.font.SysFont('Teko', font_size)
         self.func = func
         
         self.addRect()
@@ -640,6 +681,7 @@ class TrashBin(pygame.sprite.Sprite):
 
 class Amplifier(object):
     def __init__(self, Fs, channels):
+        from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
         if len(channels) != 2:
             raise ValueError("tylko2  kanały chcemy!!!!!!!!1111")
         amps = TmsiCppAmplifier.get_available_amplifiers('usb')
@@ -651,7 +693,7 @@ class Amplifier(object):
         self.gains = np.array(self.amp.current_description.channel_gains)
         self.offsets = np.array(self.amp.current_description.channel_offsets)
         self.channels = channels
-        self.b1,self.a1 = butter(1,1/(Fs/2),'highpass')
+        self.b1,self.self.a1 = butter(1,1/(Fs/2),'highpass')
         
     @property
     def fs(self):

@@ -4,6 +4,43 @@
 import argparse
 import sys
 
+from multiprocessing import Process, Lock
+from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
+import time
+
+import numpy as np
+
+from multiprocessing.sharedctypes import Value, Array
+
+def amp(l, a1, fs=512, ds=64, channels=[0,1]):
+    amps = TmsiCppAmplifier.get_available_amplifiers('usb')
+    if not amps:
+        raise ValueError("Nie ma wzmacniacza")
+    amp = TmsiCppAmplifier(amps[0])
+    amp.sampling_rate = fs
+    gains = np.array(amp.current_description.channel_gains)
+    offsets = np.array(amp.current_description.channel_offsets)
+
+    amp.start_sampling()    
+
+    while True:    
+        t = time.time()
+        s = amp.get_samples(ds).samples * gains + offsets
+
+        t2 = time.time()
+        s = s[:,channels[0]] - s[:,channels[1]]
+        l.acquire()
+        a1[:-ds] = a1[ds:]
+        a1[-ds:] = Array('d', s)
+        l.release()
+
+def play_game(lock, sample_array, screen_size, use_keyboard=False, lifes=3, default_name='', full_screen=True):
+    game = Simple_Game(lock, sample_array, screen_size, use_keyboard=use_keyboard, 
+                            lifes=lifes, default_name=default_name, 
+                            full_screen=full_screen)
+    game.menu()
+
+
 from game_classes import Simple_Game
 
 if __name__ == '__main__':
@@ -34,13 +71,15 @@ if __name__ == '__main__':
         args.use_keyboard = False
 
     screen_size = 16 * 70, 9 * 70
-    if args.use_keyboard:
-        game = Simple_Game(screen_size, use_keyboard=True, 
-                            lifes=args.lifes, default_name=args.name, 
-                            full_screen=args.full_screen)
-    if args.use_amplifier:
-        game = Simple_Game(screen_size, use_keyboard=False, 
-                            lifes=args.lifes, default_name=args.name, 
-                            full_screen=args.full_screen)
-    while game.menu():
-        pass
+
+    l = Lock()
+
+    a1 = Array('d', np.zeros(512*2))
+
+    p = Process(target=amp, args=(l, a1))
+    p2 = Process(target=play_game, args=(l, a1, screen_size, args.use_keyboard, args.lifes, args.name, args.full_screen))
+    p.start()
+    p2.start()
+    
+    p.join()
+    p2.join()
