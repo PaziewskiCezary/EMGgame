@@ -29,13 +29,6 @@ class Simple_Game(object):
         self.full_screen = full_screen
         pygame.init()
 
-        # if not self.use_keyboard:
-            # try:
-                # self.amp = Amplifier(512, [0, 1])
-            # except ValueError as e:
-                # print(e)
-                # exit(1)
-
         self.bgcolour = (255,239,148) #żółte
         self.text_colour = (232,98,203) #różowy
         self.button_colour = (232,98,203) #różowy
@@ -43,10 +36,9 @@ class Simple_Game(object):
         self.size = size
         self.x_screen, self.y_screen = self.size
         self.max_lifes = lifes
-        #self.max_missed = 1   #chyba nie potrzebne 
         
         if self.full_screen:
-            self.screen = pygame.display.set_mode((0,0),  pygame.FULLSCREEN)  #do przemyślenienia ,pygame.RESIZABLE)
+            self.screen = pygame.display.set_mode((0,0),  pygame.FULLSCREEN)
             self.x_screen = self.screen.get_width()
             self.y_screen = self.screen.get_height()
             self.size = (self.x_screen, self.y_screen)
@@ -60,7 +52,7 @@ class Simple_Game(object):
 
         self.clock = pygame.time.Clock()
 
-        self.font_style = 'Teko'
+        self.font_style = 'DejaVu Sans Mono'
         self.font_size = 30
 
         self.backgrounds = sorted([x for x in get_backgrounds()])
@@ -106,13 +98,13 @@ class Simple_Game(object):
         self.update()
   
         self.screen.fill(self.bgcolour)
-        self.text('KALIBRACJA', self.x_screen // 2, self.y_screen // 2)
+        self.text('KALIBRACJA', self.x_screen // 2, self.y_screen // 2, font_size=self.y_screen // 10)
         self.update()
         time.sleep(2)
         
 
         self.screen.fill(self.bgcolour)
-        self.text('ROZLUŹNIJ RĘKĘ', self.x_screen // 2, self.y_screen // 2)
+        self.text('ROZLUŹNIJ RĘKĘ', self.x_screen // 2, self.y_screen // 2, font_size=self.y_screen // 10)
         self.update()
         time.sleep(1)
         
@@ -131,6 +123,7 @@ class Simple_Game(object):
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit(); sys.exit();
+                        #self.amp.amp.stop_sampling()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.menu()
@@ -142,7 +135,7 @@ class Simple_Game(object):
         time.sleep(2)
         
         self.screen.fill(self.bgcolour)
-        self.text('ZACIŚNIJ RĘKĘ', self.x_screen // 2, self.y_screen // 2)
+        self.text('ZACIŚNIJ RĘKĘ', self.x_screen // 2, self.y_screen // 2, font_size=self.y_screen // 10)
         self.update()
 
         time.sleep(1)
@@ -161,51 +154,43 @@ class Simple_Game(object):
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         pygame.quit(); sys.exit();
+                        #self.amp.amp.stop_sampling()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.menu()
-            
+      
         self.calib_max = np.mean(samples)
-        print(len(samples))
         del samples
         print(self.calib_min, self.calib_max)
 
         # self.calib_max = 400
         if self.calib_min >= self.calib_max or  self.calib_max - self.calib_min < 50:
             self.screen.fill(self.bgcolour)
-            self.text('POWTORZAM KALIBRACJĘ', self.x_screen // 2, self.y_screen // 2)
+            self.text('POWTORZAM KALIBRACJĘ', self.x_screen // 2, self.y_screen // 2, font_size=self.y_screen // 10)
             self.update() 
             time.sleep(2)
             self.calibrate()
 
         self.screen.fill(self.bgcolour)
-        self.text('KONIEC KALIBRACJI', self.x_screen // 2, self.y_screen // 2) 
+        self.text('KONIEC KALIBRACJI', self.x_screen // 2, self.y_screen // 2, font_size=self.y_screen // 10) 
         self.update()
 
     def get_name(self):
         
-        textinput = pygame_textinput.TextInput()
-
-        textinput.text_color = self.text_colour
+        textinput = pygame_textinput.TextInput(font_family = self.font_style, font_size = self.y_screen // 13, text_color = self.text_colour,       max_string_length = 15)
         
         clock = pygame.time.Clock()
-
-
-        #font = pygame.font.Font('freesansbold.ttf', 32) 
-        font = pygame.font.SysFont(self.font_style, self.font_size)
-        text = font.render("PODAJ SWÓJ NICK:", True, self.text_colour) 
-        
+ 
         is_input = True
         while is_input:
             self.screen.fill(self.bgcolour)
-            textRect = text.get_rect()  
-            textRect.center = (self.x_screen // 2, self.y_screen // 4) 
-            self.screen.blit(text, textRect)
+            self.text("PODAJ SWÓJ NICK:", self.x_screen // 2,  self.y_screen // 4, font_size=self.y_screen // 13)
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
+                    #self.amp.amp.stop_sampling()
                     exit()
-	        
+			
             textinput.update(events)
             a = textinput.font_object.size(textinput.get_text())
             self.screen.blit(textinput.get_surface(), 
@@ -222,7 +207,7 @@ class Simple_Game(object):
                         break
     
 
-    def text(self, napis, x_pos, y_pos, *, text='Amatic SC', font_size=30, rectangle_color = None):  #'DejaVu Sans Mono'
+    def text(self, napis, x_pos, y_pos, *, text='DejaVu Sans Mono', font_size=30, rectangle_color = None):
 
         font = pygame.font.SysFont(text, font_size)
         text = font.render(napis, True, self.text_colour) 
@@ -258,7 +243,7 @@ class Simple_Game(object):
         self.backgrounds = sorted([x for x in get_backgrounds()])
         self.backgrounds = [pygame.image.load(x) for x in 	self.backgrounds]
         self.bgn_idx = 0
-        speed_rate = 0.0003 if not self.use_keyboard else 0.0003
+        speed_rate = 0.0003
         trash_number = 0
 
         bins = [TrashBin(width=self.x_screen*TrashBin.precent, img_path=path, type=type) for (type, path) in get_bins()]
@@ -385,13 +370,13 @@ class Simple_Game(object):
 
 
                 # labes with lives and score
-                font_size = 25
-                font_size_s = 40
-                wh, hh = pygame.font.SysFont(self.font_style, font_size_s).size('❤')  #'DejaVu Sans Mono'
-                pygame.draw.rect(self.screen, self.bgcolour, (0, 0, self.x_screen, 50), False)
+                font_size = self.y_screen // 24
+                font_size_heart = self.y_screen // 20
+                wh, hh = pygame.font.SysFont(self.font_style, font_size_heart).size('❤')  #'DejaVu Sans Mono'
+                pygame.draw.rect(self.screen, self.bgcolour, (0, 0, self.x_screen, self.y_screen // 14), False)
                 self.text("Punkty: "+str(self.score), 100, 25, text=self.font_style, font_size = font_size) 
                 self.text('Życia: ', 200 + len("Punkty: "+str(self.score))*font_size, 25, text=self.font_style, font_size = font_size) 
-                self.text('❤'*self.lifes, 65 + 0.5 * self.lifes * wh + len("Punkty: "+str(self.score))*font_size + len("Życia: ")*font_size, 25, text=self.font_style, font_size = font_size_s)
+                self.text('❤'*self.lifes, 65 + 0.5 * self.lifes * wh + len("Punkty: "+str(self.score))*font_size + len("Życia: ")*font_size, 25, text=self.font_style, font_size = font_size_heart)
                
                 self.update()
 
@@ -420,30 +405,34 @@ class Simple_Game(object):
 
         self.screen.fill(self.bgcolour)
         self.update()
-        x_button, y_button = 60, 30
+        x_button, y_button = self.x_screen // 20, self.y_screen // 20
+        button_font_size = self.y_screen // 18
+        title_font_size = self.y_screen // 12
+        subtitle_font_size = self.y_screen // 14
+        points_font_size = self.y_screen // 16
 
         return_btn = Button(self.screen, 'Menu', (x_button, y_button), (x_button*2, y_button*2), 
-                            button_color=self.button_colour, label_color=self.button_text_colour, func=self.menu, font_size = 25)
+                            button_color=self.button_colour, label_color=self.button_text_colour, func=self.menu, font_size = button_font_size)
         again_btn = Button(self.screen, 'Zagraj jeszcze raz!', (self.x_screen // 2, 7 * self.y_screen // 8), (x_button*7, y_button*3), 
-                            button_color=self.button_colour, label_color=self.button_text_colour, func=self.play, font_size = 25)
+                            button_color=self.button_colour, label_color=self.button_text_colour, func=self.play, font_size = button_font_size)
                   
-        self.text('WYNIK',    self.x_screen // 2, self.y_screen // 4, font_size=64)
-        self.text('Punkty', 3*self.x_screen // 4, self.y_screen // 2 )
-        self.text('Imię',   2*self.x_screen // 4, self.y_screen // 2 )
-        self.text('Pozycja',  self.x_screen // 4, self.y_screen // 2 )
+        self.text('WYNIK',    self.x_screen // 2, self.y_screen // 4, font_size=title_font_size)
+        self.text('Punkty', 3*self.x_screen // 4, self.y_screen // 2, font_size=subtitle_font_size)
+        self.text('Imię',   2*self.x_screen // 4, self.y_screen // 2, font_size=subtitle_font_size)
+        self.text('Pozycja',  self.x_screen // 4, self.y_screen // 2, font_size=subtitle_font_size)
 
         self.update()
         time.sleep(1)  
 
-        self.text(str(self.score), 3*self.x_screen // 4, self.y_screen // 2 + 100 )
+        self.text(str(self.score), 3*self.x_screen // 4, self.y_screen // 2 + 100, font_size=points_font_size)
         self.update()
         time.sleep(1)
         
-        self.text(self.name, 2*self.x_screen // 4, self.y_screen // 2 + 100)
+        self.text(self.name, 2*self.x_screen // 4, self.y_screen // 2 + 100, font_size=points_font_size)
         self.update() 
         time.sleep(1)  
         
-        self.text(f' {str(place) if place<10 else str(place)}.', self.x_screen // 4, self.y_screen // 2 + 100 )
+        self.text(f' {str(place) if place<10 else str(place)}.', self.x_screen // 4, self.y_screen // 2 + 100, font_size=points_font_size)
         self.update()
 
         while True:
@@ -452,6 +441,7 @@ class Simple_Game(object):
                 again_btn.onClick(event)
                 if event.type == pygame.QUIT:
                     pygame.quit(); sys.exit();
+                    #self.amp.amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.menu()
@@ -494,9 +484,9 @@ class Simple_Game(object):
 
         self.screen.fill(self.bgcolour)
         self.update()
-        x_button ,y_button = 60, 30
+        x_button ,y_button = self.x_screen // 20, self.y_screen // 20
         return_btn = Button(self.screen, 'Wróć', (x_button, y_button), (x_button*2, y_button*2), 
-                            button_color=self.button_colour, label_color=self.button_text_colour, func=self.menu, font_size = 25)
+                            button_color=self.button_colour, label_color=self.button_text_colour, func=self.menu, font_size = button_font_size)
         self.text('WYNIKI', self.x_screen // 2, self.y_screen // 10  - 25, font_size = 48)
         y_offset = 55
         for i in range(min(len(scores), 10)):
@@ -510,6 +500,7 @@ class Simple_Game(object):
                 return_btn.onClick(event)
                 if event.type == pygame.QUIT:
                     pygame.quit(); sys.exit();
+                    self.amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.menu()
@@ -525,7 +516,7 @@ class Simple_Game(object):
 
         x_button = self.x_screen/4
         y_button = self.y_screen/5
-        font_size = int(x_button//4)
+        font_size = int(x_button//5)
         
         b_s = Button(self.screen, 'Start', (self.x_screen/2,self.y_screen/2-1.5*y_button), (x_button, y_button), self.button_colour, self.button_text_colour, self.main_loop, font_size = font_size)
         b_w = Button(self.screen, 'Wyniki', (self.x_screen/2,self.y_screen/2), (x_button, y_button), self.button_colour, self.button_text_colour, self.scores, font_size = font_size)
@@ -539,6 +530,7 @@ class Simple_Game(object):
                 b_e.onClick(event)
                 if event.type == pygame.QUIT:
                     pygame.quit(); sys.exit();
+                    self.amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         pygame.quit(); sys.exit();
@@ -679,6 +671,7 @@ class TrashBin(pygame.sprite.Sprite):
     def top(self):
         return self.image.get_rect()[1] + self.pos[1]
 
+"""
 class Amplifier(object):
     def __init__(self, Fs, channels):
         from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
@@ -698,7 +691,8 @@ class Amplifier(object):
     @property
     def fs(self):
         return self.amp.sampling_rate
-
+"""
+"""
     def samples(self,d,p = 100):
         '''Return array of signals in microvolts'''
         t = time.time()
@@ -711,7 +705,9 @@ class Amplifier(object):
             x = 1
         else:
             x = 0
-            return s, x
+           return s, x
+"""
+"""
 	
     def calib(self, t=5, dt=512//3):
         
@@ -733,7 +729,8 @@ class Amplifier(object):
 
         scim = np.mean(sample)
         return scim
-
+"""
+"""
     def get_signal(self, n):
         Fs = self.amp.sampling_rate
         
@@ -743,3 +740,4 @@ class Amplifier(object):
         s-=np.mean(s)
         scim = np.mean(np.abs(s))
         return scim
+"""

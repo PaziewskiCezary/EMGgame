@@ -81,5 +81,12 @@ if __name__ == '__main__':
     p.start()
     p2.start()
     
-    p.join()
-    p2.join()
+    #p.join()
+    #p2.join()
+
+    try:
+        while True:
+            pass
+    except KeyboardInterrup:
+        p.kill()
+        p2.kill()
