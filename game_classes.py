@@ -485,6 +485,7 @@ class Simple_Game(object):
         self.screen.fill(self.bgcolour)
         self.update()
         x_button ,y_button = self.x_screen // 20, self.y_screen // 20
+        button_font_size = self.y_screen // 18
         return_btn = Button(self.screen, 'Wróć', (x_button, y_button), (x_button*2, y_button*2), 
                             button_color=self.button_colour, label_color=self.button_text_colour, func=self.menu, font_size = button_font_size)
         self.text('WYNIKI', self.x_screen // 2, self.y_screen // 10  - 25, font_size = 48)
