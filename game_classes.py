@@ -18,9 +18,10 @@ def debug():
 
 class Simple_Game(object):
     """dSimple_Game"""
-    def __init__(self, lock, sample_array, size, use_keyboard=False, lifes=3, 
+    def __init__(self, queue, lock, sample_array, size, use_keyboard=False, lifes=3, 
                  default_name='', full_screen=True):
 
+        self.queue = queue
         self.lock = lock
         self.sample_array = sample_array
 
@@ -58,6 +59,9 @@ class Simple_Game(object):
         self.backgrounds = sorted([x for x in get_backgrounds()])
         self.backgrounds = [pygame.image.load(x) for x in 	self.backgrounds]
         self.max_shift = 10
+
+    def kill(self):
+        self.queue.put(1)
 
     @property
     def use_keyboard(self):
@@ -122,8 +126,7 @@ class Simple_Game(object):
             while time.time() - t0 <= 0.5:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        pygame.quit(); sys.exit();
-                        #self.amp.amp.stop_sampling()
+                        self.kill()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.menu()
@@ -153,7 +156,7 @@ class Simple_Game(object):
             while time.time() - t0 <= 0.5:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        pygame.quit(); sys.exit();
+                        self.kill()
                         #self.amp.amp.stop_sampling()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -188,8 +191,7 @@ class Simple_Game(object):
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
-                    #self.amp.amp.stop_sampling()
-                    exit()
+                    self.kill()
 			
             textinput.update(events)
             a = textinput.font_object.size(textinput.get_text())
@@ -292,7 +294,7 @@ class Simple_Game(object):
                 break_loop = False
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        sys.exit()
+                        self.kill()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             play = False
@@ -307,8 +309,7 @@ class Simple_Game(object):
                             self.trash.y += 10
                 if break_loop:
                     break
-                #exit_btn = Button(self.screen, 'Koniec', (200 , 200), (100, 200), (0xff, 0xff, 0xff), (0,0,0) , self.menu) #czy to jest używane?????
-                
+               
                 if not self.use_keyboard:
                     #signal = self.amp.get_signal(self.amp.fs//3)
                     self.lock.acquire()
@@ -440,8 +441,7 @@ class Simple_Game(object):
                 return_btn.onClick(event)
                 again_btn.onClick(event)
                 if event.type == pygame.QUIT:
-                    pygame.quit(); sys.exit();
-                    #self.amp.amp.stop_sampling()
+                    self.kill()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.menu()
@@ -499,7 +499,7 @@ class Simple_Game(object):
             for event in pygame.event.get():
                 return_btn.onClick(event)
                 if event.type == pygame.QUIT:
-                    pygame.quit(); sys.exit();
+                    self.kill()
                     self.amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
@@ -520,7 +520,7 @@ class Simple_Game(object):
         
         b_s = Button(self.screen, 'Start', (self.x_screen/2,self.y_screen/2-1.5*y_button), (x_button, y_button), self.button_colour, self.button_text_colour, self.main_loop, font_size = font_size)
         b_w = Button(self.screen, 'Wyniki', (self.x_screen/2,self.y_screen/2), (x_button, y_button), self.button_colour, self.button_text_colour, self.scores, font_size = font_size)
-        b_e = Button(self.screen, 'Wyjdź', (self.x_screen/2,self.y_screen/2+1.5*y_button), (x_button, y_button), self.button_colour, self.button_text_colour, pygame.quit, font_size = font_size)
+        b_e = Button(self.screen, 'Wyjdź', (self.x_screen/2,self.y_screen/2+1.5*y_button), (x_button, y_button), self.button_colour, self.button_text_colour, self.kill, font_size = font_size)
  
         self.update()
         while True:
@@ -529,11 +529,11 @@ class Simple_Game(object):
                 b_w.onClick(event)
                 b_e.onClick(event)
                 if event.type == pygame.QUIT:
-                    pygame.quit(); sys.exit();
+                    self.kill()
                     self.amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        pygame.quit(); sys.exit();
+                        self.kill()
 
         return False
 

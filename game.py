@@ -5,14 +5,16 @@ import argparse
 import sys
 
 from multiprocessing import Process, Lock
-from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 import time
 
 import numpy as np
 
 from multiprocessing.sharedctypes import Value, Array
+import multiprocessing as mp
 
 def amp(l, a1, fs=512, ds=64, channels=[0,1]):
+    from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
+
     amps = TmsiCppAmplifier.get_available_amplifiers('usb')
     if not amps:
         raise ValueError("Nie ma wzmacniacza")
@@ -34,12 +36,12 @@ def amp(l, a1, fs=512, ds=64, channels=[0,1]):
         a1[-ds:] = Array('d', s)
         l.release()
 
-def play_game(lock, sample_array, screen_size, use_keyboard=False, lifes=3, default_name='', full_screen=True):
-    game = Simple_Game(lock, sample_array, screen_size, use_keyboard=use_keyboard, 
+def play_game(queue, lock, sample_array, screen_size, use_keyboard=False, lifes=3, default_name='', full_screen=True):
+    game = Simple_Game(queue, lock, sample_array, screen_size, use_keyboard=use_keyboard, 
                             lifes=lifes, default_name=default_name, 
                             full_screen=full_screen)
     game.menu()
-
+    print(1)
 
 from game_classes import Simple_Game
 
@@ -75,18 +77,14 @@ if __name__ == '__main__':
     l = Lock()
 
     a1 = Array('d', np.zeros(512*2))
+    q = mp.Queue()
 
     p = Process(target=amp, args=(l, a1))
-    p2 = Process(target=play_game, args=(l, a1, screen_size, args.use_keyboard, args.lifes, args.name, args.full_screen))
+    p2 = Process(target=play_game, args=(q, l, a1, screen_size, args.use_keyboard, args.lifes, args.name, args.full_screen))
     p.start()
     p2.start()
-    
-    #p.join()
-    #p2.join()
 
-    try:
-        while True:
-            pass
-    except KeyboardInterrup:
-        p.kill()
-        p2.kill()
+    while q.empty():
+        pass
+    p.kill()
+    p2.kill()
