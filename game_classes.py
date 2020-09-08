@@ -56,9 +56,17 @@ class Simple_Game(object):
         self.font_style = 'DejaVu Sans Mono'
         self.font_size = 30
 
-        self.backgrounds = sorted([x for x in get_backgrounds()])
-        self.backgrounds = [pygame.image.load(x) for x in 	self.backgrounds]
         self.max_shift = 10
+
+        self.backgrounds = sorted([x for x in get_backgrounds()])
+        self.backgrounds = [pygame.image.load(x) for x in   self.backgrounds]
+
+        self.bins = [TrashBin(width=self.x_screen*TrashBin.precent, img_path=path, type=type) for (type, path) in get_bins()]
+
+        self.trashes = []
+        for i, (type, path) in enumerate(get_trashes()):
+            t = Trash(width=self.x_screen*Trash.precent, img_path=path, type=type)
+            self.trashes.append(t)
 
     def kill(self):
         self.queue.put(1)
@@ -242,13 +250,12 @@ class Simple_Game(object):
         self.lifes = self.max_lifes
         self.score = 0 
         self.missed = 0 
-        self.backgrounds = sorted([x for x in get_backgrounds()])
-        self.backgrounds = [pygame.image.load(x) for x in 	self.backgrounds]
+
         self.bgn_idx = 0
         speed_rate = 0.0003
         trash_number = 0
 
-        bins = [TrashBin(width=self.x_screen*TrashBin.precent, img_path=path, type=type) for (type, path) in get_bins()]
+        bins = self.bins[:]
 
         number_of_bins = len(bins)
         bin_widht = self.x_screen * bins[0].precent
@@ -266,11 +273,8 @@ class Simple_Game(object):
             bin_.x = pos_x
             bin_.y = pos_y
 
-        trashes = []
-        for i, (type, path) in enumerate(get_trashes()):
-            t = Trash(width=self.x_screen*Trash.precent, img_path=path, type=type)
-            trashes.append(t)
-
+       
+        trashes = self.trashes[:]
         np.random.shuffle(trashes)
 
         play = True
