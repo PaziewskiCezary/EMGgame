@@ -17,7 +17,7 @@ def debug():
     import ipdb; ipdb.set_trace()
 
 class Simple_Game(object):
-    """dSimple_Game"""
+    """Simple_Game"""
     def __init__(self, queue, lock, sample_array, size, use_keyboard=False, lifes=3, 
                  default_name='', full_screen=True):
 
@@ -484,7 +484,10 @@ class Simple_Game(object):
 
         # sorting scores with keeping indexes
         index = range(len(scores))
-        scores, index = zip(*reversed(sorted(zip(scores, index), key=lambda x : x[0][0])))
+        try:
+            scores, index = zip(*reversed(sorted(zip(scores, index), key=lambda x : x[0][0])))
+        except ValueError:
+            scores, index = ['brak wyników'], [0]
 
         self.screen.fill(self.bgcolour)
         self.update()
@@ -500,6 +503,7 @@ class Simple_Game(object):
             self.text(str(scores[i][0]), 3*self.x_screen // 4, self.y_screen // 10 + (i+1)*y_offset)
             time.sleep(0.1)        
             self.update()
+        self.update()
         while True:
             for event in pygame.event.get():
                 return_btn.onClick(event)

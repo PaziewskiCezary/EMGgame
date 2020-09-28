@@ -41,7 +41,6 @@ def play_game(queue, lock, sample_array, screen_size, use_keyboard=False, lifes=
                             lifes=lifes, default_name=default_name, 
                             full_screen=full_screen)
     game.menu()
-    print(1)
 
 from game_classes import Simple_Game
 
