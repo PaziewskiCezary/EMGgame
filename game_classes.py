@@ -2,14 +2,9 @@ import pygame
 import os
 import math
 import time
-import sys
 import pickle
 import pygame_textinput
-
-from scipy.signal import butter, lfilter, iirnotch, lfilter_zi, filtfilt
 import numpy as np
-import matplotlib.pyplot as plt
-import scipy.signal as ss
 
 from utils import *
 
@@ -98,7 +93,7 @@ class Simple_Game(object):
             elif d < s <= 2 * d:
                 return 0
             elif d * 2 < s <= 3 * d:
-	            return  min((s - d * 2)/d, 1)
+                return  min((s - d * 2)/d, 1)
 
     def update(self):
         pygame.display.update()
@@ -106,7 +101,7 @@ class Simple_Game(object):
     def calibrate(self):
         
         self.screen.fill(self.bgcolour)
-        pygame.display.set_caption('Kalibracja') 
+        pygame.display.set_caption('Kalibracja')
         self.update()
   
         self.screen.fill(self.bgcolour)
@@ -165,7 +160,6 @@ class Simple_Game(object):
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self.kill()
-                        #self.amp.amp.stop_sampling()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
                             self.menu()
@@ -174,7 +168,6 @@ class Simple_Game(object):
         del samples
         print(self.calib_min, self.calib_max)
 
-        # self.calib_max = 400
         if self.calib_min >= self.calib_max or  self.calib_max - self.calib_min < 50:
             self.screen.fill(self.bgcolour)
             self.text('POWTORZAM KALIBRACJĘ', self.x_screen // 2, self.y_screen // 2, font_size=self.y_screen // 10)
@@ -243,9 +236,6 @@ class Simple_Game(object):
         self.play()
         
     def play(self):
-        # if not self.use_keyboard:
-            # self.amp.amp.start_sampling()        
-            # time.sleep(1)	
         
         self.lifes = self.max_lifes
         self.score = 0 
@@ -315,7 +305,6 @@ class Simple_Game(object):
                     break
                
                 if not self.use_keyboard:
-                    #signal = self.amp.get_signal(self.amp.fs//3)
                     self.lock.acquire()
                     signal = self.sample_array[-256:]
                     signal -= np.mean(signal)
@@ -386,10 +375,6 @@ class Simple_Game(object):
                 self.update()
 
                 self.clock.tick(60)
-        
-
-        # if not self.use_keyboard:
-            # self.amp.amp.stop_sampling()
 
         self.score = max(0, self.score)
         self.save_score()
@@ -679,74 +664,3 @@ class TrashBin(pygame.sprite.Sprite):
     @property
     def top(self):
         return self.image.get_rect()[1] + self.pos[1]
-
-"""
-class Amplifier(object):
-    def __init__(self, Fs, channels):
-        from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
-        if len(channels) != 2:
-            raise ValueError("tylko2  kanały chcemy!!!!!!!!1111")
-        amps = TmsiCppAmplifier.get_available_amplifiers('usb')
-        if not amps:
-            raise ValueError("Nie ma wzmacniacza")
-			
-        self.amp = TmsiCppAmplifier(amps[0])
-        self.amp.sampling_rate = Fs
-        self.gains = np.array(self.amp.current_description.channel_gains)
-        self.offsets = np.array(self.amp.current_description.channel_offsets)
-        self.channels = channels
-        self.b1,self.self.a1 = butter(1,1/(Fs/2),'highpass')
-        
-    @property
-    def fs(self):
-        return self.amp.sampling_rate
-"""
-"""
-    def samples(self,d,p = 100):
-        '''Return array of signals in microvolts'''
-        t = time.time()
-        s = self.amp.get_samples(5*Fs).samples * self.gains + self.offsets
-        s = s[:,self.channels[0]] - s[:,self.channels[1]]
-        b,a = butter(2,1/(self.amp.sampling_rate/2),'highpass')
-        s = filtfilt(b,a,s)
-        s = s[-d:]
-        if np.mean(s) > p:
-            x = 1
-        else:
-            x = 0
-           return s, x
-"""
-"""
-	
-    def calib(self, t=5, dt=512//3):
-        
-        czas_kalibracji = t
-   
-        
-        l = czas_kalibracji
-        self.amp.start_sampling()
-        sample = []
-        t = time.time()
-
-        while time.time() - t <= czas_kalibracji:
-            if np.round(time.time() - t,3) == (czas_kalibracji - l) and np.round(time.time() - t,3) < czas_kalibracji + 1:
-
-                l -= 1
-            sample.append(self.get_signal(dt))        
-    	
-        self.amp.stop_sampling()
-
-        scim = np.mean(sample)
-        return scim
-"""
-"""
-    def get_signal(self, n):
-        Fs = self.amp.sampling_rate
-        
-        s = self.amp.get_samples(int(n)).samples * self.gains + self.offsets
-        
-        s = s[:,self.channels[0]] - s[:,self.channels[1]]
-        s-=np.mean(s)
-        scim = np.mean(np.abs(s))
-        return scim
-"""

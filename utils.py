@@ -1,7 +1,5 @@
 import os
 
-import pygame
-
 __all__ = ['collide_in', 'get_bins', 'get_trashes', 'get_backgrounds']
 
 def collide_in(obj1, obj2):
