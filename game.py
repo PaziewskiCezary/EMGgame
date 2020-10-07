@@ -12,6 +12,8 @@ import numpy as np
 from multiprocessing.sharedctypes import Value, Array
 import multiprocessing as mp
 
+from simple_game import SimpleGame
+
 def amp(l, a1, fs=512, ds=64, channels=[0,1]):
     from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
@@ -37,12 +39,11 @@ def amp(l, a1, fs=512, ds=64, channels=[0,1]):
         l.release()
 
 def play_game(queue, lock, sample_array, screen_size, use_keyboard=False, lifes=3, default_name='', full_screen=True):
-    game = Simple_Game(queue, lock, sample_array, screen_size, use_keyboard=use_keyboard, 
+    game = SimpleGame(queue, lock, sample_array, screen_size, use_keyboard=use_keyboard,
                             lifes=lifes, default_name=default_name, 
                             full_screen=full_screen)
-    game.menu()
+    game._menu()
 
-from game_classes import Simple_Game
 
 if __name__ == '__main__':
 
