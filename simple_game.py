@@ -62,7 +62,7 @@ class SimpleGame(object):
 
         self.__trashes = []
         for i, (trash_type, trash_path) in enumerate(get_trashes()):
-            trash = Trash(width=self.__x_screen * Trash.precent, img_path=trash_path, type=trash_type)
+            trash = Trash(width=self.__x_screen * Trash.precent, img_path=trash_path, trash_type=trash_type)
             self.__trashes.append(trash)
 
     def __kill(self):
@@ -354,7 +354,7 @@ class SimpleGame(object):
 
                         if collide_in(self.__trash, bin_):
 
-                            if bin_.type == self.__trash.type:
+                            if bin_.type == self.__trash.trash_type:
 
                                 self.__score += 100
                                 collision = True
