@@ -15,7 +15,7 @@ from trash_bin import TrashBin
 class SimpleGame(object):
     """Simple_Game"""
 
-    def __init__(self, queue, lock, sample_array, size, use_keyboard=False, lifes=3, default_name='', full_screen=True):
+    def __init__(self, queue, lock, sample_array, size, use_keyboard=False, lives=3, default_name='', full_screen=True):
 
         self.__queue = queue
         self.__lock = lock
@@ -26,13 +26,13 @@ class SimpleGame(object):
         self.__full_screen = full_screen
         pygame.init()
 
-        self.__bgcolour = (255, 239, 148)  # yellow
+        self.__background_colour = (255, 239, 148)  # yellow
         self.__text_colour = (232, 98, 203)  # pink
         self.__button_colour = (232, 98, 203)  # pink
         self.__button_text_colour = (255, 239, 148)  # yellow
         self.__screen_size = size
         self.__x_screen, self.__y_screen = self.__screen_size
-        self.__max_lifes = lifes
+        self.__max_lives = lives
 
         if self.__full_screen:
             self.__screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -43,7 +43,7 @@ class SimpleGame(object):
         else:
             self.__screen = pygame.display.set_mode(self.__screen_size)
 
-        self.__screen.fill(self.__bgcolour)
+        self.__screen.fill(self.__background_colour)
 
         pygame.display.flip()
 
@@ -114,16 +114,16 @@ class SimpleGame(object):
         text_y_position = self.__y_screen // 2
         font_size = self.__y_screen // 10
 
-        self.__screen.fill(self.__bgcolour)
+        self.__screen.fill(self.__background_colour)
         pygame.display.set_caption('Kalibracja')
         self.__update()
 
-        self.__screen.fill(self.__bgcolour)
+        self.__screen.fill(self.__background_colour)
         self.__text('KALIBRACJA', text_x_position, text_y_position, font_size=font_size)
         self.__update()
         time.sleep(2)
 
-        self.__screen.fill(self.__bgcolour)
+        self.__screen.fill(self.__background_colour)
         self.__text('ROZLUŹNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
         self.__update()
         time.sleep(1)
@@ -154,7 +154,7 @@ class SimpleGame(object):
 
         time.sleep(2)
 
-        self.__screen.fill(self.__bgcolour)
+        self.__screen.fill(self.__background_colour)
         self.__text('ZACIŚNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
         self.__update()
 
@@ -185,13 +185,13 @@ class SimpleGame(object):
 
         if self.__calibrate_value_min >= self.__calibrate_value_max or \
                 self.__calibrate_value_max - self.__calibrate_value_min < minimum_difference_between_calibration_values:
-            self.__screen.fill(self.__bgcolour)
+            self.__screen.fill(self.__background_colour)
             self.__text('POWTARZAM KALIBRACJĘ', text_x_position, text_y_position, font_size=font_size)
             self.__update()
             time.sleep(2)
             self.__calibrate()
 
-        self.__screen.fill(self.__bgcolour)
+        self.__screen.fill(self.__background_colour)
         self.__text('KONIEC KALIBRACJI', text_x_position, text_y_position, font_size=font_size)
         self.__update()
 
@@ -204,7 +204,7 @@ class SimpleGame(object):
 
         is_input = True
         while is_input:
-            self.__screen.fill(self.__bgcolour)
+            self.__screen.fill(self.__background_colour)
             self.__text("PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4, font_size=self.__y_screen // 13)
             events = pygame.event.get()
             for event in events:
@@ -254,7 +254,7 @@ class SimpleGame(object):
 
     def __play(self):
 
-        self.__lifes = self.__max_lifes
+        self.__lives = self.__max_lives
         self.__score = 0
         self.__missed = 0
 
@@ -287,17 +287,17 @@ class SimpleGame(object):
         this_trash = None
         self.__update_background()
 
-        while trashes and play and self.__lifes > 0:
+        while trashes and play and self.__lives > 0:
             if new_trash:
                 self.__trash = trashes.pop()
                 trash_number += 1
-                # recalcualte x to be in center
+                # recalculate x to be in center
                 self.__trash.x = self.__x_screen // 2 - self.__trash.size[1] // 2
                 self.__trash.y = 100
                 new_trash = False
                 this_trash = True
 
-            if not self.__lifes:
+            if not self.__lives:
                 play = False
 
             while this_trash:
@@ -364,28 +364,29 @@ class SimpleGame(object):
                                 self.__missed += 1
 
                     if not collision:
-                        self.__lifes -= 1
+                        self.__lives -= 1
 
                     new_trash = True
                     this_trash = False
 
                 # showing bins
-                self.__screen.fill(self.__bgcolour)
+                self.__screen.fill(self.__background_colour)
                 self.__update_background()
                 for bin_ in bins:
                     self.__screen.blit(bin_.image, bin_.pos)
                 self.__screen.blit(self.__trash.image, self.__trash.pos)
 
-                # labes with lives and score
+                # labels with lives and score
                 font_size = self.__y_screen // 24
                 font_size_heart = self.__y_screen // 20
                 wh, hh = pygame.font.SysFont(self.__font_style, font_size_heart).size('❤')  # 'DejaVu Sans Mono'
-                pygame.draw.rect(self.__screen, self.__bgcolour, (0, 0, self.__x_screen, self.__y_screen // 14), False)
+                pygame.draw.rect(self.__screen, self.__background_colour,
+                                 (0, 0, self.__x_screen, self.__y_screen // 14), False)
                 self.__text("Punkty: " + str(self.__score), 100, 25, font_style=self.__font_style, font_size=font_size)
                 self.__text('Życia: ', 200 + len("Punkty: " + str(self.__score)) * font_size, 25,
                             font_style=self.__font_style, font_size=font_size)
-                self.__text('❤' * self.__lifes,
-                            65 + 0.5 * self.__lifes * wh + len("Punkty: " + str(self.__score)) * font_size + len(
+                self.__text('❤' * self.__lives,
+                            65 + 0.5 * self.__lives * wh + len("Punkty: " + str(self.__score)) * font_size + len(
                               "Życia: ") * font_size, 25, font_style=self.__font_style, font_size=font_size_heart)
 
                 self.__update()
@@ -409,7 +410,7 @@ class SimpleGame(object):
         place = np.argmax(index) + 1
         # play = False
 
-        self.__screen.fill(self.__bgcolour)
+        self.__screen.fill(self.__background_colour)
         self.__update()
         x_button, y_button = self.__x_screen // 20, self.__y_screen // 20
         button_font_size = self.__y_screen // 18
@@ -457,7 +458,7 @@ class SimpleGame(object):
 
     def __update_background(self):
 
-        idx = math.log2(self.__max_lifes - self.__lifes + self.__missed + 1)
+        idx = math.log2(self.__max_lives - self.__lives + self.__missed + 1)
         idx = int(idx)
 
         idx = min(idx, len(self.__backgrounds) - 1)
@@ -488,7 +489,7 @@ class SimpleGame(object):
         except ValueError:
             scores, index = ['brak wyników'], [0]
 
-        self.__screen.fill(self.__bgcolour)
+        self.__screen.fill(self.__background_colour)
         self.__update()
         x_button, y_button = self.__x_screen // 20, self.__y_screen // 20
         button_font_size = self.__y_screen // 18
@@ -520,7 +521,7 @@ class SimpleGame(object):
 
     def _menu(self):
 
-        self.__screen.fill(self.__bgcolour)
+        self.__screen.fill(self.__background_colour)
 
         pygame.display.set_caption('Segreguj smieci')
 

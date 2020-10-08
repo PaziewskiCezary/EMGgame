@@ -3,8 +3,8 @@ import os
 __all__ = ['collide_in', 'get_bins', 'get_trashes', 'get_backgrounds']
 
 def collide_in(obj1, obj2):
-    ((obj1_x1, obj1_y1), (obj1_x2, obj1_y2)) = obj1.corrners
-    ((obj2_x1, obj2_y1), (obj2_x2, obj2_y2)) = obj2.corrners
+    ((obj1_x1, obj1_y1), (obj1_x2, obj1_y2)) = obj1.corners
+    ((obj2_x1, obj2_y1), (obj2_x2, obj2_y2)) = obj2.corners
 
     if obj1_x1 >= obj2_x1 and obj1_x2 <= obj2_x2:
         return True

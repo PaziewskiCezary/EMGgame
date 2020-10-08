@@ -1,5 +1,5 @@
 '''Simple game with falling stuff'''
-# python game.py --keyboard --lifes 1 --name fsdf --not-full
+# python game.py --keyboard --lives 1 --name fsdf --not-full
 
 import argparse
 import sys
@@ -38,9 +38,9 @@ def amp(l, a1, fs=512, ds=64, channels=[0,1]):
         a1[-ds:] = Array('d', s)
         l.release()
 
-def play_game(queue, lock, sample_array, screen_size, use_keyboard=False, lifes=3, default_name='', full_screen=True):
+def play_game(queue, lock, sample_array, screen_size, use_keyboard=False, lives=3, default_name='', full_screen=True):
     game = SimpleGame(queue, lock, sample_array, screen_size, use_keyboard=use_keyboard,
-                            lifes=lifes, default_name=default_name, 
+                            lives=lives, default_name=default_name,
                             full_screen=full_screen)
     game._menu()
 
@@ -53,7 +53,7 @@ if __name__ == '__main__':
     parser.add_argument('--keyboard', nargs='*', dest='use_keyboard', default=False, help='run without aplifier')
     parser.add_argument('--not-full', nargs='*', dest='full_screen', default=True, help='turn off full screen')
 
-    parser.add_argument('--lifes', dest='lifes', default=5, type=int, help='set lifes number')
+    parser.add_argument('--lives', dest='lives', default=5, type=int, help='set lives number')
     parser.add_argument('--name', dest='name', default='', type=str, help='set name')
 
     args = parser.parse_args()
@@ -80,7 +80,7 @@ if __name__ == '__main__':
     q = mp.Queue()
 
     p = Process(target=amp, args=(l, a1))
-    p2 = Process(target=play_game, args=(q, l, a1, screen_size, args.use_keyboard, args.lifes, args.name, args.full_screen))
+    p2 = Process(target=play_game, args=(q, l, a1, screen_size, args.use_keyboard, args.lives, args.name, args.full_screen))
     p.start()
     p2.start()
 

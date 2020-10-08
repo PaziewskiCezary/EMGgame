@@ -28,7 +28,7 @@ class TrashBin(pygame.sprite.Sprite):
         return self.x, self.y
 
     @property
-    def corrners(self):
+    def corners(self):
         w, h = self.size
         p1, p2 = (self.x, self.y), (self.x + w, self.y + h)
         return p1, p2
