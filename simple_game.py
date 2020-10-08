@@ -6,6 +6,8 @@ import pickle
 import pygame_textinput
 import numpy as np
 
+from ctypes import *
+
 from utils import *
 from button import Button
 from trash import Trash
@@ -35,7 +37,10 @@ class SimpleGame(object):
         self.__max_lives = lives
 
         if self.__full_screen:
-            self.__screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+            # auto_screen_resolution = (0, 0)  #ubuntu
+            windll.user32.SetProcessDPIAware()    # windows; works more or less
+            auto_screen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+            self.__screen = pygame.display.set_mode(auto_screen_resolution, pygame.FULLSCREEN)
             self.__x_screen = self.__screen.get_width()
             self.__y_screen = self.__screen.get_height()
             self.__screen_size = (self.__x_screen, self.__y_screen)
@@ -61,7 +66,7 @@ class SimpleGame(object):
                        (bin_type, bin_path) in get_bins()]
 
         self.__trashes = []
-        for i, (trash_type, trash_path) in enumerate(get_trashes()):
+        for _, (trash_type, trash_path) in enumerate(get_trashes()):
             trash = Trash(width=self.__x_screen * Trash.precent, img_path=trash_path, trash_type=trash_type)
             self.__trashes.append(trash)
 
@@ -72,12 +77,12 @@ class SimpleGame(object):
     def use_keyboard(self):
         return self.__use_keyboard
 
-    def __move_thrash(self, arg):
+    def __move_thrash(self, shift):
         if not self.__trash:
             raise ValueError('self.__thrash not set')
-        if abs(arg) > 1:
+        if abs(shift) > 1:
             raise ValueError('arg must be between -1 and 1')
-        self.__trash.x += self.__max_shift * arg
+        self.__trash.x += self.__max_shift * shift
 
     def __muscle_move(self, muscle_tension):
 
@@ -133,6 +138,7 @@ class SimpleGame(object):
         number_of_calibrate_samples = 256
         samples = []
         start_time_calibration_min = time.time()
+
         while time.time() - start_time_calibration_min <= calibration_time:
             self.__lock.acquire()
             signal = self.__sample_array[-number_of_calibrate_samples:]
@@ -212,9 +218,9 @@ class SimpleGame(object):
                     self.__kill()
 
             input_text.update(events)
-            a = input_text.font_object.size(input_text.get_text())
+            text_length = input_text.font_object.size(input_text.get_text())[0]
             self.__screen.blit(input_text.get_surface(),
-                               ((self.__x_screen - a[0]) // 2, self.__y_screen // 2))
+                               ((self.__x_screen - text_length) // 2, self.__y_screen // 2))
 
             self.__update()
             clock.tick(30)
@@ -269,15 +275,15 @@ class SimpleGame(object):
         offset = (1 - number_of_bins * TrashBin.precent) / (number_of_bins + 1)
         offset = round(self.__x_screen * offset)
 
-        bin_w, bin_h = bins[0].size
+        bin_width, bin_height = bins[0].size
 
-        pos_y = self.__y_screen - bin_h
+        bin_y_position = self.__y_screen - bin_height
 
-        for i, bin_ in enumerate(bins):
-            pos_x = bin_w * i
-            pos_x += offset * (i + 1)
+        for number_of_bin, bin_ in enumerate(bins):
+            pos_x = bin_width * number_of_bin
+            pos_x += offset * (number_of_bin + 1)
             bin_.x = pos_x
-            bin_.y = pos_y
+            bin_.y = bin_y_position
 
         trashes = self.__trashes[:]
         np.random.shuffle(trashes)
@@ -348,7 +354,7 @@ class SimpleGame(object):
                 translation_y = self.__x_screen * speed_rate * 1.02 ** trash_number
                 self.__trash.x, self.__trash.y = trash_x, trash_y + translation_y
 
-                if self.__trash.bottom > pos_y:
+                if self.__trash.bottom > bin_y_position:
                     collision = False
                     for (i, bin_) in enumerate(bins):
 
