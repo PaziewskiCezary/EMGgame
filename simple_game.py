@@ -8,10 +8,16 @@ import numpy as np
 
 from ctypes import *
 
-from utils import *
+import utils as utils
 from button import Button
 from trash import Trash
 from trash_bin import TrashBin
+
+
+MOVE_LEFT = -1
+MOVE_RIGHT = 1
+MOVE_DOWN = 0
+NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 
 class SimpleGame(object):
@@ -59,14 +65,14 @@ class SimpleGame(object):
 
         self.__max_shift = 10
 
-        self.__backgrounds = sorted([x for x in get_backgrounds()])
+        self.__backgrounds = sorted([x for x in utils.get_backgrounds()])
         self.__backgrounds = [pygame.image.load(x) for x in self.__backgrounds]
 
         self.__bins = [TrashBin(width=self.__x_screen * TrashBin.precent, img_path=bin_path, type=bin_type) for
-                       (bin_type, bin_path) in get_bins()]
+                       (bin_type, bin_path) in utils.get_bins()]
 
         self.__trashes = []
-        for _, (trash_type, trash_path) in enumerate(get_trashes()):
+        for _, (trash_type, trash_path) in enumerate(utils.get_trashes()):
             trash = Trash(width=self.__x_screen * Trash.precent, img_path=trash_path, trash_type=trash_type)
             self.__trashes.append(trash)
 
@@ -82,7 +88,7 @@ class SimpleGame(object):
             raise ValueError('self.__thrash not set')
         if abs(shift) > 1:
             raise ValueError('arg must be between -1 and 1')
-        self.__trash.x += self.__max_shift * shift
+        self.__trash.x += self.__max_shift * shift      # comm chenge x after changes in trash
 
     def __muscle_move(self, muscle_tension):
 
@@ -92,20 +98,16 @@ class SimpleGame(object):
         second_movement_interval = 2 * movement_interval
         third_movement_interval = 3 * movement_interval
 
-        move_left = -1
-        move_right = 1
-        move_straight = 0
-
         if muscle_tension <= self.__calibrate_value_min:
-            return move_left
+            return MOVE_LEFT
         elif muscle_tension >= self.__calibrate_value_max:
-            return move_right
+            return MOVE_RIGHT
         else:
             actual_muscle_tension = muscle_tension - self.__calibrate_value_min
             if actual_muscle_tension <= movement_interval:
                 return (actual_muscle_tension - movement_interval) / movement_interval
             elif movement_interval < actual_muscle_tension <= second_movement_interval:
-                return move_straight
+                return MOVE_DOWN
             elif second_movement_interval < actual_muscle_tension <= third_movement_interval:
                 return (actual_muscle_tension - second_movement_interval) / movement_interval
 
@@ -135,13 +137,12 @@ class SimpleGame(object):
 
         calibration_time = 5
         quit_time = 0.5
-        number_of_calibrate_samples = 256
         samples = []
         start_time_calibration_min = time.time()
 
         while time.time() - start_time_calibration_min <= calibration_time:
             self.__lock.acquire()
-            signal = self.__sample_array[-number_of_calibrate_samples:]
+            signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
             signal -= np.mean(signal)
             signal = np.abs(signal)
             self.__lock.release()
@@ -203,7 +204,7 @@ class SimpleGame(object):
 
     def __get_name(self):
 
-        input_text = pygame_textinput.TextInput(font_family=self.__font_style, font_size=self.__y_screen // 13,
+        input_name = pygame_textinput.TextInput(font_family=self.__font_style, font_size=self.__y_screen // 13,
                                                 text_color=self.__text_colour, max_string_length=15)
 
         clock = pygame.time.Clock()
@@ -217,9 +218,9 @@ class SimpleGame(object):
                 if event.type == pygame.QUIT:
                     self.__kill()
 
-            input_text.update(events)
-            text_length = input_text.font_object.size(input_text.get_text())[0]
-            self.__screen.blit(input_text.get_surface(),
+            input_name.update(events)
+            text_length = input_name.font_object.size(input_name.get_text())[0]
+            self.__screen.blit(input_name.get_surface(),
                                ((self.__x_screen - text_length) // 2, self.__y_screen // 2))
 
             self.__update()
@@ -228,7 +229,7 @@ class SimpleGame(object):
             for event in events:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
-                        self.__name = input_text.get_text()
+                        self.__name = input_name.get_text()
                         is_input = False
                         break
 
@@ -268,38 +269,37 @@ class SimpleGame(object):
         speed_rate = 0.0003
         trash_number = 0
 
-        bins = self.__bins[:]
-
-        number_of_bins = len(bins)
+        number_of_bins = len(self.__bins)
 
         offset = (1 - number_of_bins * TrashBin.precent) / (number_of_bins + 1)
         offset = round(self.__x_screen * offset)
 
-        bin_width, bin_height = bins[0].size
+        first_bin = 0
+
+        bin_width, bin_height = self.__bins[first_bin].size
 
         bin_y_position = self.__y_screen - bin_height
 
-        for number_of_bin, bin_ in enumerate(bins):
-            pos_x = bin_width * number_of_bin
-            pos_x += offset * (number_of_bin + 1)
-            bin_.x = pos_x
+        for number_of_bin, bin_ in enumerate(self.__bins):
+            bin_x_position = bin_width * number_of_bin
+            bin_x_position += offset * (number_of_bin + 1)
+            bin_.x = bin_x_position    # comm change x and y after changes in trash_bin
             bin_.y = bin_y_position
 
-        trashes = self.__trashes[:]
-        np.random.shuffle(trashes)
+        np.random.shuffle(self.__trashes)
 
         play = True
         new_trash = True
         this_trash = None
         self.__update_background()
 
-        while trashes and play and self.__lives > 0:
+        while self.__trashes and play and self.__lives > 0:
             if new_trash:
-                self.__trash = trashes.pop()
+                self.__trash = self.__trashes.pop()
                 trash_number += 1
                 # recalculate x to be in center
-                self.__trash.x = self.__x_screen // 2 - self.__trash.size[1] // 2
-                self.__trash.y = 100
+                self.__trash.x = self.__x_screen // 2 - self.__trash.size[1] // 2    # comm change x and y after changes
+                self.__trash.y = 100                                                 # in trash
                 new_trash = False
                 this_trash = True
 
@@ -317,10 +317,11 @@ class SimpleGame(object):
                             break_loop = True
 
                         if event.key == pygame.K_LEFT:
-                            self.__move_thrash(-1)
+                            self.__move_thrash(MOVE_LEFT)
 
                         if event.key == pygame.K_RIGHT:
-                            self.__move_thrash(1)
+                            self.__move_thrash(MOVE_RIGHT)
+
                         if event.key == pygame.K_DOWN:
                             self.__trash.y += 10
                 if break_loop:
@@ -328,11 +329,11 @@ class SimpleGame(object):
 
                 if not self.__use_keyboard:
                     self.__lock.acquire()
-                    signal = self.__sample_array[-256:]
+                    signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
                     signal -= np.mean(signal)
                     signal = np.abs(signal)
                     self.__lock.release()
-                    move_value = self.__muscle_move(np.mean(signal)) / 10
+                    move_value = self.__muscle_move(np.mean(signal)) / 10   # comm why 10?
                     self.__move_thrash(move_value)
                 else:
                     for event in pygame.event.get():
@@ -342,23 +343,25 @@ class SimpleGame(object):
                                 break_loop = True
 
                             if event.key == pygame.K_LEFT:
-                                self.__move_thrash(-1)
+                                self.__move_thrash(MOVE_LEFT)
 
                             if event.key == pygame.K_RIGHT:
-                                self.__move_thrash(1)
+                                self.__move_thrash(MOVE_RIGHT)
                 if break_loop:
                     break
 
-                trash_x, trash_y = self.__trash.pos
+                trash_x_position, trash_y_position = self.__trash.pos   # comm change pos
 
-                translation_y = self.__x_screen * speed_rate * 1.02 ** trash_number
-                self.__trash.x, self.__trash.y = trash_x, trash_y + translation_y
+                acceleration = 1.02 ** trash_number
+
+                translation_y = self.__x_screen * speed_rate * acceleration  # comm why not y_screen
+                self.__trash.x, self.__trash.y = trash_x_position, trash_y_position + translation_y
 
                 if self.__trash.bottom > bin_y_position:
                     collision = False
-                    for (i, bin_) in enumerate(bins):
+                    for (i, bin_) in enumerate(self.__bins):
 
-                        if collide_in(self.__trash, bin_):
+                        if utils.collide_in(self.__trash, bin_):
 
                             if bin_.type == self.__trash.trash_type:
 
@@ -378,7 +381,7 @@ class SimpleGame(object):
                 # showing bins
                 self.__screen.fill(self.__background_colour)
                 self.__update_background()
-                for bin_ in bins:
+                for bin_ in self.__bins:
                     self.__screen.blit(bin_.image, bin_.pos)
                 self.__screen.blit(self.__trash.image, self.__trash.pos)
 
