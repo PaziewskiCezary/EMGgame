@@ -5,6 +5,7 @@ import time
 import pickle
 import pygame_textinput
 import numpy as np
+from ctypes import *
 
 from utils import *
 from button import Button
@@ -35,7 +36,9 @@ class SimpleGame(object):
         self.__max_lives = lives
 
         if self.__full_screen:
-            self.__screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+            windll.user32.SetProcessDPIAware()  # windows; works more or less
+            auto_screen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+            self.__screen = pygame.display.set_mode(auto_screen_resolution, pygame.FULLSCREEN)
             self.__x_screen = self.__screen.get_width()
             self.__y_screen = self.__screen.get_height()
             self.__screen_size = (self.__x_screen, self.__y_screen)
@@ -57,12 +60,12 @@ class SimpleGame(object):
         self.__backgrounds = sorted([x for x in get_backgrounds()])
         self.__backgrounds = [pygame.image.load(x) for x in self.__backgrounds]
 
-        self.__bins = [TrashBin(width=self.__x_screen * TrashBin.precent, img_path=bin_path, type=bin_type) for
+        self.__bins = [TrashBin(desired_width=self.__x_screen * TrashBin.precentage, img_path=bin_path, bin_type=bin_type) for
                        (bin_type, bin_path) in get_bins()]
 
         self.__trashes = []
         for i, (trash_type, trash_path) in enumerate(get_trashes()):
-            trash = Trash(width=self.__x_screen * Trash.precent, img_path=trash_path, trash_type=trash_type)
+            trash = Trash(desired_width=self.__x_screen * Trash.precentage, img_path=trash_path, trash_type=trash_type)
             self.__trashes.append(trash)
 
     def __kill(self):
@@ -77,7 +80,7 @@ class SimpleGame(object):
             raise ValueError('self.__thrash not set')
         if abs(arg) > 1:
             raise ValueError('arg must be between -1 and 1')
-        self.__trash.x += self.__max_shift * arg
+        self.__trash.x_position += self.__max_shift * arg
 
     def __muscle_move(self, muscle_tension):
 
@@ -240,12 +243,10 @@ class SimpleGame(object):
         self.__screen.blit(text, text_rect)
 
     def __main_loop(self):
-        if not self.__use_keyboard:
-            self.__get_name()
-        elif self.__default_name:
+        if self.__default_name:
             self.__name = self.__default_name
         else:
-            self.__name = input('Podaj imię: ')
+            self.__get_name()
 
         if not self.__use_keyboard:
             self.__calibrate()
@@ -266,7 +267,7 @@ class SimpleGame(object):
 
         number_of_bins = len(bins)
 
-        offset = (1 - number_of_bins * TrashBin.precent) / (number_of_bins + 1)
+        offset = (1 - number_of_bins * TrashBin.precentage) / (number_of_bins + 1)
         offset = round(self.__x_screen * offset)
 
         bin_w, bin_h = bins[0].size
@@ -276,8 +277,8 @@ class SimpleGame(object):
         for i, bin_ in enumerate(bins):
             pos_x = bin_w * i
             pos_x += offset * (i + 1)
-            bin_.x = pos_x
-            bin_.y = pos_y
+            bin_.x_position = pos_x
+            bin_.y_position = pos_y
 
         trashes = self.__trashes[:]
         np.random.shuffle(trashes)
@@ -292,8 +293,8 @@ class SimpleGame(object):
                 self.__trash = trashes.pop()
                 trash_number += 1
                 # recalculate x to be in center
-                self.__trash.x = self.__x_screen // 2 - self.__trash.size[1] // 2
-                self.__trash.y = 100
+                self.__trash.x_position = self.__x_screen // 2 - self.__trash.size[1] // 2
+                self.__trash.y_position = 100
                 new_trash = False
                 this_trash = True
 
@@ -316,7 +317,7 @@ class SimpleGame(object):
                         if event.key == pygame.K_RIGHT:
                             self.__move_thrash(1)
                         if event.key == pygame.K_DOWN:
-                            self.__trash.y += 10
+                            self.__trash.y_position += 10
                 if break_loop:
                     break
 
@@ -343,10 +344,10 @@ class SimpleGame(object):
                 if break_loop:
                     break
 
-                trash_x, trash_y = self.__trash.pos
+                trash_x, trash_y = self.__trash.get_position
 
                 translation_y = self.__x_screen * speed_rate * 1.02 ** trash_number
-                self.__trash.x, self.__trash.y = trash_x, trash_y + translation_y
+                self.__trash.x_position, self.__trash.y_position = trash_x, trash_y + translation_y
 
                 if self.__trash.bottom > pos_y:
                     collision = False
@@ -354,7 +355,7 @@ class SimpleGame(object):
 
                         if collide_in(self.__trash, bin_):
 
-                            if bin_.type == self.__trash.trash_type:
+                            if bin_.type == self.__trash.type:
 
                                 self.__score += 100
                                 collision = True
@@ -373,8 +374,8 @@ class SimpleGame(object):
                 self.__screen.fill(self.__background_colour)
                 self.__update_background()
                 for bin_ in bins:
-                    self.__screen.blit(bin_.image, bin_.pos)
-                self.__screen.blit(self.__trash.image, self.__trash.pos)
+                    self.__screen.blit(bin_.image, bin_.get_position)
+                self.__screen.blit(self.__trash.image, self.__trash.get_position)
 
                 # labels with lives and score
                 font_size = self.__y_screen // 24

@@ -9,14 +9,12 @@ import time
 
 import numpy as np
 
-from multiprocessing.sharedctypes import Value, Array
+from multiprocessing.sharedctypes import Array
 import multiprocessing as mp
 
 from simple_game import SimpleGame
 
 def amp(l, a1, fs=512, ds=64, channels=[0,1]):
-    from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
-
     amps = TmsiCppAmplifier.get_available_amplifiers('usb')
     if not amps:
         raise ValueError("Nie ma wzmacniacza")
@@ -49,8 +47,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='EMG game')
 
-    parser.add_argument('--amplifier', nargs='*', dest='use_amplifier', default=False, help='run with aplifier')
-    parser.add_argument('--keyboard', nargs='*', dest='use_keyboard', default=False, help='run without aplifier')
+    parser.add_argument('--amplifier', nargs='*', dest='use_amplifier', default=False, help='run with amplifier')
+    parser.add_argument('--keyboard', nargs='*', dest='use_keyboard', default=False, help='run without amplifier')
     parser.add_argument('--not-full', nargs='*', dest='full_screen', default=True, help='turn off full screen')
 
     parser.add_argument('--lives', dest='lives', default=5, type=int, help='set lives number')
@@ -61,6 +59,7 @@ if __name__ == '__main__':
     if args.use_keyboard is not False:
         args.use_keyboard = True
     if args.use_amplifier is not False:
+        from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
         args.use_amplifier = True
     if args.full_screen is not True:
         args.full_screen = False
@@ -69,8 +68,8 @@ if __name__ == '__main__':
         sys.exit('Can\'t use --amplifier and --keyboard at the same time')
     
     if not (args.use_keyboard or args.use_amplifier):
-        args.use_amplifier = True
-        args.use_keyboard = False
+        args.use_amplifier = False
+        args.use_keyboard = True
 
     screen_size = 16 * 70, 9 * 70
 
@@ -79,12 +78,15 @@ if __name__ == '__main__':
     a1 = Array('d', np.zeros(512*2))
     q = mp.Queue()
 
-    p = Process(target=amp, args=(l, a1))
+
     p2 = Process(target=play_game, args=(q, l, a1, screen_size, args.use_keyboard, args.lives, args.name, args.full_screen))
-    p.start()
+    if args.use_amplifier:
+        p = Process(target=amp, args=(l, a1))
+        p.start()
     p2.start()
 
     while q.empty():
         pass
-    p.kill()
+    if args.use_amplifier:
+        p.kill()
     p2.kill()
