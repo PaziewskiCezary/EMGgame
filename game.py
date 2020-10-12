@@ -30,7 +30,7 @@ def amp(l, a1, fs=512, ds=64, channels=[0,1]):
         s = amp.get_samples(ds).samples * gains + offsets
 
         t2 = time.time()
-        s = s[:,channels[0]] - s[:,channels[1]]
+        s = s[:channels[0]] - s[:channels[1]]
         l.acquire()
         a1[:-ds] = a1[ds:]
         a1[-ds:] = Array('d', s)
