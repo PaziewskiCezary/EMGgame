@@ -4,7 +4,7 @@ import pygame
 class Trash(pygame.sprite.Sprite):
     """docstring for Trash"""
 
-    precentage = 0.05
+    percentage = 0.05
 
     def __init__(self, position=(0, 0), *, img_path, trash_type, desired_width):
         pygame.sprite.Sprite.__init__(self)
