@@ -371,11 +371,11 @@ class SimpleGame(object):
                             if bin_.type == self.__trash.type:
 
                                 self.__score += 100
-                                collision = True
                             else:
                                 self.__score += -10
-                                collision = True
                                 self.__missed += 1
+                                
+                            collision = True
 
                     if not collision:
                         self.__lives -= 1
