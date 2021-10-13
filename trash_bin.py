@@ -4,13 +4,13 @@ import pygame
 class TrashBin(pygame.sprite.Sprite):
     """docstring for Trash"""
 
-    precentage = 0.1
+    percentage = 0.1
 
     def __init__(self, position=(0, 0), *, img_path, bin_type=None, desired_width):
         pygame.sprite.Sprite.__init__(self)
 
         self.x_position, self.y_position = position
-        self.type = type
+        self.type = bin_type
         self.image = pygame.image.load(img_path).convert()
         self.image.set_colorkey((173, 170, 218))
 
