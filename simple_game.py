@@ -7,8 +7,6 @@ import pygame_textinput
 import numpy as np
 from ctypes import *
 
-from ctypes import *
-
 import utils as utils
 from button import Button
 from trash import Trash
@@ -35,10 +33,12 @@ class SimpleGame(object):
         self.__full_screen = full_screen
         pygame.init()
 
-        self.__background_colour = (255, 239, 148)  # yellow
-        self.__text_colour = (232, 98, 203)  # pink
-        self.__button_colour = (232, 98, 203)  # pink
-        self.__button_text_colour = (255, 239, 148)  # yellow
+        self.__yellow_rgb = (255, 239, 148)
+        self.__pink_rgb = (232, 98, 203)
+        self.__background_colour = self.__yellow_rgb
+        self.__text_colour = self.__pink_rgb
+        self.__button_colour = self.__pink_rgb
+        self.__button_text_colour = self.__yellow_rgb
         self.__screen_size = size
         self.__x_screen, self.__y_screen = self.__screen_size
         self.__max_lives = lives
@@ -68,12 +68,12 @@ class SimpleGame(object):
         self.__backgrounds = sorted([x for x in utils.get_backgrounds()])
         self.__backgrounds = [pygame.image.load(x) for x in self.__backgrounds]
 
-        self.__bins = [TrashBin(desired_width=self.__x_screen * TrashBin.precentage, img_path=bin_path, bin_type=bin_type) for
+        self.__bins = [TrashBin(desired_width=self.__x_screen * TrashBin.percentage, img_path=bin_path, bin_type=bin_type) for
                        (bin_type, bin_path) in utils.get_bins()]
 
         self.__trashes = []
         for i, (trash_type, trash_path) in enumerate(utils.get_trashes()):
-            trash = Trash(desired_width=self.__x_screen * Trash.precentage, img_path=trash_path, trash_type=trash_type)
+            trash = Trash(desired_width=self.__x_screen * Trash.percentage, img_path=trash_path, trash_type=trash_type)
 
             self.__trashes.append(trash)
     def __kill(self):
@@ -270,7 +270,7 @@ class SimpleGame(object):
 
         number_of_bins = len(self.__bins)
 
-        offset = (1 - number_of_bins * TrashBin.precentage) / (number_of_bins + 1)
+        offset = (1 - number_of_bins * TrashBin.percentage) / (number_of_bins + 1)
         offset = round(self.__x_screen * offset)
 
         first_bin = 0
@@ -283,31 +283,31 @@ class SimpleGame(object):
         for number_of_bin, bin_ in enumerate(self.__bins):
             bin_x_position = bin_width * number_of_bin
             bin_x_position += offset * (number_of_bin + 1)
-            bin_.x_position = bin_x_position    # comm change x and y after changes in trash_bin
+            bin_.x_position = bin_x_position   
             bin_.y_position = bin_y_position
 
         np.random.shuffle(self.__trashes)
 
         play = True
         new_trash = True
-        this_trash = None
+        actual_trash = None
         self.__update_background()
 
         while self.__trashes and play and self.__lives > 0:
             if new_trash:
                 self.__trash = self.__trashes.pop()
                 trash_number += 1
-                # recalculate x to be in center
 
-                self.__trash.x_position = self.__x_screen // 2 - self.__trash.size[1] // 2    # comm change x and y after changes
-                self.__trash.y_position = 100                                                 # in trash
+                # recalculate x to be in center
+                self.__trash.x_position = self.__x_screen // 2 - self.__trash.size[1] // 2    
+                self.__trash.y_position = 100                                                 
                 new_trash = False
-                this_trash = True
+                actual_trash = True
 
             if not self.__lives:
                 play = False
 
-            while this_trash:
+            while actual_trash:
                 break_loop = False
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
@@ -351,37 +351,33 @@ class SimpleGame(object):
                 if break_loop:
                     break
 
-                trash_x, trash_y = self.__trash.get_position
+                
 
-                translation_y = self.__x_screen * speed_rate * 1.02 ** trash_number
-                self.__trash.x_position, self.__trash.y_position = trash_x, trash_y + translation_y
-
-                trash_x_position, trash_y_position = self.__trash.get_position   # comm change pos
+                trash_x_position, trash_y_position = self.__trash.get_position   
 
                 acceleration = 1.02 ** trash_number
 
-                translation_y = self.__x_screen * speed_rate * acceleration  # comm why not y_screen
-                self.__trash.x_position, self.__trash.y_position = trash_x_position, trash_y_position + translation_y
+                y_step = self.__y_screen * speed_rate * acceleration  
+                self.__trash.x_position, self.__trash.y_position = trash_x_position, trash_y_position + y_step
                 if self.__trash.bottom > bin_y_position:
                     collision = False
                     for (i, bin_) in enumerate(self.__bins):
 
                         if utils.collide_in(self.__trash, bin_):
-
+                            collision = True
+                            print("Kolizja", bin_.type, self.__trash.type)
                             if bin_.type == self.__trash.type:
-
                                 self.__score += 100
+
                             else:
                                 self.__score += -10
                                 self.__missed += 1
-                                
-                            collision = True
-
+                                     
                     if not collision:
                         self.__lives -= 1
 
                     new_trash = True
-                    this_trash = False
+                    actual_trash = False
 
                 # showing bins
                 self.__screen.fill(self.__background_colour)
@@ -394,27 +390,26 @@ class SimpleGame(object):
                 # labels with lives and score
                 font_size = self.__y_screen // 24
                 font_size_heart = self.__y_screen // 20
-                wh, hh = pygame.font.SysFont(self.__font_style, font_size_heart).size('❤')  # 'DejaVu Sans Mono'
+                width_heart, height_heart = pygame.font.SysFont(self.__font_style, font_size_heart).size(u"♥")  # 'DejaVu Sans Mono'
                 pygame.draw.rect(self.__screen, self.__background_colour,
                                  (0, 0, self.__x_screen, self.__y_screen // 14), False)
                 self.__text("Punkty: " + str(self.__score), 100, 25, font_style=self.__font_style, font_size=font_size)
                 self.__text('Życia: ', 200 + len("Punkty: " + str(self.__score)) * font_size, 25,
                             font_style=self.__font_style, font_size=font_size)
-                self.__text('❤' * self.__lives,
-                            65 + 0.5 * self.__lives * wh + len("Punkty: " + str(self.__score)) * font_size + len(
+                self.__text(u"♥" * self.__lives,
+                            65 + 0.5 * self.__lives * width_heart + len("Punkty: " + str(self.__score)) * font_size + len(
                               "Życia: ") * font_size, 25, font_style=self.__font_style, font_size=font_size_heart)
 
                 self.__update()
 
                 self.__clock.tick(60)
 
-        self.__score = max(0, self.__score)
+        self.__score = self.__score
         self.__save_score()
 
         # show score
         try:
             scores = pickle.load(open("wyniki.pkl", "rb"))
-
         except FileNotFoundError:
             scores = []
 
