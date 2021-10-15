@@ -5,7 +5,6 @@ import time
 import pickle
 import pygame_textinput
 import numpy as np
-from ctypes import *
 
 import utils as utils
 from button import Button
@@ -551,8 +550,6 @@ class SimpleGame(object):
                 b_e.on_click(event)
                 if event.type == pygame.QUIT:
                     self.__kill()
-                    # self.__amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.__kill()
-
