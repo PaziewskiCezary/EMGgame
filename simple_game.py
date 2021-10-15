@@ -68,14 +68,15 @@ class SimpleGame(object):
         self.__backgrounds = sorted([x for x in utils.get_backgrounds()])
         self.__backgrounds = [pygame.image.load(x) for x in self.__backgrounds]
 
-        self.__bins = [TrashBin(desired_width=self.__x_screen * TrashBin.percentage, img_path=bin_path, bin_type=bin_type) for
-                       (bin_type, bin_path) in utils.get_bins()]
+        self.__bins = [TrashBin(desired_width=self.__x_screen * TrashBin.percentage, img_path=bin_path,
+                                bin_type=bin_type) for (bin_type, bin_path) in utils.get_bins()]
 
         self.__trashes = []
         for i, (trash_type, trash_path) in enumerate(utils.get_trashes()):
             trash = Trash(desired_width=self.__x_screen * Trash.percentage, img_path=trash_path, trash_type=trash_type)
 
             self.__trashes.append(trash)
+
     def __kill(self):
         self.__queue.put(1)
 
@@ -173,7 +174,7 @@ class SimpleGame(object):
         start_time_calibration_max = time.time()
         while time.time() - start_time_calibration_max <= calibration_time:
             self.__lock.acquire()
-            signal = self.__sample_array[-number_of_calibrate_samples:]
+            signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
             signal -= np.mean(signal)
             signal = np.abs(signal)
             self.__lock.release()
@@ -279,7 +280,6 @@ class SimpleGame(object):
 
         bin_y_position = self.__y_screen - bin_height
 
-
         for number_of_bin, bin_ in enumerate(self.__bins):
             bin_x_position = bin_width * number_of_bin
             bin_x_position += offset * (number_of_bin + 1)
@@ -351,8 +351,6 @@ class SimpleGame(object):
                 if break_loop:
                     break
 
-                
-
                 trash_x_position, trash_y_position = self.__trash.get_position   
 
                 acceleration = 1.02 ** trash_number
@@ -390,15 +388,16 @@ class SimpleGame(object):
                 # labels with lives and score
                 font_size = self.__y_screen // 24
                 font_size_heart = self.__y_screen // 20
-                width_heart, height_heart = pygame.font.SysFont(self.__font_style, font_size_heart).size(u"♥")  # 'DejaVu Sans Mono'
+                width_heart, height_heart = pygame.font.SysFont(self.__font_style, font_size_heart).size(u"♥")
+                # 'DejaVu Sans Mono' works for hearts
                 pygame.draw.rect(self.__screen, self.__background_colour,
                                  (0, 0, self.__x_screen, self.__y_screen // 14), False)
                 self.__text("Punkty: " + str(self.__score), 100, 25, font_style=self.__font_style, font_size=font_size)
                 self.__text('Życia: ', 200 + len("Punkty: " + str(self.__score)) * font_size, 25,
                             font_style=self.__font_style, font_size=font_size)
                 self.__text(u"♥" * self.__lives,
-                            65 + 0.5 * self.__lives * width_heart + len("Punkty: " + str(self.__score)) * font_size + len(
-                              "Życia: ") * font_size, 25, font_style=self.__font_style, font_size=font_size_heart)
+                            65 + 0.5 * self.__lives * width_heart + len("Punkty: " + str(self.__score)) * font_size +
+                            len("Życia: ") * font_size, 25, font_style=self.__font_style, font_size=font_size_heart)
 
                 self.__update()
 
@@ -521,13 +520,9 @@ class SimpleGame(object):
                 return_btn.on_click(event)
                 if event.type == pygame.QUIT:
                     self.__kill()
-                    # self.__amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self._menu()
-
-        # del scores
-        # del index
 
     def _menu(self):
 
@@ -561,4 +556,3 @@ class SimpleGame(object):
                     if event.key == pygame.K_ESCAPE:
                         self.__kill()
 
-        # return False

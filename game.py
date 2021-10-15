@@ -27,10 +27,7 @@ def connect_amplifier(locked_process, samples_array, sampling_frequency=512, num
     amplifier.start_sampling()
 
     while True:
-        t = time.time()  # wyrzucić???
         samples = amplifier.get_samples(number_of_samples).samples * gains + offsets
-
-        t2 = time.time()  # wyrzucić????
         samples = samples[:channels[0]] - samples[:channels[1]]
         locked_process.acquire()
         samples_array[:-number_of_samples] = samples_array[number_of_samples:]
