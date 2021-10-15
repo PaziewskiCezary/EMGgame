@@ -173,7 +173,7 @@ class SimpleGame(object):
         start_time_calibration_max = time.time()
         while time.time() - start_time_calibration_max <= calibration_time:
             self.__lock.acquire()
-            signal = self.__sample_array[-number_of_calibrate_samples:]
+            signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
             signal -= np.mean(signal)
             signal = np.abs(signal)
             self.__lock.release()
