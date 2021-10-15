@@ -15,7 +15,7 @@ import multiprocessing as mp
 from simple_game import SimpleGame
 
 
-def connect_amplifier(locked_process, samples_array, sampling_frequency=512, number_of_samples=64, channels=[0, 1]):
+def connect_amplifier(process_lock, samples_array, sampling_frequency=512, number_of_samples=64, channels=[0, 1]):
     amplifiers = TmsiCppAmplifier.get_available_amplifiers('usb')
     if not amplifiers:
         raise ValueError("Nie ma wzmacniacza")
@@ -31,16 +31,16 @@ def connect_amplifier(locked_process, samples_array, sampling_frequency=512, num
         try:
             samples = amplifier.get_samples(number_of_samples).samples * gains + offsets
             
-            samples = samples[:,channels[0]] - samples[:,channels[1]]
-            with lock:
+            samples = samples[:, channels[0]] - samples[:, channels[1]]
+            with process_lock:
                 samples_array[:-number_of_samples] = samples_array[number_of_samples:]
                 samples_array[-number_of_samples:] = Array('d', samples)
         except Exception as e:
             print(e)
 
 
-def play_game(queue, lock, sample_array, screen_size, use_keyboard=False, lives=3, default_name='', full_screen=True):
-    game = SimpleGame(queue, lock, sample_array, screen_size, use_keyboard=use_keyboard,
+def play_game(queue, process_lock, sample_array, screen_size, use_keyboard=False, lives=3, default_name='', full_screen=True):
+    game = SimpleGame(queue, process_lock, sample_array, screen_size, use_keyboard=use_keyboard,
                       lives=lives, default_name=default_name,
                       full_screen=full_screen)
     game._menu()
