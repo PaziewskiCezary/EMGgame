@@ -5,7 +5,6 @@ import time
 import pickle
 import pygame_textinput
 import numpy as np
-from ctypes import *
 
 import utils as utils
 from button import Button
@@ -44,8 +43,8 @@ class SimpleGame(object):
         self.__max_lives = lives
 
         if self.__full_screen:
-            windll.user32.SetProcessDPIAware()  # windows; works more or less
-            auto_screen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+            display_info = pygame.display.Info()
+            auto_screen_resolution = (display_info.current_w, display_info.current_h)
             self.__screen = pygame.display.set_mode(auto_screen_resolution, pygame.FULLSCREEN)
             self.__x_screen = self.__screen.get_width()
             self.__y_screen = self.__screen.get_height()
@@ -68,14 +67,15 @@ class SimpleGame(object):
         self.__backgrounds = sorted([x for x in utils.get_backgrounds()])
         self.__backgrounds = [pygame.image.load(x) for x in self.__backgrounds]
 
-        self.__bins = [TrashBin(desired_width=self.__x_screen * TrashBin.percentage, img_path=bin_path, bin_type=bin_type) for
-                       (bin_type, bin_path) in utils.get_bins()]
+        self.__bins = [TrashBin(desired_width=self.__x_screen * TrashBin.percentage, img_path=bin_path,
+                                bin_type=bin_type) for (bin_type, bin_path) in utils.get_bins()]
 
         self.__trashes = []
         for i, (trash_type, trash_path) in enumerate(utils.get_trashes()):
             trash = Trash(desired_width=self.__x_screen * Trash.percentage, img_path=trash_path, trash_type=trash_type)
 
             self.__trashes.append(trash)
+
     def __kill(self):
         self.__queue.put(1)
 
@@ -314,7 +314,8 @@ class SimpleGame(object):
 
         font_size = self.__y_screen // 24
         font_size_heart = self.__y_screen // 20
-        width_heart, height_heart = pygame.font.SysFont(self.__font_style, font_size_heart).size(u"♥")  # 'DejaVu Sans Mono'
+        width_heart, height_heart = pygame.font.SysFont(self.__font_style, font_size_heart).size(u"♥")
+        # 'DejaVu Sans Mono'
         pygame.draw.rect(self.__screen, self.__background_colour,
                          (0, 0, self.__x_screen, self.__y_screen // 14), False)
         self.__text("Punkty: " + str(self.__score), 100, 25, font_style=self.__font_style, font_size=font_size)
@@ -351,7 +352,6 @@ class SimpleGame(object):
         bin_width, bin_height = self.__bins[first_bin].size
 
         bin_y_position = self.__y_screen - bin_height
-
 
         for number_of_bin, bin_ in enumerate(self.__bins):
             bin_x_position = bin_width * number_of_bin
@@ -437,8 +437,6 @@ class SimpleGame(object):
                 if break_loop:
                     break
 
-                
-
                 trash_x_position, trash_y_position = self.__trash.get_position   
 
                 acceleration = 1.02 ** trash_number
@@ -483,7 +481,6 @@ class SimpleGame(object):
 
         self.__what_next()
         
-
     def __update_background(self):
 
         idx = math.log2(self.__max_lives - self.__lives + self.__missed + 1)
@@ -539,13 +536,9 @@ class SimpleGame(object):
                 return_btn.on_click(event)
                 if event.type == pygame.QUIT:
                     self.__kill()
-                    # self.__amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self._menu()
-
-        # del scores
-        # del index
 
     def _menu(self):
 
@@ -574,9 +567,6 @@ class SimpleGame(object):
                 b_e.on_click(event)
                 if event.type == pygame.QUIT:
                     self.__kill()
-                    # self.__amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.__kill()
-
-        # return False
