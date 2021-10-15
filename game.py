@@ -25,14 +25,18 @@ def connect_amplifier(locked_process, samples_array, sampling_frequency=512, num
     offsets = np.array(amplifier.current_description.channel_offsets)
 
     amplifier.start_sampling()
-
+    time.sleep(1)
     while True:
-        samples = amplifier.get_samples(number_of_samples).samples * gains + offsets
-        samples = samples[:channels[0]] - samples[:channels[1]]
-        locked_process.acquire()
-        samples_array[:-number_of_samples] = samples_array[number_of_samples:]
-        samples_array[-number_of_samples:] = Array('d', samples)
-        locked_process.release()
+
+        try:
+            samples = amplifier.get_samples(number_of_samples).samples * gains + offsets
+            
+            samples = samples[:,channels[0]] - samples[:,channels[1]]
+            with lock:
+                samples_array[:-number_of_samples] = samples_array[number_of_samples:]
+                samples_array[-number_of_samples:] = Array('d', samples)
+        except Exception as e:
+            print(e)
 
 
 def play_game(queue, lock, sample_array, screen_size, use_keyboard=False, lives=3, default_name='', full_screen=True):
@@ -73,21 +77,23 @@ if __name__ == '__main__':
 
     default_screen_size = 16 * 70, 9 * 70
 
-    locked_processes = Lock()
+    lock = Lock()
 
     samples_array = Array('d', np.zeros(512 * 2))
     processes_queue = mp.Queue()
 
     game_process = Process(target=play_game,
-                           args=(processes_queue, locked_processes, samples_array, default_screen_size,
+                           args=(processes_queue, lock, samples_array, default_screen_size,
                                  args.use_keyboard, args.lives, args.name, args.full_screen))
     if args.use_amplifier:
-        amplifier_process = Process(target=connect_amplifier, args=(locked_processes, samples_array))
+        amplifier_process = Process(target=connect_amplifier, args=(lock, samples_array))
         amplifier_process.start()
     game_process.start()
-
     while processes_queue.empty():
         pass
     if args.use_amplifier:
+        print(1)
         amplifier_process.terminate()
     game_process.terminate()
+    print(3)
+    exit()
