@@ -44,8 +44,8 @@ class SimpleGame(object):
         self.__max_lives = lives
 
         if self.__full_screen:
-            windll.user32.SetProcessDPIAware()  # windows; works more or less
-            auto_screen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+            display_info = pygame.display.Info()
+            auto_screen_resolution = (display_info.current_w, display_info.current_h)
             self.__screen = pygame.display.set_mode(auto_screen_resolution, pygame.FULLSCREEN)
             self.__x_screen = self.__screen.get_width()
             self.__y_screen = self.__screen.get_height()
