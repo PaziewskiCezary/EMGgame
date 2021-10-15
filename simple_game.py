@@ -173,7 +173,7 @@ class SimpleGame(object):
         start_time_calibration_max = time.time()
         while time.time() - start_time_calibration_max <= calibration_time:
             self.__lock.acquire()
-            signal = self.__sample_array[-number_of_calibrate_samples:]
+            signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
             signal -= np.mean(signal)
             signal = np.abs(signal)
             self.__lock.release()
@@ -247,7 +247,7 @@ class SimpleGame(object):
         text_rect.center = (x_position, y_position)
         self.__screen.blit(text, text_rect)
 
-    def __main_loop(self):
+    def __start(self):
         if self.__default_name:
             self.__name = self.__default_name
         else:
@@ -258,15 +258,88 @@ class SimpleGame(object):
 
         self.__play()
 
-    def __play(self):
+    def __show_score(self):
 
-        self.__lives = self.__max_lives
-        self.__score = 0
-        self.__missed = 0
+        try:
+            scores = pickle.load(open("wyniki.pkl", "rb"))
+        except FileNotFoundError:
+            scores = []
 
-        self.__bgn_idx = 0
-        speed_rate = 0.0003
-        trash_number = 0
+        # sorting scores with keeping indexes
+        index = range(len(scores))
+        scores, index = zip(*reversed(sorted(zip(scores, index), key=lambda x: x[0][0])))
+        
+        place = np.argmax(index) + 1
+        # play = False
+
+        self.__screen.fill(self.__background_colour)
+        self.__update()
+        x_button, y_button = self.__x_screen // 20, self.__y_screen // 20
+        button_font_size = self.__y_screen // 18
+        title_font_size = self.__y_screen // 12
+        subtitle_font_size = self.__y_screen // 14
+        points_font_size = self.__y_screen // 16
+
+        return_btn = Button(self.__screen, 'Menu', (x_button, y_button), (x_button * 2, y_button * 2),
+                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self._menu,
+                            font_size=button_font_size)
+        again_btn = Button(self.__screen, 'Zagraj jeszcze raz!', (self.__x_screen // 2, 7 * self.__y_screen // 8),
+                           (x_button * 7, y_button * 3),
+                           button_color=self.__button_colour, label_color=self.__button_text_colour, func=self.__play,
+                           font_size=button_font_size)
+
+        self.__text('WYNIK', self.__x_screen // 2, self.__y_screen // 4, font_size=title_font_size)
+        self.__text('Punkty', 3 * self.__x_screen // 4, self.__y_screen // 2, font_size=subtitle_font_size)
+        self.__text('Imię', 2 * self.__x_screen // 4, self.__y_screen // 2, font_size=subtitle_font_size)
+        self.__text('Pozycja', self.__x_screen // 4, self.__y_screen // 2, font_size=subtitle_font_size)
+
+        self.__update()
+        time.sleep(1)
+
+        self.__text(str(self.__score), 3 * self.__x_screen // 4, self.__y_screen // 2 + 100, font_size=points_font_size)
+        self.__update()
+        time.sleep(1)
+
+        self.__text(self.__name, 2 * self.__x_screen // 4, self.__y_screen // 2 + 100, font_size=points_font_size)
+        self.__update()
+        time.sleep(1)
+
+        self.__text(f' {str(place) if place < 10 else str(place)}.', self.__x_screen // 4, self.__y_screen // 2 + 100,
+                    font_size=points_font_size)
+        self.__update()
+
+        return return_btn, again_btn
+
+    def __make_heart_lives(self):
+
+        font_size = self.__y_screen // 24
+        font_size_heart = self.__y_screen // 20
+        width_heart, height_heart = pygame.font.SysFont(self.__font_style, font_size_heart).size(u"♥")  # 'DejaVu Sans Mono'
+        pygame.draw.rect(self.__screen, self.__background_colour,
+                         (0, 0, self.__x_screen, self.__y_screen // 14), False)
+        self.__text("Punkty: " + str(self.__score), 100, 25, font_style=self.__font_style, font_size=font_size)
+        self.__text('Życia: ', 200 + len("Punkty: " + str(self.__score)) * font_size, 25,
+                    font_style=self.__font_style, font_size=font_size)
+        self.__text(u"♥" * self.__lives,
+                    65 + 0.5 * self.__lives * width_heart + len("Punkty: " + str(self.__score)) * font_size + len(
+                      "Życia: ") * font_size, 25, font_style=self.__font_style, font_size=font_size_heart)
+
+        self.__update()
+
+    def __what_next(self):
+
+        return_btn, again_btn = self.__show_score()
+        while True:
+            for event in pygame.event.get():
+                return_btn.on_click(event)
+                again_btn.on_click(event)
+                if event.type == pygame.QUIT:
+                    self.__kill()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self._menu()
+
+    def __set_bins(self):
 
         number_of_bins = len(self.__bins)
 
@@ -286,6 +359,19 @@ class SimpleGame(object):
             bin_.x_position = bin_x_position   
             bin_.y_position = bin_y_position
 
+        return bin_y_position
+
+    def __play(self):
+
+        self.__lives = self.__max_lives
+        self.__score = 0
+        self.__missed = 0
+
+        self.__bgn_idx = 0
+        speed_rate = 0.0003
+        trash_number = 0
+
+        bin_y_position = self.__set_bins()
         np.random.shuffle(self.__trashes)
 
         play = True
@@ -388,83 +474,15 @@ class SimpleGame(object):
                 self.__screen.blit(self.__trash.image, self.__trash.get_position)
 
                 # labels with lives and score
-                font_size = self.__y_screen // 24
-                font_size_heart = self.__y_screen // 20
-                width_heart, height_heart = pygame.font.SysFont(self.__font_style, font_size_heart).size(u"♥")  # 'DejaVu Sans Mono'
-                pygame.draw.rect(self.__screen, self.__background_colour,
-                                 (0, 0, self.__x_screen, self.__y_screen // 14), False)
-                self.__text("Punkty: " + str(self.__score), 100, 25, font_style=self.__font_style, font_size=font_size)
-                self.__text('Życia: ', 200 + len("Punkty: " + str(self.__score)) * font_size, 25,
-                            font_style=self.__font_style, font_size=font_size)
-                self.__text(u"♥" * self.__lives,
-                            65 + 0.5 * self.__lives * width_heart + len("Punkty: " + str(self.__score)) * font_size + len(
-                              "Życia: ") * font_size, 25, font_style=self.__font_style, font_size=font_size_heart)
-
-                self.__update()
+                self.__make_heart_lives()
 
                 self.__clock.tick(60)
 
         self.__score = self.__score
         self.__save_score()
 
-        # show score
-        try:
-            scores = pickle.load(open("wyniki.pkl", "rb"))
-        except FileNotFoundError:
-            scores = []
-
-        # sorting scores with keeping indexes
-        index = range(len(scores))
-        scores, index = zip(*reversed(sorted(zip(scores, index), key=lambda x: x[0][0])))
-
-        place = np.argmax(index) + 1
-        # play = False
-
-        self.__screen.fill(self.__background_colour)
-        self.__update()
-        x_button, y_button = self.__x_screen // 20, self.__y_screen // 20
-        button_font_size = self.__y_screen // 18
-        title_font_size = self.__y_screen // 12
-        subtitle_font_size = self.__y_screen // 14
-        points_font_size = self.__y_screen // 16
-
-        return_btn = Button(self.__screen, 'Menu', (x_button, y_button), (x_button * 2, y_button * 2),
-                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self._menu,
-                            font_size=button_font_size)
-        again_btn = Button(self.__screen, 'Zagraj jeszcze raz!', (self.__x_screen // 2, 7 * self.__y_screen // 8),
-                           (x_button * 7, y_button * 3),
-                           button_color=self.__button_colour, label_color=self.__button_text_colour, func=self.__play,
-                           font_size=button_font_size)
-
-        self.__text('WYNIK', self.__x_screen // 2, self.__y_screen // 4, font_size=title_font_size)
-        self.__text('Punkty', 3 * self.__x_screen // 4, self.__y_screen // 2, font_size=subtitle_font_size)
-        self.__text('Imię', 2 * self.__x_screen // 4, self.__y_screen // 2, font_size=subtitle_font_size)
-        self.__text('Pozycja', self.__x_screen // 4, self.__y_screen // 2, font_size=subtitle_font_size)
-
-        self.__update()
-        time.sleep(1)
-
-        self.__text(str(self.__score), 3 * self.__x_screen // 4, self.__y_screen // 2 + 100, font_size=points_font_size)
-        self.__update()
-        time.sleep(1)
-
-        self.__text(self.__name, 2 * self.__x_screen // 4, self.__y_screen // 2 + 100, font_size=points_font_size)
-        self.__update()
-        time.sleep(1)
-
-        self.__text(f' {str(place) if place < 10 else str(place)}.', self.__x_screen // 4, self.__y_screen // 2 + 100,
-                    font_size=points_font_size)
-        self.__update()
-
-        while True:
-            for event in pygame.event.get():
-                return_btn.on_click(event)
-                again_btn.on_click(event)
-                if event.type == pygame.QUIT:
-                    self.__kill()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_ESCAPE:
-                        self._menu()
+        self.__what_next()
+        
 
     def __update_background(self):
 
@@ -540,7 +558,7 @@ class SimpleGame(object):
         font_size = int(x_button // 5)
 
         b_s = Button(self.__screen, 'Start', (self.__x_screen / 2, self.__y_screen / 2 - 1.5 * y_button),
-                     (x_button, y_button), self.__button_colour, self.__button_text_colour, self.__main_loop,
+                     (x_button, y_button), self.__button_colour, self.__button_text_colour, self.__start,
                      font_size=font_size)
         b_w = Button(self.__screen, 'Wyniki', (self.__x_screen / 2, self.__y_screen / 2), (x_button, y_button),
                      self.__button_colour, self.__button_text_colour, self.__scores, font_size=font_size)
