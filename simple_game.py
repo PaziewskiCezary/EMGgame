@@ -116,25 +116,7 @@ class SimpleGame(object):
     def __update():
         pygame.display.update()
 
-    def __calibrate(self):
-
-        text_x_position = self.__x_screen // 2
-        text_y_position = self.__y_screen // 2
-        font_size = self.__y_screen // 10
-
-        self.__screen.fill(self.__background_colour)
-        pygame.display.set_caption('Kalibracja')
-        self.__update()
-
-        self.__screen.fill(self.__background_colour)
-        self.__text('KALIBRACJA', text_x_position, text_y_position, font_size=font_size)
-        self.__update()
-        time.sleep(2)
-
-        self.__screen.fill(self.__background_colour)
-        self.__text('ROZLUŹNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
-        self.__update()
-        time.sleep(1)
+    def __get_calib_samples(self):
 
         calibration_time = 5
         quit_time = 0.5
@@ -157,8 +139,44 @@ class SimpleGame(object):
                         if event.key == pygame.K_ESCAPE:
                             self._menu()
 
-        self.__calibrate_value_min = np.mean(samples)
+        samples_mean = np.mean(samples)
         del samples
+        return samples_mean
+
+    def __check_calib(self):
+
+        minimum_difference_between_calibration_values = 50
+
+        if self.__calibrate_value_min >= self.__calibrate_value_max or \
+                self.__calibrate_value_max - self.__calibrate_value_min < minimum_difference_between_calibration_values:
+            self.__screen.fill(self.__background_colour)
+            self.__text('POWTARZAM KALIBRACJĘ', text_x_position, text_y_position, font_size=font_size)
+            self.__update()
+            time.sleep(2)
+            self.__calibrate()
+
+
+    def __calibrate(self):
+
+        text_x_position = self.__x_screen // 2
+        text_y_position = self.__y_screen // 2
+        font_size = self.__y_screen // 10
+
+        self.__screen.fill(self.__background_colour)
+        pygame.display.set_caption('Kalibracja')
+        self.__update()
+
+        self.__screen.fill(self.__background_colour)
+        self.__text('KALIBRACJA', text_x_position, text_y_position, font_size=font_size)
+        self.__update()
+        time.sleep(2)
+
+        self.__screen.fill(self.__background_colour)
+        self.__text('ROZLUŹNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
+        self.__update()
+        time.sleep(1)
+
+        self.__calibrate_value_min = self.__get_calib_samples()
 
         time.sleep(2)
 
@@ -168,36 +186,8 @@ class SimpleGame(object):
 
         time.sleep(1)
 
-        minimum_difference_between_calibration_values = 50
-        samples = []
-        start_time_calibration_max = time.time()
-        while time.time() - start_time_calibration_max <= calibration_time:
-            self.__lock.acquire()
-            signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
-            signal -= np.mean(signal)
-            signal = np.abs(signal)
-            self.__lock.release()
-            samples.append(signal)
-            start_quit_time = time.time()
-            while time.time() - start_quit_time <= quit_time:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        self.__kill()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            self._menu()
+        self.__calibrate_value_max = self.__get_calib_samples()
 
-        self.__calibrate_value_max = np.mean(samples)
-        del samples
-        print(self.__calibrate_value_min, self.__calibrate_value_max)
-
-        if self.__calibrate_value_min >= self.__calibrate_value_max or \
-                self.__calibrate_value_max - self.__calibrate_value_min < minimum_difference_between_calibration_values:
-            self.__screen.fill(self.__background_colour)
-            self.__text('POWTARZAM KALIBRACJĘ', text_x_position, text_y_position, font_size=font_size)
-            self.__update()
-            time.sleep(2)
-            self.__calibrate()
 
         self.__screen.fill(self.__background_colour)
         self.__text('KONIEC KALIBRACJI', text_x_position, text_y_position, font_size=font_size)
@@ -449,7 +439,6 @@ class SimpleGame(object):
 
                         if utils.collide_in(self.__trash, bin_):
                             collision = True
-                            print("Kolizja", bin_.type, self.__trash.type)
                             if bin_.type == self.__trash.type:
                                 self.__score += 100
 
