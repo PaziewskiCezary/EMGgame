@@ -89,5 +89,5 @@ if __name__ == '__main__':
     while processes_queue.empty():
         pass
     if args.use_amplifier:
-        amplifier_process.kill()
-    game_process.kill()
+        amplifier_process.terminate()
+    game_process.terminate()
