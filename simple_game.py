@@ -327,8 +327,8 @@ class SimpleGame(object):
                          (0, 0, self.__x_screen, self.__y_screen // 14), False)
         self.__text(score_text, width_score / 2, 25, font_style=self.__font_style, font_size=font_size)
         self.__text(lives_text, self.__x_screen//2, 25, font_style=self.__font_style, font_size=font_size)
-        self.__text(heart_text * self.__lives, self.__x_screen//2 + width_lives//2 + 0.5 * self.__lives * width_heart, 25,
-                    font_style=self.__font_style, font_size=font_size_heart)
+        self.__text(heart_text * self.__lives, self.__x_screen//2 + width_lives//2 + 0.5 * self.__lives * width_heart,
+                    25, font_style=self.__font_style, font_size=font_size_heart)
 
         self.__update()
 

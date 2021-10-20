@@ -42,7 +42,8 @@ def connect_amplifier(process_lock, samples_array, sampling_frequency=512, numbe
             print(e)
 
 
-def play_game(queue, process_lock, sample_array, screen_size, use_keyboard=False, lives=3, default_name='', full_screen=True):
+def play_game(queue, process_lock, sample_array, screen_size, use_keyboard=False, lives=3, default_name='',
+              full_screen=True):
     game = SimpleGame(queue, process_lock, sample_array, screen_size, use_keyboard=use_keyboard,
                       lives=lives, default_name=default_name,
                       full_screen=full_screen)
