@@ -78,6 +78,8 @@ class SimpleGame(object):
 
     def __kill(self):
         self.__queue.put(1)
+        pygame.quit()
+        exit()
 
     @property
     def use_keyboard(self):
@@ -304,16 +306,19 @@ class SimpleGame(object):
 
         font_size = self.__y_screen // 24
         font_size_heart = self.__y_screen // 20
-        width_heart, height_heart = pygame.font.SysFont(self.__font_style, font_size_heart).size(u"♥")
+        score_text = "Punkty: " + str(self.__score)
+        lives_text = "Życia: "
+        heart_text = u"♥"
+        width_heart, height_heart = pygame.font.SysFont(self.__font_style, font_size_heart).size(heart_text)
+        width_score, _ = pygame.font.SysFont(self.__font_style, font_size).size(score_text)
+        width_lives, _ = pygame.font.SysFont(self.__font_style, font_size).size(lives_text)
         # 'DejaVu Sans Mono'
         pygame.draw.rect(self.__screen, self.__background_colour,
                          (0, 0, self.__x_screen, self.__y_screen // 14), False)
-        self.__text("Punkty: " + str(self.__score), 100, 25, font_style=self.__font_style, font_size=font_size)
-        self.__text('Życia: ', 200 + len("Punkty: " + str(self.__score)) * font_size, 25,
-                    font_style=self.__font_style, font_size=font_size)
-        self.__text(u"♥" * self.__lives,
-                    65 + 0.5 * self.__lives * width_heart + len("Punkty: " + str(self.__score)) * font_size + len(
-                      "Życia: ") * font_size, 25, font_style=self.__font_style, font_size=font_size_heart)
+        self.__text(score_text, width_score / 2, 25, font_style=self.__font_style, font_size=font_size)
+        self.__text(lives_text, 200 + width_score, 25, font_style=self.__font_style, font_size=font_size)
+        self.__text(heart_text * self.__lives, 100 + 0.5 * self.__lives * width_heart + width_score + width_lives, 25,
+                    font_style=self.__font_style, font_size=font_size_heart)
 
         self.__update()
 
@@ -424,6 +429,7 @@ class SimpleGame(object):
 
                             if event.key == pygame.K_RIGHT:
                                 self.__move_thrash(MOVE_RIGHT)
+
                 if break_loop:
                     break
 
@@ -440,7 +446,7 @@ class SimpleGame(object):
                         if utils.collide_in(self.__trash, bin_):
                             collision = True
                             if bin_.type == self.__trash.type:
-                                self.__score += 100
+                                self.__score += 300
 
                             else:
                                 self.__score += -10
