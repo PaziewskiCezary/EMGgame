@@ -12,6 +12,9 @@ import numpy as np
 from multiprocessing.sharedctypes import Array
 import multiprocessing as mp
 
+from os import environ
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
+
 from simple_game import SimpleGame
 
 
