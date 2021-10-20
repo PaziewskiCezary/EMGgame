@@ -85,15 +85,15 @@ if __name__ == '__main__':
     game_process = Process(target=play_game,
                            args=(processes_queue, lock, samples_array, default_screen_size,
                                  args.use_keyboard, args.lives, args.name, args.full_screen))
+    game_process.deamon = True
+    game_process.start()
     if args.use_amplifier:
         amplifier_process = Process(target=connect_amplifier, args=(lock, samples_array))
+        amplifier_process.deamon = True
         amplifier_process.start()
-    game_process.start()
+
     while processes_queue.empty():
         pass
-    if args.use_amplifier:
-        print(1)
-        amplifier_process.terminate()
-    game_process.terminate()
-    print(3)
-    exit()
+
+
+

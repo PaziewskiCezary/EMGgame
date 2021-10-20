@@ -78,6 +78,8 @@ class SimpleGame(object):
 
     def __kill(self):
         self.__queue.put(1)
+        pygame.quit()
+        exit()
 
     @property
     def use_keyboard(self):
