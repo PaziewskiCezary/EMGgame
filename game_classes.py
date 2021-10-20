@@ -65,6 +65,8 @@ class Simple_Game(object):
 
     def kill(self):
         self.queue.put(1)
+        pygame.quit()
+        exit()
 
     @property
     def use_keyboard(self):
@@ -494,7 +496,7 @@ class Simple_Game(object):
                 return_btn.onClick(event)
                 if event.type == pygame.QUIT:
                     self.kill()
-                    self.amp.stop_sampling()
+                    # self.amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.menu()
@@ -524,7 +526,7 @@ class Simple_Game(object):
                 b_e.onClick(event)
                 if event.type == pygame.QUIT:
                     self.kill()
-                    self.amp.stop_sampling()
+                   #  self.amp.stop_sampling()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.kill()

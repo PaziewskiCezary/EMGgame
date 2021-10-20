@@ -80,10 +80,13 @@ if __name__ == '__main__':
 
     p = Process(target=amp, args=(l, a1))
     p2 = Process(target=play_game, args=(q, l, a1, screen_size, args.use_keyboard, args.lifes, args.name, args.full_screen))
+    p.daemon = True
+    p2.daemon = True
     p.start()
     p2.start()
 
     while q.empty():
-        pass
-    p.kill()
-    p2.kill()
+        time.sleep(0.1)
+    print(1)
+    # p.kill()
+    # p2.kill()
