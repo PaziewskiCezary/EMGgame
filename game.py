@@ -3,6 +3,9 @@
 
 import argparse
 import sys
+import os
+import signal
+import platform
 
 from multiprocessing import Process, Lock
 import time
@@ -89,15 +92,25 @@ if __name__ == '__main__':
     game_process = Process(target=play_game,
                            args=(processes_queue, lock, samples_array, default_screen_size,
                                  args.use_keyboard, args.lives, args.name, args.full_screen))
-    game_process.deamon = True
     game_process.start()
+    
     if args.use_amplifier:
         amplifier_process = Process(target=connect_amplifier, args=(lock, samples_array))
-        amplifier_process.deamon = True
         amplifier_process.start()
 
-    while processes_queue.empty():
-        pass
+    try:
+        while processes_queue.empty():
+            pass
+    except KeyboardInterrupt:
+        processes_queue.put(1)
 
-
-
+    if args.use_amplifier:
+        if platform.system() == 'Linux':
+            os.kill(amplifier_process.pid, signal.SIGKILL)
+        elif platform.system() == 'Windows':
+            os.kill(amplifier_process.pid, signal.SIGTERM)
+            
+    if platform.system() == 'Linux':
+        os.kill(game_process.pid, signal.SIGKILL)
+    elif platform.system()== 'Windows':
+        os.kill(game_process.pid, signal.SIGTERM)
