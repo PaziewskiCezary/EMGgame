@@ -1,16 +1,16 @@
 import pygame
 
 
-class Trash(pygame.sprite.Sprite):
+class Projectile(pygame.sprite.Sprite):
     """docstring for Trash"""
 
     percentage = 0.05
 
-    def __init__(self, position=(0, 0), *, img_path, trash_type, desired_width):
+    def __init__(self, position=(0, 0), *, img_path, projectile_type, desired_width):
         pygame.sprite.Sprite.__init__(self)
 
         self.x_position, self.y_position = position
-        self.type = trash_type
+        self.type = projectile_type
         self.image = pygame.image.load(img_path).convert()
         self.image.set_colorkey((255, 255, 255))
 

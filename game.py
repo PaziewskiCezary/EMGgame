@@ -1,7 +1,8 @@
 '''Simple game with falling stuff'''
 # python game.py --keyboard --lives 1 --name fsdf --not-full
 
-from simple_game import SimpleGame
+from games.simple_game import SimpleGame
+from games import AbstractGame
 
 import argparse
 import sys
@@ -45,11 +46,12 @@ def connect_amplifier(process_lock, samples_array, sampling_frequency=512, numbe
             print(e)
 
 
-def play_game(queue, process_lock, samples_array, screen_size, use_keyboard=False, lives=3, default_name='',
-              full_screen=True):
-    game = SimpleGame(queue, process_lock, samples_array, screen_size, use_keyboard=use_keyboard,
-                      lives=lives, default_name=default_name,
-                      full_screen=full_screen)
+def play_game(queue, process_lock, samples_array, lives=3, default_name=''):
+    game = AbstractGame(queue=queue,
+                        lock=process_lock,
+                        sample_array=samples_array,
+                        lives=lives,
+                        name=default_name)
     game._menu()
 
 
@@ -61,7 +63,7 @@ if __name__ == '__main__':
     parser.add_argument('--keyboard', nargs='*', dest='use_keyboard', default=False, help='run without amplifier')
     parser.add_argument('--not-full', nargs='*', dest='full_screen', default=True, help='turn off full screen')
 
-    parser.add_argument('--lives', dest='lives', default=5, type=int, help='set lives number')
+    parser.add_argument('--lives', dest='lives', default=3, type=int, help='set lives number')
     parser.add_argument('--name', dest='name', default='', type=str, help='set name')
 
     args = parser.parse_args()
@@ -90,8 +92,7 @@ if __name__ == '__main__':
     processes_queue = mp.Queue()
 
     game_process = Process(target=play_game,
-                           args=(processes_queue, lock, samples_array, default_screen_size,
-                                 args.use_keyboard, args.lives, args.name, args.full_screen))
+                           args=(processes_queue, lock, samples_array, args.lives, args.name))
     game_process.start()
     
     if args.use_amplifier:

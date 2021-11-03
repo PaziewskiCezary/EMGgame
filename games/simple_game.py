@@ -8,9 +8,10 @@ import numpy as np
 
 import utils as utils
 from button import Button
-from trash import Trash
-from trash_bin import TrashBin
+from projectile import Projectile
+from target import Target
 
+from games import AbstractGame
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
@@ -18,17 +19,17 @@ MOVE_DOWN = 0
 NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 
-class SimpleGame(object):
+class SimpleGame(AbstractGame):
     """Simple_Game"""
 
-    def __init__(self, queue, lock, sample_array, size, use_keyboard=False, lives=3, default_name='', full_screen=True):
+    def __init__(self, queue, lock, sample_array, size, use_keyboard=False, lives=3, name='', full_screen=True):
 
         self.__queue = queue
         self.__lock = lock
         self.__sample_array = sample_array
 
         self.__use_keyboard = use_keyboard
-        self.__default_name = default_name
+        self.__default_name = name
         self.__full_screen = full_screen
         pygame.init()
 
@@ -67,12 +68,12 @@ class SimpleGame(object):
         self.__backgrounds = sorted([x for x in utils.get_backgrounds()])
         self.__backgrounds = [pygame.image.load(x) for x in self.__backgrounds]
 
-        self.__bins = [TrashBin(desired_width=self.__x_screen * TrashBin.percentage, img_path=bin_path,
-                                bin_type=bin_type) for (bin_type, bin_path) in utils.get_bins()]
+        self.__bins = [Target(desired_width=self.__x_screen * Target.percentage, img_path=bin_path,
+                              bin_type=bin_type) for (bin_type, bin_path) in utils.get_targets()]
 
         self.__trashes = []
-        for i, (trash_type, trash_path) in enumerate(utils.get_trashes()):
-            trash = Trash(desired_width=self.__x_screen * Trash.percentage, img_path=trash_path, trash_type=trash_type)
+        for i, (trash_type, trash_path) in enumerate(utils.get_projectiles()):
+            trash = Projectile(desired_width=self.__x_screen * Projectile.percentage, img_path=trash_path, projectile_type=trash_type)
 
             self.__trashes.append(trash)
 
@@ -85,7 +86,7 @@ class SimpleGame(object):
     def use_keyboard(self):
         return self.__use_keyboard
 
-    def __move_thrash(self, shift):
+    def __move_projectile(self, shift):
         if not self.__trash:
             raise ValueError('self.__thrash not set')
         if abs(shift) > 1:
@@ -251,7 +252,7 @@ class SimpleGame(object):
     def __show_score(self):
 
         try:
-            scores = pickle.load(open("wyniki.pkl", "rb"))
+            scores = pickle.load(open("../wyniki.pkl", "rb"))
         except FileNotFoundError:
             scores = []
 
@@ -300,7 +301,7 @@ class SimpleGame(object):
 
         return return_btn, again_btn
 
-    def __make_heart_lives(self):
+    def __make_health_text(self):
 
         font_size = self.__y_screen // 24
         font_size_heart = self.__y_screen // 20
@@ -333,11 +334,11 @@ class SimpleGame(object):
                     if event.key == pygame.K_ESCAPE:
                         self._menu()
 
-    def __set_bins(self):
+    def __set_targets(self):
 
         number_of_bins = len(self.__bins)
 
-        offset = (1 - number_of_bins * TrashBin.percentage) / (number_of_bins + 1)
+        offset = (1 - number_of_bins * Target.percentage) / (number_of_bins + 1)
         offset = round(self.__x_screen * offset)
 
         first_bin = 0
@@ -364,7 +365,7 @@ class SimpleGame(object):
         speed_rate = 0.0003
         trash_number = 0
 
-        bin_y_position = self.__set_bins()
+        bin_y_position = self.__set_targets()
         np.random.shuffle(self.__trashes)
 
         play = True
@@ -397,10 +398,10 @@ class SimpleGame(object):
                             break_loop = True
 
                         if event.key == pygame.K_LEFT:
-                            self.__move_thrash(MOVE_LEFT)
+                            self.__move_projectile(MOVE_LEFT)
 
                         if event.key == pygame.K_RIGHT:
-                            self.__move_thrash(MOVE_RIGHT)
+                            self.__move_projectile(MOVE_RIGHT)
 
                         if event.key == pygame.K_DOWN:
                             self.__trash.y_position += 10
@@ -414,7 +415,7 @@ class SimpleGame(object):
                     signal = np.abs(signal)
                     self.__lock.release()
                     move_value = self.__muscle_move(np.mean(signal)) / 10   # comm why 10?
-                    self.__move_thrash(move_value)
+                    self.__move_projectile(move_value)
                 else:
                     for event in pygame.event.get():
                         if event.type == pygame.KEYDOWN:
@@ -423,10 +424,10 @@ class SimpleGame(object):
                                 break_loop = True
 
                             if event.key == pygame.K_LEFT:
-                                self.__move_thrash(MOVE_LEFT)
+                                self.__move_projectile(MOVE_LEFT)
 
                             if event.key == pygame.K_RIGHT:
-                                self.__move_thrash(MOVE_RIGHT)
+                                self.__move_projectile(MOVE_RIGHT)
 
                 if break_loop:
                     break
@@ -465,7 +466,7 @@ class SimpleGame(object):
                 self.__screen.blit(self.__trash.image, self.__trash.get_position)
 
                 # labels with lives and score
-                self.__make_heart_lives()
+                self.__make_health_text()
 
                 self.__clock.tick(60)
 
@@ -485,17 +486,17 @@ class SimpleGame(object):
         self.__screen.blit(img, [0, 0])
 
     def __save_score(self):
-        if not os.path.isfile("wyniki.pkl"):
+        if not os.path.isfile("../wyniki.pkl"):
             scores = []
-            pickle.dump(scores, open("wyniki.pkl", "wb"))
+            pickle.dump(scores, open("../wyniki.pkl", "wb"))
 
-        scores = pickle.load(open("wyniki.pkl", "rb"))
+        scores = pickle.load(open("../wyniki.pkl", "rb"))
         scores.append((self.__score, self.__name))
-        pickle.dump(scores, open("wyniki.pkl", "wb"))
+        pickle.dump(scores, open("../wyniki.pkl", "wb"))
 
     def __scores(self):
         try:
-            scores = pickle.load(open("wyniki.pkl", "rb"))
+            scores = pickle.load(open("../wyniki.pkl", "rb"))
 
         except FileNotFoundError:
             scores = []

@@ -1,6 +1,6 @@
 import os
 
-__all__ = ['collide_in', 'get_bins', 'get_trashes', 'get_backgrounds']
+__all__ = ['collide_in', 'get_targets', 'get_projectiles', 'get_backgrounds']
 
 
 def collide_in(obj1, obj2):
@@ -13,15 +13,15 @@ def collide_in(obj1, obj2):
     return False
 
 
-def get_bins(path="static/bins/"):
+def get_targets(path="static/bins/"):
     for root, dirs, files in os.walk(path):
         for name in files:
             path = os.path.join(root, name)
-            bin_type = name.split('.png')[0]
-            yield bin_type, path
+            target_type = name.split('.png')[0]
+            yield target_type, path
 
 
-def get_trashes(path="static/trash/"):
+def get_projectiles(path="static/trash/"):
     for root, dirs, files in os.walk(path):
         for name in files:
             path = os.path.join(root, name)
