@@ -145,7 +145,7 @@ class SimpleGame(object):
         del samples
         return samples_mean
 
-    def __check_calib(self):
+    def __check_calib(self, text_x_position, text_y_position, font_size):
 
         minimum_difference_between_calibration_values = 50
 
@@ -156,7 +156,6 @@ class SimpleGame(object):
             self.__update()
             time.sleep(2)
             self.__calibrate()
-
 
     def __calibrate(self):
 
@@ -189,8 +188,7 @@ class SimpleGame(object):
         time.sleep(1)
 
         self.__calibrate_value_max = self.__get_calib_samples()
-
-
+        self.__check_calib(text_x_position, text_y_position, font_size)
         self.__screen.fill(self.__background_colour)
         self.__text('KONIEC KALIBRACJI', text_x_position, text_y_position, font_size=font_size)
         self.__update()

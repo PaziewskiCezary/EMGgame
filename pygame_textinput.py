@@ -48,7 +48,6 @@ class TextInput:
         self.max_string_length = max_string_length
         self.input_string = initial_string  # Inputted text
 
-
         if not os.path.isfile(font_family):
             font_family = pygame.font.match_font(font_family)
 
