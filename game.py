@@ -1,6 +1,8 @@
 '''Simple game with falling stuff'''
 # python game.py --keyboard --lives 1 --name fsdf --not-full
 
+from simple_game import SimpleGame
+
 import argparse
 import sys
 import os
@@ -17,8 +19,6 @@ import multiprocessing as mp
 
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = '1'
-
-from simple_game import SimpleGame
 
 
 def connect_amplifier(process_lock, samples_array, sampling_frequency=512, number_of_samples=64, channels=[0, 1]):
@@ -45,9 +45,9 @@ def connect_amplifier(process_lock, samples_array, sampling_frequency=512, numbe
             print(e)
 
 
-def play_game(queue, process_lock, sample_array, screen_size, use_keyboard=False, lives=3, default_name='',
+def play_game(queue, process_lock, samples_array, screen_size, use_keyboard=False, lives=3, default_name='',
               full_screen=True):
-    game = SimpleGame(queue, process_lock, sample_array, screen_size, use_keyboard=use_keyboard,
+    game = SimpleGame(queue, process_lock, samples_array, screen_size, use_keyboard=use_keyboard,
                       lives=lives, default_name=default_name,
                       full_screen=full_screen)
     game._menu()
@@ -112,5 +112,5 @@ if __name__ == '__main__':
             
     if platform.system() == 'Linux':
         os.kill(game_process.pid, signal.SIGKILL)
-    elif platform.system()== 'Windows':
+    elif platform.system() == 'Windows':
         os.kill(game_process.pid, signal.SIGTERM)
