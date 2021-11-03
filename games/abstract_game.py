@@ -3,7 +3,6 @@ import os
 import time
 import math
 import pickle
-import pygame_textinput
 import numpy as np
 
 from abc import ABC
@@ -13,12 +12,11 @@ from button import Button
 from projectile import Projectile
 from target import Target
 from pygame_text import text
-
+from .player import Player
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
 MOVE_DOWN = 0
-NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 from types import SimpleNamespace
 
@@ -92,6 +90,7 @@ class AbstractGame:
             self.__projectiles.append(projectile)
 
 
+
         # TODO move up
         self._game_name = 'Falling trash'
     def __kill(self):
@@ -132,89 +131,11 @@ class AbstractGame:
     def __update():
         pygame.display.update()
 
-    def __get_calib_samples(self):
-        calibration_time = 5
-        quit_time = 0.5
-        samples = []
-        start_time_calibration_min = time.time()
-
-        while time.time() - start_time_calibration_min <= calibration_time:
-            self.__lock.acquire()
-            signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
-            signal -= np.mean(signal)
-            signal = np.abs(signal)
-            self.__lock.release()
-            samples.append(signal)
-            start_quit_time = time.time()
-            while time.time() - start_quit_time <= quit_time:
-                for event in pygame.event.get():
-                    if event.type == pygame.QUIT:
-                        self.__kill()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            self._menu()
-
-        samples_mean = np.mean(samples)
-        del samples
-        return samples_mean
-
-    def __check_calib(self, text_x_position, text_y_position, font_size):
-
-        minimum_difference_between_calibration_values = 50
-
-        if self.__calibrate_value_min >= self.__calibrate_value_max or \
-                self.__calibrate_value_max - self.__calibrate_value_min < minimum_difference_between_calibration_values:
-            self.__screen.fill(self.__background_colour)
-            text(self.__screen, self.__text_colour, 'POWTARZAM KALIBRACJĘ', text_x_position, text_y_position, font_size=font_size)
-            self.__update()
-            time.sleep(2)
-            self.__calibrate()
-
-    def __calibrate(self):
-
-        text_x_position = self.__x_screen // 2
-        text_y_position = self.__y_screen // 2
-        font_size = self.__y_screen // 10
-
-        self.__screen.fill(self.__background_colour)
-        pygame.display.set_caption('Kalibracja')
-        self.__update()
-
-        self.__screen.fill(self.__background_colour)
-        text(self.__screen, self.__text_colour, 'KALIBRACJA', text_x_position, text_y_position, font_size=font_size)
-        self.__update()
-        time.sleep(2)
-
-        self.__screen.fill(self.__background_colour)
-        text(self.__screen, self.__text_colour, 'ROZLUŹNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
-        self.__update()
-        time.sleep(1)
-
-        self.__calibrate_value_min = self.__get_calib_samples()
-
-        time.sleep(2)
-
-        self.__screen.fill(self.__background_colour)
-        text(self.__screen, self.__text_colour, 'ZACIŚNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
-        self.__update()
-
-        time.sleep(1)
-
-        self.__calibrate_value_max = self.__get_calib_samples()
-        self.__check_calib(text_x_position, text_y_position, font_size)
-        self.__screen.fill(self.__background_colour)
-        text(self.__screen, self.__text_colour, 'KONIEC KALIBRACJI', text_x_position, text_y_position, font_size=font_size)
-        self.__update()
-
-
     def __start(self):
-        if self._name:
-            self.__name = self._name
-        else:
-            self.__get_name()
+        self.__player = Player(self.__screen, self.__use_keyboard, self.__lock, self.__sample_array)
+        self.__calibrate_value_min, self.__calibrate_value_max = self.__player.calibrate_values
 
-        if not self.__use_keyboard:
-            self.__calibrate()
+        self.__name = self.__player.name
 
         self.__play()
 

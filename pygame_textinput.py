@@ -74,6 +74,8 @@ class TextInput:
 
         self.clock = pygame.time.Clock()
 
+
+
     def update(self, events):
         for event in events:
             if event.type == pygame.KEYDOWN:
