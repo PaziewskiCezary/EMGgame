@@ -1,4 +1,2 @@
 numpy
-pygame
-scipy
-matplotlib
+pygame==1.9.6
