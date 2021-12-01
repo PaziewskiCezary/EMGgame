@@ -18,18 +18,14 @@ MOVE_LEFT = -1
 MOVE_RIGHT = 1
 MOVE_DOWN = 0
 
-from types import SimpleNamespace
-
-COLOR_PALLET = SimpleNamespace()
-COLOR_PALLET.yellow_rgb = (255, 239, 148)
-COLOR_PALLET.pink_rgb = (232, 98, 203)
-
+import screen_properties
+import color_palette 
 
 # class AbstractGame(ABC):
 class AbstractGame:
     """AbstractGame"""
 
-    def __init__(self, queue, lock, sample_array, lives=3, name=''): #, color_pallet=COLOR_PALLET):
+    def __init__(self, queue, lock, sample_array, full_screen, lives=3, name=''): #, color_pallet=COLOR_PALLET):
 
         self.__queue = queue
         self.__lock = lock
@@ -37,35 +33,27 @@ class AbstractGame:
 
         self.__use_keyboard = True
         self._name = name
+
+        self.__background_colour = color_palette.yellow_rgb
+        self.__text_colour = color_palette.pink_rgb
+        self.__button_colour = color_palette.pink_rgb
+        self.__button_text_colour = color_palette.yellow_rgb
+
+        # TODO set full_screen
+        self.__full_screen = full_screen
+        self.__screen_properties = screen_properties.ScreenProperties(self.__full_screen)
+        self.__screen = self.__screen_properties.screen
+        self.__x_screen = self.__screen_properties.x_screen
+        self.__y_screen = self.__screen_properties.y_screen
+        self.__screen.fill(self.__background_colour)
         # TODO move up
-        self.__full_screen = False
         pygame.init()
 
-        self.__color_pallet = COLOR_PALLET
-
-        self.__background_colour = self.__color_pallet.yellow_rgb
-        self.__text_colour = self.__color_pallet.pink_rgb
-        self.__button_colour = self.__color_pallet.pink_rgb
-        self.__button_text_colour = self.__color_pallet.yellow_rgb
-
-        self.__screen_size = (1600, 900)
-        self.__screen = pygame.display.set_mode(self.__screen_size)
-
-        self.__x_screen, self.__y_screen = self.__screen_size
+        
         self.__max_lives = lives
 
-        # TODO MOVE THIS UP
-        if self.__full_screen:
-            display_info = pygame.display.Info()
-            auto_screen_resolution = (display_info.current_w, display_info.current_h)
-            self.__screen = pygame.display.set_mode(auto_screen_resolution, pygame.FULLSCREEN)
-            self.__x_screen = self.__screen.get_width()
-            self.__y_screen = self.__screen.get_height()
-            self.__screen_size = (self.__x_screen, self.__y_screen)
-        else:
-            self.__screen = pygame.display.set_mode(self.__screen_size)
+        
 
-        self.__screen.fill(self.__background_colour)
 
         pygame.display.flip()
 

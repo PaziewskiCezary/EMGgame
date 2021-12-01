@@ -46,10 +46,11 @@ def connect_amplifier(process_lock, samples_array, sampling_frequency=512, numbe
             print(e)
 
 
-def play_game(queue, process_lock, samples_array, lives=3, default_name=''):
+def play_game(queue, process_lock, samples_array, full_screen, lives=3, default_name=''):
     game = AbstractGame(queue=queue,
                         lock=process_lock,
                         sample_array=samples_array,
+                        full_screen=full_screen,
                         lives=lives,
                         name=default_name)
     game._menu()
@@ -67,15 +68,17 @@ if __name__ == '__main__':
     parser.add_argument('--name', dest='name', default='', type=str, help='set name')
 
     args = parser.parse_args()
-
     if args.use_keyboard is not False:
         args.use_keyboard = True
+
+    if args.full_screen is not False:
+        args.full_screen = False 
+        
     if args.use_amplifier is not False:
         from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
         args.use_amplifier = True
-    if args.full_screen is not True:
-        args.full_screen = False
+    
 
     if args.use_keyboard and args.use_amplifier:
         sys.exit('Can\'t use --amplifier and --keyboard at the same time')
@@ -92,7 +95,7 @@ if __name__ == '__main__':
     processes_queue = mp.Queue()
 
     game_process = Process(target=play_game,
-                           args=(processes_queue, lock, samples_array, args.lives, args.name))
+                           args=(processes_queue, lock, samples_array, args.full_screen, args.lives, args.name))
     game_process.start()
     
     if args.use_amplifier:
