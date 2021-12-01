@@ -52,9 +52,6 @@ class AbstractGame:
         
         self.__max_lives = lives
 
-        
-
-
         pygame.display.flip()
 
         self.__clock = pygame.time.Clock()
