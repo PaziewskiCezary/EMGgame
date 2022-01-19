@@ -19,8 +19,8 @@ from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 
-# from emg_games.games.player import Player
-# from gui.scenes import ScreenProperties
+from emg_games.games.player import Player
+from emg_games.gui.scenes import ScreenProperties
 from emg_games.games import AbstractGame
 
 def connect_amplifier(process_lock, samples_array, sampling_frequency=512, number_of_samples=64, channels=[0, 1]):
