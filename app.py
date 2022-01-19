@@ -19,10 +19,9 @@ from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 
-from emg_games import gui, games, backbones
-import emg_games
-from games import Player
-from gui.scenes import ScreenProperties
+# from emg_games.games.player import Player
+# from gui.scenes import ScreenProperties
+from emg_games.games import AbstractGame
 
 def connect_amplifier(process_lock, samples_array, sampling_frequency=512, number_of_samples=64, channels=[0, 1]):
     amplifiers = TmsiCppAmplifier.get_available_amplifiers('usb')
@@ -62,7 +61,7 @@ def play_game(queue, process_lock, samples_array, args):
 
     #player = Player(screen=screen_properties, use_keyboard=args.use_keyboard, lock, sample_array)
 
-    game._menu()
+    abstract_game._menu()
 
 
 if __name__ == '__main__':

@@ -34,10 +34,10 @@ class AbstractGame:
         self.__use_keyboard = True
         self._name = name
 
-        self.__background_colour = palette.yellow_rgb
-        self.__text_colour = palette.pink_rgb
-        self.__button_colour = palette.pink_rgb
-        self.__button_text_colour = palette.yellow_rgb
+        self.__background_colour = palette.YELLOW_RGB
+        self.__text_colour = palette.PINK_RGB
+        self.__button_colour = palette.PINK_RGB
+        self.__button_text_colour = palette.YELLOW_RGB
 
         # TODO set full_screen
         self.__full_screen = full_screen
