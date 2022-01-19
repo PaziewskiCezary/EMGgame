@@ -7,19 +7,19 @@ import numpy as np
 
 from abc import ABC
 
-
-from button import Button
-from projectile import Projectile
-from target import Target
-from pygame_text import text
+from emg_games.backbones import utils
+from emg_games.gui.components import Button
+from emg_games.backbones import Projectile
+from emg_games.backbones import Target
+from emg_games.gui.components import text
 from .player import Player
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
 MOVE_DOWN = 0
 
-import screen_properties
-import color_palette 
+from emg_games.gui.scenes.screen_properties import ScreenProperties
+from emg_games.gui.components import palette
 
 # class AbstractGame(ABC):
 class AbstractGame:
@@ -34,14 +34,14 @@ class AbstractGame:
         self.__use_keyboard = True
         self._name = name
 
-        self.__background_colour = color_palette.yellow_rgb
-        self.__text_colour = color_palette.pink_rgb
-        self.__button_colour = color_palette.pink_rgb
-        self.__button_text_colour = color_palette.yellow_rgb
+        self.__background_colour = palette.YELLOW_RGB
+        self.__text_colour = palette.PINK_RGB
+        self.__button_colour = palette.PINK_RGB
+        self.__button_text_colour = palette.YELLOW_RGB
 
         # TODO set full_screen
         self.__full_screen = full_screen
-        self.__screen_properties = screen_properties.ScreenProperties(self.__full_screen)
+        self.__screen_properties = ScreenProperties(self.__full_screen)
         self.__screen = self.__screen_properties.screen
         self.__x_screen = self.__screen_properties.x_screen
         self.__y_screen = self.__screen_properties.y_screen
@@ -49,7 +49,7 @@ class AbstractGame:
         # TODO move up
         pygame.init()
 
-        
+
         self.__max_lives = lives
 
         pygame.display.flip()

@@ -13,24 +13,29 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class Player:
 
-    def __init__(self, screen_properties, use_keyboard, lock, sample_array): #, color_PALETTE)"
+    def __init__(self, screen_properties, use_keyboard, lock, sample_array):
+
         self.__use_keyboard = use_keyboard
 
         self.__name = ''
         self.__calibrate_value_min = 0
         self.__calibrate_value_max = float('inf')
         self.__input_type = None
+
         self.__screen_properties = screen_properties
         self.__screen = self.__screen_properties.screen
         self.__lock = lock # TODO decouple this
         self.__sample_array = sample_array # TODO decouple this
 
+
         self.__x_screen, self.__y_screen = self.__screen.get_size()
 
         self.__get_name()
         self.__get_input_type()
+        print(2132312)
         if not self.__use_keyboard:
-            Calibration.calibrate
+            calibrate = Calibration(self.__screen)
+            calibrate.calibrate()
 
     def __bool__(self):
         return self.name != '' and self.calibrate_values != (0, float('inf')) and self.__input_type is not None
@@ -62,7 +67,7 @@ class Player:
         pygame.display.update()
 
     def __get_name(self):
-
+        print('starting get name')
         input_name = TextInput(font_family=palette.FONT_STYLE, font_size=self.__y_screen // 13,
                                text_color=palette.TEXT_COLOUR, max_string_length=15)
 
@@ -97,11 +102,16 @@ class Player:
 
     def __use_keyboard_true(self):
         self.__use_keyboard = True
+        self._is_waiting_for_option = False
 
     def __use_keyboard_false(self):
         self.__use_keyboard = False
+        self._is_waiting_for_option = False
 
     def __get_input_type(self):
+
+        print('start input type')
+        self._is_waiting_for_option = True
 
         self.__screen.fill(palette.BACKGROUND_COLOUR)
 
@@ -109,15 +119,16 @@ class Player:
         y_button = self.__y_screen / 5
         font_size = int(x_button // 5)
 
-        muscle_button = Button(self.__screen, 'Mięsień', (self.__x_screen / 2, self.__y_screen / 2 - 1.5 * y_button),
+
+        muscle_button = Button(self.__screen, 'Mięsień', (self.__x_screen / 2, self.__y_screen / 2 - 0.75 * y_button),
                                (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_false,
                                font_size=font_size)
-        keyboard_button = Button(self.__screen, 'Klawiatura', (self.__x_screen / 2, self.__y_screen / 2),
-                                 (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_true,
+        keyboard_button = Button(self.__screen, 'Klawiatura', (self.__x_screen / 2, self.__y_screen / 2 + 0.75 * y_button),
+                                (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_true,
                                  font_size=font_size)
 
         self.__update()
-        while True:
+        while self._is_waiting_for_option:
             for event in pygame.event.get():
                 muscle_button.on_click(event)
                 keyboard_button.on_click(event)
@@ -126,6 +137,3 @@ class Player:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.__kill()
-
-    
-
