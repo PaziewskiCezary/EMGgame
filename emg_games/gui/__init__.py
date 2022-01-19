@@ -1,2 +1,2 @@
-import components
-import scenes
+# import components
+# import scenes
