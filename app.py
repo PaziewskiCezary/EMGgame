@@ -18,9 +18,8 @@ import multiprocessing as mp
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
-from emg_games import *
-from games import Player
-from gui.scenes import ScreenProperties
+from emg_games.games import Player
+from emg_games.gui.scenes import ScreenProperties
 
 def connect_amplifier(process_lock, samples_array, sampling_frequency=512, number_of_samples=64, channels=[0, 1]):
     amplifiers = TmsiCppAmplifier.get_available_amplifiers('usb')
@@ -58,7 +57,7 @@ def play_game(queue, process_lock, samples_array, args):
                                     name=args.name)#,
                                     #screen_properties=screen_properties)'''
 
-    player = Player(screen=screen_properties, use_keyboard=args.use_keyboard, lock=process_lock, sample_array=samples_array)
+    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, lock=process_lock, sample_array=samples_array)
 
     #game._menu()
 
