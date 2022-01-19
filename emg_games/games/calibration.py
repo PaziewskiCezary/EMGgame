@@ -14,17 +14,17 @@ class Calibration():
         text_y_position = self.__y_screen // 2
         font_size = self.__y_screen // 10
 
-        self.__screen.fill(color_palette.background_colour)
+        self.__screen.fill(color_palette.BACKGROUND_COLOUR)
         pygame.display.set_caption('Kalibracja')
         self.__update()
 
-        self.__screen.fill(color_palette.background_colour)
-        text(self.__screen, color_palette.text_colour, 'KALIBRACJA', text_x_position, text_y_position, font_size=font_size)
+        self.__screen.fill(color_palette.BACKGROUND_COLOUR)
+        text(self.__screen, color_palette.TEXT_COLOUR, 'KALIBRACJA', text_x_position, text_y_position, font_size=font_size)
         self.__update()
         time.sleep(2)
 
-        self.__screen.fill(color_palette.background_colour)
-        text(self.__screen, color_palette.text_colour, 'ROZLUŹNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
+        self.__screen.fill(color_palette.BACKGROUND_COLOUR)
+        text(self.__screen, color_palette.TEXT_COLOUR, 'ROZLUŹNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
         self.__update()
         time.sleep(1)
 
@@ -32,16 +32,16 @@ class Calibration():
 
         time.sleep(2)
 
-        self.__screen.fill(color_palette.background_colour)
-        text(self.__screen, color_palette.text_colour, 'ZACIŚNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
+        self.__screen.fill(color_palette.BACKGROUND_COLOUR)
+        text(self.__screen, color_palette.TEXT_COLOUR, 'ZACIŚNIJ RĘKĘ', text_x_position, text_y_position, font_size=font_size)
         self.__update()
 
         time.sleep(1)
 
         self.__calibrate_value_max = self.__get_calib_samples()
         self.__check_calib(text_x_position, text_y_position, font_size)
-        self.__screen.fill(color_palette.background_colour)
-        text(self.__screen, color_palette.text_colour, 'KONIEC KALIBRACJI', text_x_position, text_y_position, font_size=font_size)
+        self.__screen.fill(color_palette.BACKGROUND_COLOUR)
+        text(self.__screen, color_palette.TEXT_COLOUR, 'KONIEC KALIBRACJI', text_x_position, text_y_position, font_size=font_size)
         self.__update()
 
     def __get_calib_samples(self):
@@ -79,8 +79,8 @@ class Calibration():
 
         if self.__calibrate_value_min >= self.__calibrate_value_max or \
                 self.__calibrate_value_max - self.__calibrate_value_min < minimum_difference_between_calibration_values:
-            self.__screen.fill(color_palette.background_colour)
-            text(self.__screen, color_palette.text_colour, 'POWTARZAM KALIBRACJĘ', text_x_position, text_y_position,
+            self.__screen.fill(color_palette.BACKGROUND_COLOUR)
+            text(self.__screen, color_palette.TEXT_COLOUR, 'POWTARZAM KALIBRACJĘ', text_x_position, text_y_position,
                  font_size=font_size)
             self.__update()
             time.sleep(2)
