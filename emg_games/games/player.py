@@ -2,12 +2,10 @@ import time
 import numpy as np
 import pygame
 
-import pygame_textinput
-from pygame_text import text
-from types import SimpleNamespace
-from calibration import Calibration
-
-
+from emg_games.gui.components.pygame_textinput import TextInput
+from emg_games.gui.components.pygame_text import text
+from emg_games.games.calibration import Calibration
+from emg_games.gui.components import palette
 
 pygame.init()
 
@@ -60,15 +58,15 @@ class Player:
 
     def __get_name(self):
 
-        input_name = pygame_textinput.TextInput(font_family=self.__palette.font_style, font_size=self.__y_screen // 13,
-                                                text_color=self.__palette.text_colour, max_string_length=15)
+        input_name = TextInput(font_family=palette.FONT_STYLE, font_size=self.__y_screen // 13,
+                               text_color=palette.TEXT_COLOUR, max_string_length=15)
 
         clock = pygame.time.Clock()
         is_input = True
         while is_input:
 
-            self.__screen.fill(self.__palette.background_colour)
-            text(self.__screen, self.__palette.text_colour, "PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4, font_size=self.__y_screen // 13)
+            self.__screen.fill(palette.BACKGROUND_COLOUR)
+            text(self.__screen, palette.TEXT_COLOUR, "PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4, font_size=self.__y_screen // 13)
 
             # TODO exiting
             events = pygame.event.get()
@@ -90,10 +88,8 @@ class Player:
                         self.__name = input_name.get_text()
                         is_input = False
                         break
-
+    # TODO
     def __get_input_type(self):
+        '''Get preferred way of playing'''
         return
         raise NotImplemented
-
-    
-
