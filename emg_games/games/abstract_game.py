@@ -7,7 +7,7 @@ import numpy as np
 
 from abc import ABC
 
-import utils as utils
+
 from button import Button
 from projectile import Projectile
 from target import Target

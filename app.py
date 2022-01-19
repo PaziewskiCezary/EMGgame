@@ -18,9 +18,7 @@ import multiprocessing as mp
 from os import environ
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
-
-from emg_games import gui, games, backbones
-import emg_games
+from emg_games import *
 from games import Player
 from gui.scenes import ScreenProperties
 
@@ -50,19 +48,19 @@ def connect_amplifier(process_lock, samples_array, sampling_frequency=512, numbe
 
 def play_game(queue, process_lock, samples_array, args):
 
-    #screen_properties = ScreenProperties(args.full_screen)
+    screen_properties = ScreenProperties(args.full_screen)
 
-    abstract_game = AbstractGame(queue=queue,
-                        lock=process_lock,
-                        sample_array=samples_array,
-                        full_screen=args.full_screen,
-                        lives=args.lives,
-                        name=args.name)#,
-                        #screen_properties=screen_properties)
+    '''abstract_game = AbstractGame(queue=queue,
+                                    lock=process_lock,
+                                    sample_array=samples_array,
+                                    full_screen=args.full_screen,
+                                    lives=args.lives,
+                                    name=args.name)#,
+                                    #screen_properties=screen_properties)'''
 
-    #player = Player(screen=screen_properties, use_keyboard=args.use_keyboard, lock, sample_array)
+    player = Player(screen=screen_properties, use_keyboard=args.use_keyboard, lock=process_lock, sample_array=samples_array)
 
-    game._menu()
+    #game._menu()
 
 
 if __name__ == '__main__':
