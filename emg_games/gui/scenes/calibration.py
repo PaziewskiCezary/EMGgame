@@ -5,8 +5,8 @@ import palette
 class Calibration():
 
 	def __init__(self, screen):
-		self.__screen = screen
-		self.__x_screen, self.__y_screen = self.__screen.get_size()
+    self.__screen = screen
+    self.__x_screen, self.__y_screen = self.__screen.get_size()
 
 	def calibrate(self):
 

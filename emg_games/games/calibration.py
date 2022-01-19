@@ -1,14 +1,16 @@
 import pygame
+import time
 
-import palette
+from emg_games.gui.components import palette
+from emg_games.gui.components import text
 
-class Calibration():
+class Calibration:
 
-	def __init__(self, screen):
-		self.__screen = screen
-		self.__x_screen, self.__y_screen = self.__screen.get_size()
+    def __init__(self, screen):
+        self.__screen = screen
+        self.__x_screen, self.__y_screen = self.__screen.get_size()
 
-	def calibrate(self):
+    def calibrate(self):
 
         text_x_position = self.__x_screen // 2
         text_y_position = self.__y_screen // 2
@@ -85,4 +87,3 @@ class Calibration():
             self.__update()
             time.sleep(2)
             self.calibrate()
-	

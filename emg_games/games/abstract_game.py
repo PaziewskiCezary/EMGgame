@@ -19,7 +19,6 @@ MOVE_RIGHT = 1
 MOVE_DOWN = 0
 
 from emg_games.gui.scenes.screen_properties import ScreenProperties
-screen_properties = ScreenProperties()
 from emg_games.gui.components import palette
 
 # class AbstractGame(ABC):
@@ -42,7 +41,7 @@ class AbstractGame:
 
         # TODO set full_screen
         self.__full_screen = full_screen
-        self.__screen_properties = screen_properties.ScreenProperties(self.__full_screen)
+        self.__screen_properties = ScreenProperties(self.__full_screen)
         self.__screen = self.__screen_properties.screen
         self.__x_screen = self.__screen_properties.x_screen
         self.__y_screen = self.__screen_properties.y_screen
@@ -50,7 +49,7 @@ class AbstractGame:
         # TODO move up
         pygame.init()
 
-        
+
         self.__max_lives = lives
 
         pygame.display.flip()
