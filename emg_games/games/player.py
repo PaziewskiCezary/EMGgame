@@ -13,8 +13,7 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class Player:
 
-
-    def __init__(self, screen_properties, use_keyboard, lock, sample_array): #, color_PALETTE)"
+    def __init__(self, screen_properties, use_keyboard, lock, sample_array):
 
         self.__use_keyboard = use_keyboard
 
@@ -23,8 +22,8 @@ class Player:
         self.__calibrate_value_max = float('inf')
         self.__input_type = None
         self.__screen = screen_properties
-        self.__lock = lock # TODO decouple this
-        self.__sample_array = sample_array # TODO decouple this
+        self.__lock = lock  # TODO decouple this
+        self.__sample_array = sample_array  # TODO decouple this
 
         self.__x_screen, self.__y_screen = self.__screen.get_size()
 
@@ -32,8 +31,8 @@ class Player:
         self.__get_input_type()
         print(2132312)
         if not self.__use_keyboard:
-            calib = Calibration(self.__screen)
-            calib.calibrate()
+            calibrate = Calibration(self.__screen)
+            calibrate.calibrate()
 
     def __bool__(self):
         return self.name != '' and self.calibrate_values != (0, float('inf')) and self.__input_type is not None
@@ -98,7 +97,6 @@ class Player:
                         is_input = False
                         break
 
-
     def __use_keyboard_true(self):
         self.__use_keyboard = True
         self._is_waiting_for_option = False
@@ -116,10 +114,10 @@ class Player:
         y_button = self.__y_screen / 5
         font_size = int(x_button // 5)
 
-        muscle_button = Button(self.__screen, 'Mięsień', (self.__x_screen / 2, self.__y_screen / 2 - 1.5 * y_button),
+        muscle_button = Button(self.__screen, 'Mięsień', (self.__x_screen / 2, self.__y_screen / 2 - 0.75 * y_button),
                                (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_false,
                                font_size=font_size)
-        keyboard_button = Button(self.__screen, 'Klawiatura', (self.__x_screen / 2, self.__y_screen / 2),
+        keyboard_button = Button(self.__screen, 'Klawiatura', (self.__x_screen / 2, self.__y_screen / 2 + 0.75 * y_button),
                                  (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_true,
                                  font_size=font_size)
 
@@ -133,5 +131,3 @@ class Player:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.__kill()
-
-        print('exit input type')
