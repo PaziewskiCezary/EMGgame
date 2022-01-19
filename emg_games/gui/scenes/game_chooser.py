@@ -1,9 +1,10 @@
+import pygame
+import math
+
 from emg_games.gui.components.button import Button
 from emg_games.gui.components import palette
 from screen_properties import ScreenProperties
 
-import pygame
-import math
 
 full_screen = False
 pygame.init()
