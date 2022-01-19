@@ -1,11 +1,10 @@
-import time
-import numpy as np
 import pygame
 
 from emg_games.gui.components.pygame_textinput import TextInput
 from emg_games.gui.components.pygame_text import text
 from emg_games.games.calibration import Calibration
 from emg_games.gui.components import palette
+from emg_games.gui.components.button import Button
 
 pygame.init()
 
@@ -14,14 +13,14 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class Player:
 
-    def __init__(self, screen, use_keyboard, lock, sample_array): #, color_PALETTE)"
+    def __init__(self, screen_properties, use_keyboard, lock, sample_array): #, color_PALETTE)"
         self.__use_keyboard = use_keyboard
 
         self.__name = ''
         self.__calibrate_value_min = 0
         self.__calibrate_value_max = float('inf')
         self.__input_type = None
-        self.__screen = screen
+        self.__screen = screen_properties
         self.__lock = lock # TODO decouple this
         self.__sample_array = sample_array # TODO decouple this
 
@@ -34,6 +33,11 @@ class Player:
 
     def __bool__(self):
         return self.name != '' and self.calibrate_values != (0, float('inf')) and self.__input_type is not None
+
+    def kill(self):
+        self.__queue.put(1)
+        pygame.quit()
+        exit()
 
     @property
     def name(self):
@@ -66,13 +70,14 @@ class Player:
         while is_input:
 
             self.__screen.fill(palette.BACKGROUND_COLOUR)
-            text(self.__screen, palette.TEXT_COLOUR, "PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4, font_size=self.__y_screen // 13)
+            text(self.__screen, palette.TEXT_COLOUR, "PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4,
+                 font_size=self.__y_screen // 13)
 
             # TODO exiting
             events = pygame.event.get()
-            # for event in events:
-            #     if event.type == pygame.QUIT:
-            #         self.__kill()
+            for event in events:
+                if event.type == pygame.QUIT:
+                    self.__kill()
 
             input_name.update(events)
             text_length = input_name.font_object.size(input_name.get_text())[0]
@@ -89,9 +94,37 @@ class Player:
                         is_input = False
                         break
 
+    def __use_keyboard_true(self):
+        self.__use_keyboard = True
+
+    def __use_keyboard_false(self):
+        self.__use_keyboard = False
+
     def __get_input_type(self):
-        return
-        raise NotImplemented
+
+        self.__screen.fill(self.__background_colour)
+
+        x_button = self.__x_screen / 4
+        y_button = self.__y_screen / 5
+        font_size = int(x_button // 5)
+
+        muscle_button = Button(self.__screen, 'Mięsień', (self.__x_screen / 2, self.__y_screen / 2 - 1.5 * y_button),
+                               (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_false(),
+                               font_size=font_size)
+        keyboard_button = Button(self.__screen, 'Klawiatura', (self.__x_screen / 2, self.__y_screen / 2),
+                                 (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_true(),
+                                 font_size=font_size)
+
+        self.__update()
+        while True:
+            for event in pygame.event.get():
+                muscle_button.on_click(event)
+                keyboard_button.on_click(event)
+                if event.type == pygame.QUIT:
+                    self.__kill()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.__kill()
 
     
 
