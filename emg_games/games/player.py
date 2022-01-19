@@ -16,7 +16,7 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class Player:
 
-    def __init__(self, screen, use_keyboard, lock, sample_array): #, color_PALETTE)"
+    def __init__(self, screen, use_keyboard, lock, sample_array): #, palette)"
         self.__use_keyboard = use_keyboard
 
         self.__name = ''
@@ -60,15 +60,15 @@ class Player:
 
     def __get_name(self):
 
-        input_name = pygame_textinput.TextInput(font_family=self.__color_palette.font_style, font_size=self.__y_screen // 13,
-                                                text_color=self.__color_palette.text_colour, max_string_length=15)
+        input_name = pygame_textinput.TextInput(font_family=self.__palette.font_style, font_size=self.__y_screen // 13,
+                                                text_color=self.__palette.text_colour, max_string_length=15)
 
         clock = pygame.time.Clock()
         is_input = True
         while is_input:
 
-            self.__screen.fill(self.__color_palette.background_colour)
-            text(self.__screen, self.__color_palette.text_colour, "PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4, font_size=self.__y_screen // 13)
+            self.__screen.fill(self.__palette.background_colour)
+            text(self.__screen, self.__palette.text_colour, "PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4, font_size=self.__y_screen // 13)
 
             # TODO exiting
             events = pygame.event.get()

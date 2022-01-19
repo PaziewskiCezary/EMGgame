@@ -7,19 +7,20 @@ import numpy as np
 
 from abc import ABC
 
-import utils as utils
-from button import Button
-from projectile import Projectile
-from target import Target
-from pygame_text import text
+from emg_games.backbones import utils
+from emg_games.gui.components import Button
+from emg_games.backbones import Projectile
+from emg_games.backbones import Target
+from emg_games.gui.components import text
 from .player import Player
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
 MOVE_DOWN = 0
 
-import screen_properties
-import color_palette 
+from emg_games.gui.scenes.screen_properties import ScreenProperties
+screen_properties = ScreenProperties()
+from emg_games.gui.components import palette
 
 # class AbstractGame(ABC):
 class AbstractGame:
@@ -34,10 +35,10 @@ class AbstractGame:
         self.__use_keyboard = True
         self._name = name
 
-        self.__background_colour = color_palette.yellow_rgb
-        self.__text_colour = color_palette.pink_rgb
-        self.__button_colour = color_palette.pink_rgb
-        self.__button_text_colour = color_palette.yellow_rgb
+        self.__background_colour = palette.yellow_rgb
+        self.__text_colour = palette.pink_rgb
+        self.__button_colour = palette.pink_rgb
+        self.__button_text_colour = palette.yellow_rgb
 
         # TODO set full_screen
         self.__full_screen = full_screen

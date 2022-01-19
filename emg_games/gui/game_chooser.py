@@ -1,5 +1,5 @@
 from button import Button
-import color_palette
+import palette
 from screen_properties import ScreenProperties
 
 import pygame
@@ -16,7 +16,7 @@ y_screen = screen_properties.y_screen
 
 screen = pygame.display.set_mode(screen_size)
 
-screen.fill(color_palette.BACKGROUND_COLOUR)
+screen.fill(palette.BACKGROUND_COLOUR)
 
 pygame.display.flip()
 
@@ -67,7 +67,7 @@ for i in range(number_of_rows):
         if index >= len(list_of_games):
             break
         game_button = Button(screen, list_of_games[index], [x_position, y_position], button_dimension,
-                             color_palette.PINK_RGB, color_palette.YELLOW_RGB, lambda idx=index: get_game_name(idx),
+                             palette.PINK_RGB, palette.YELLOW_RGB, lambda idx=index: get_game_name(idx),
                              final_font_size)
         game_buttons.append(game_button)
 update()
