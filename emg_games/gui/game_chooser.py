@@ -1,42 +1,22 @@
 from button import Button
+import color_palette
+from screen_properties import ScreenProperties
 
 import pygame
 import math
-import time
-
-from types import SimpleNamespace
-
-COLOR_PALLETE = SimpleNamespace()
-COLOR_PALLETE.yellow_rgb = (255, 239, 148)
-COLOR_PALLETE.pink_rgb = (232, 98, 203)
 
 full_screen = False
 pygame.init()
 
-color_pallet = COLOR_PALLETE
+screen_properties = ScreenProperties(full_screen)
 
-background_colour = color_pallet.yellow_rgb
-text_colour = color_pallet.pink_rgb
-button_colour = color_pallet.pink_rgb
-button_text_colour = color_pallet.yellow_rgb
+screen_size = screen_properties.screen_size
+x_screen = screen_properties.x_screen
+y_screen = screen_properties.y_screen
 
-screen_size = (1600 // 2, 900 // 2)
 screen = pygame.display.set_mode(screen_size)
 
-x_screen, y_screen = screen_size
-
-# TODO MOVE THIS UP
-if full_screen:
-    display_info = pygame.display.Info()
-    auto_screen_resolution = (display_info.current_w, display_info.current_h)
-    screen = pygame.display.set_mode(auto_screen_resolution, pygame.FULLSCREEN)
-    x_screen = screen.get_width()
-    y_screen = screen.get_height()
-    screen_size = (x_screen, y_screen)
-else:
-    screen = pygame.display.set_mode(screen_size)
-
-screen.fill(background_colour)
+screen.fill(color_palette.BACKGROUND_COLOUR)
 
 pygame.display.flip()
 
@@ -49,8 +29,6 @@ def kill(self):
     pygame.quit()
     exit()
 
-
-# command = lambda l=letter: print_on_press(l)
 
 def get_game_name(index):
     print(list_of_games[index])
@@ -88,8 +66,9 @@ for i in range(number_of_rows):
         index = i * number_of_columns + j
         if index >= len(list_of_games):
             break
-        game_button = Button(screen, list_of_games[index], [x_position, y_position], button_dimension, button_colour,
-                             button_text_colour, lambda idx=index: get_game_name(idx), final_font_size)
+        game_button = Button(screen, list_of_games[index], [x_position, y_position], button_dimension,
+                             color_palette.PINK_RGB, color_palette.YELLOW_RGB, lambda idx=index: get_game_name(idx),
+                             final_font_size)
         game_buttons.append(game_button)
 update()
 
@@ -102,4 +81,4 @@ while True:
         # if event.type == pygame.KEYDOWN:
         #     if event.key == pygame.K_ESCAPE:
         #         self._menu()
-# time.sleep(20)
+
