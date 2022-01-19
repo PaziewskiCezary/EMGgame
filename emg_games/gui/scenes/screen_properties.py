@@ -1,6 +1,6 @@
 import pygame
 
-import color_palette
+# import color_palette
 
 
 class ScreenProperties():
