@@ -10,6 +10,10 @@ class Calibration:
         self.__screen = screen
         self.__x_screen, self.__y_screen = self.__screen.get_size()
 
+    @staticmethod
+    def __update():
+        pygame.display.update()
+
     def calibrate(self):
 
         text_x_position = self.__x_screen // 2
