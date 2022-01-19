@@ -1,5 +1,5 @@
-yellow_rgb = (255, 239, 148)
-pink_rgb = (232, 98, 203)
-font_style = 'DejaVu Sans Mono'
-text_colour = pink_rgb
-background_colour = yellow_rgb
+YELLOW_RGB = (255, 239, 148)
+PINK_RGB = (232, 98, 203)
+FONT_STYLE = 'DejaVu Sans Mono'
+TEXT_COLOUR = PINK_RGB
+BACKGROUND_COLOUR = YELLOW_RGB
