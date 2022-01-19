@@ -1,5 +1,6 @@
 import pygame
 
+
 def text(screen, color, caption, x_position, y_position, *,
          font_style='DejaVu Sans Mono', font_size=30, rectangle_color=None):
     """blit generator from text"""
