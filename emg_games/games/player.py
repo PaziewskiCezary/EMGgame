@@ -2,11 +2,10 @@ import pygame
 
 from emg_games.gui.components.pygame_textinput import TextInput
 from emg_games.gui.components.pygame_text import text
-#from emg_games.games.calibration import Calibration
+from emg_games.games.calibration import Calibration
 from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
 
-from emg_games.games import Calibration
 
 pygame.init()
 
@@ -35,7 +34,7 @@ class Player:
         self.__get_name()
         self.__get_input_type()
         if not self.__use_keyboard:
-            calibrate = Calibration(self.__screen)
+            calibrate = Calibration(self.__screen, lock)
             calibrate.calibrate()
 
     def __bool__(self):

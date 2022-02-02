@@ -6,9 +6,10 @@ from emg_games.gui.components import text
 
 class Calibration:
 
-    def __init__(self, screen):
+    def __init__(self, screen, lock):
         self.__screen = screen
         self.__x_screen, self.__y_screen = self.__screen.get_size()
+        self.__lock = lock
 
     @staticmethod
     def __update():
