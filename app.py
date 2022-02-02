@@ -20,30 +20,7 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 from emg_games.games import Player
 from emg_games.gui.scenes import ScreenProperties
-
-def connect_amplifier(process_lock, samples_array, sampling_frequency=512, number_of_samples=64, channels=[0, 1]):
-    amplifiers = TmsiCppAmplifier.get_available_amplifiers('usb')
-    if not amplifiers:
-        raise ValueError("Nie ma wzmacniacza")
-    amplifier = TmsiCppAmplifier(amplifiers[0])
-    amplifier.sampling_rate = sampling_frequency
-    gains = np.array(amplifier.current_description.channel_gains)
-    offsets = np.array(amplifier.current_description.channel_offsets)
-
-    amplifier.start_sampling()
-    time.sleep(1)
-    while True:
-
-        try:
-            samples = amplifier.get_samples(number_of_samples).samples * gains + offsets
-            
-            samples = samples[:, channels[0]] - samples[:, channels[1]]
-            with process_lock:
-                samples_array[:-number_of_samples] = samples_array[number_of_samples:]
-                samples_array[-number_of_samples:] = Array('d', samples)
-        except Exception as e:
-            print(e)
-
+from emg_games.amplifier import Amplifier
 
 def play_game(queue, process_lock, samples_array, args):
 
@@ -103,8 +80,7 @@ if __name__ == '__main__':
     game_process.start()
     
     if args.use_amplifier:
-        amplifier_process = Process(target=connect_amplifier, args=(lock, samples_array))
-        amplifier_process.start()
+        amp = Amplifier()
 
     try:
         while processes_queue.empty():
@@ -113,10 +89,7 @@ if __name__ == '__main__':
         processes_queue.put(1)
 
     if args.use_amplifier:
-        if platform.system() == 'Linux':
-            os.kill(amplifier_process.pid, signal.SIGKILL)
-        elif platform.system() == 'Windows':
-            os.kill(amplifier_process.pid, signal.SIGTERM)
+        amp.terminate()
             
     if platform.system() == 'Linux':
         os.kill(game_process.pid, signal.SIGKILL)
