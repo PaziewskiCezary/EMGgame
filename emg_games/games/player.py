@@ -34,7 +34,7 @@ class Player:
         self.__get_name()
         self.__get_input_type()
         if not self.__use_keyboard:
-            calibrate = Calibration(self.__screen, lock)
+            calibrate = Calibration(self.__screen, lock, self.__sample_array)
             calibrate.calibrate()
 
     def __bool__(self):
