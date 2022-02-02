@@ -85,12 +85,9 @@ if __name__ == '__main__':
         args.use_amplifier = False
         args.use_keyboard = True
 
-    # lock = Lock()
 
     samples_array = Array('d', np.zeros(512 * 2))
     processes_queue = mp.Queue()
-
-
 
     
     if args.use_amplifier:
