@@ -82,6 +82,7 @@ class Calibration:
                             pass
                             # return 1
         samples_mean = np.mean(samples)
+        print(samples)
         del samples
         return samples_mean
 
