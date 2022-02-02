@@ -1,4 +1,3 @@
-from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 from multiprocessing import Process, Lock
 from multiprocessing.sharedctypes import Array
 
@@ -13,6 +12,7 @@ from .utils import singleton
 class Amplifier:
 
     def __init__(self, fs=512, samples=2*512, sleep_time=1, channels=(0, 1)):
+        from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
         self._sleep_time = sleep_time
 
