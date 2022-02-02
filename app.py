@@ -16,14 +16,44 @@ from multiprocessing.sharedctypes import Array
 import multiprocessing as mp
 
 from os import environ
-environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 from emg_games.games import Player
 from emg_games.gui.scenes import ScreenProperties
+<<<<<<< HEAD
 from emg_games.amplifier import Amplifier
+=======
+import emg_games.gui.scenes.game_chooser as game_chooser
+from emg_games.games.abstract_game import AbstractGame
+
+environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
+
+
+def connect_amplifier(process_lock, samples_array, sampling_frequency=512, number_of_samples=64, channels=[0, 1]):
+    amplifiers = TmsiCppAmplifier.get_available_amplifiers('usb')
+    if not amplifiers:
+        raise ValueError("Nie ma wzmacniacza")
+    amplifier = TmsiCppAmplifier(amplifiers[0])
+    amplifier.sampling_rate = sampling_frequency
+    gains = np.array(amplifier.current_description.channel_gains)
+    offsets = np.array(amplifier.current_description.channel_offsets)
+
+    amplifier.start_sampling()
+    time.sleep(1)
+    while True:
+
+        try:
+            samples = amplifier.get_samples(number_of_samples).samples * gains + offsets
+
+            samples = samples[:, channels[0]] - samples[:, channels[1]]
+            with process_lock:
+                samples_array[:-number_of_samples] = samples_array[number_of_samples:]
+                samples_array[-number_of_samples:] = Array('d', samples)
+        except Exception as e:
+            print(e)
+
+>>>>>>> 4e4c1fe94875cae4705545a0cd271d9711f40214
 
 def play_game(queue, process_lock, samples_array, args):
-
     screen_properties = ScreenProperties(args.full_screen)
 
     '''abstract_game = AbstractGame(queue=queue,
@@ -34,9 +64,19 @@ def play_game(queue, process_lock, samples_array, args):
                                     name=args.name)#,
                                     #screen_properties=screen_properties)'''
 
-    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, lock=process_lock, sample_array=samples_array)
+    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, lock=process_lock,
+                    sample_array=samples_array, queue=queue)
 
-    #game._menu()
+    name_game = game_chooser.choose_game(screen_properties=screen_properties, kill_game=player.kill)
+    print("name_game ", name_game)
+    # game._menu()
+
+    if name_game == "ŚMIECI":
+        AbstractGame(queue=queue, lock=process_lock, sample_array=samples_array,
+                     full_screen=args.full_screen,
+                     lives=args.lives,
+                     name=player.name)  # ,
+        # screen_properties=screen_properties)
 
 
 if __name__ == '__main__':
@@ -55,13 +95,12 @@ if __name__ == '__main__':
         args.use_keyboard = True
 
     if args.full_screen is not False:
-        args.full_screen = False 
-        
+        args.full_screen = False
+
     if args.use_amplifier is not False:
         from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
         args.use_amplifier = True
-    
 
     if args.use_keyboard and args.use_amplifier:
         sys.exit('Can\'t use --amplifier and --keyboard at the same time')
@@ -95,8 +134,9 @@ if __name__ == '__main__':
         processes_queue.put(1)
 
     if args.use_amplifier:
+
         amp.terminate()
-            
+
     if platform.system() == 'Linux':
         os.kill(game_process.pid, signal.SIGKILL)
     elif platform.system() == 'Windows':
