@@ -1,5 +1,6 @@
 import pygame
 import time
+import numpy as np
 
 from emg_games.gui.components import palette
 from emg_games.gui.components import text
