@@ -9,7 +9,6 @@ from emg_games.gui.components.button import Button
 
 pygame.init()
 
-NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 
 class Player:

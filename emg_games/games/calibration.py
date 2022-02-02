@@ -4,6 +4,8 @@ import time
 from emg_games.gui.components import palette
 from emg_games.gui.components import text
 
+NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
+
 class Calibration:
 
     def __init__(self, screen, lock, sample_array):
