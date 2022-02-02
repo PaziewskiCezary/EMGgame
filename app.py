@@ -89,7 +89,7 @@ if __name__ == '__main__':
     samples_array = Array('d', np.zeros(512 * 2))
     processes_queue = mp.Queue()
 
-    
+    lock = Lock()
     if args.use_amplifier:
         # amp = Amplifier(fs=512, samples=2*512)
         amp = Amplifier()
