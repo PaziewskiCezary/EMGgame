@@ -70,17 +70,23 @@ if __name__ == '__main__':
         args.use_amplifier = False
         args.use_keyboard = True
 
-    lock = Lock()
+    # lock = Lock()
 
     samples_array = Array('d', np.zeros(512 * 2))
     processes_queue = mp.Queue()
 
+
+
+    
+    if args.use_amplifier:
+        # amp = Amplifier(fs=512, samples=2*512)
+        amp = Amplifier()
+
+        lock = amp.lock
+        samples_array = amp.data
     game_process = Process(target=play_game,
                            args=(processes_queue, lock, samples_array, args))
     game_process.start()
-    
-    if args.use_amplifier:
-        amp = Amplifier()
 
     try:
         while processes_queue.empty():

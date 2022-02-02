@@ -12,7 +12,7 @@ from .utils import singleton
 @singleton
 class Amplifier:
 
-    def __init__(self, fs=128, samples=2*128, sleep_time=1, channels=(0, 1)):
+    def __init__(self, fs=512, samples=2*512, sleep_time=1, channels=(0, 1)):
 
         self._sleep_time = sleep_time
 
