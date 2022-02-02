@@ -1,14 +1,20 @@
 import pygame
 import time
+import numpy as np
 
 from emg_games.gui.components import palette
 from emg_games.gui.components import text
 
+NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
+
 class Calibration:
 
-    def __init__(self, screen):
+    def __init__(self, screen, lock, sample_array):
         self.__screen = screen
         self.__x_screen, self.__y_screen = self.__screen.get_size()
+        self.__lock = lock
+        self.__sample_array = sample_array
+
 
     @staticmethod
     def __update():
@@ -76,6 +82,7 @@ class Calibration:
                             pass
                             # return 1
         samples_mean = np.mean(samples)
+        print(samples)
         del samples
         return samples_mean
 

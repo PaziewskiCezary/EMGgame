@@ -19,39 +19,15 @@ from os import environ
 
 from emg_games.games import Player
 from emg_games.gui.scenes import ScreenProperties
-<<<<<<< HEAD
+
 from emg_games.amplifier import Amplifier
-=======
+
 import emg_games.gui.scenes.game_chooser as game_chooser
 from emg_games.games.abstract_game import AbstractGame
 
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 
-def connect_amplifier(process_lock, samples_array, sampling_frequency=512, number_of_samples=64, channels=[0, 1]):
-    amplifiers = TmsiCppAmplifier.get_available_amplifiers('usb')
-    if not amplifiers:
-        raise ValueError("Nie ma wzmacniacza")
-    amplifier = TmsiCppAmplifier(amplifiers[0])
-    amplifier.sampling_rate = sampling_frequency
-    gains = np.array(amplifier.current_description.channel_gains)
-    offsets = np.array(amplifier.current_description.channel_offsets)
-
-    amplifier.start_sampling()
-    time.sleep(1)
-    while True:
-
-        try:
-            samples = amplifier.get_samples(number_of_samples).samples * gains + offsets
-
-            samples = samples[:, channels[0]] - samples[:, channels[1]]
-            with process_lock:
-                samples_array[:-number_of_samples] = samples_array[number_of_samples:]
-                samples_array[-number_of_samples:] = Array('d', samples)
-        except Exception as e:
-            print(e)
-
->>>>>>> 4e4c1fe94875cae4705545a0cd271d9711f40214
 
 def play_game(queue, process_lock, samples_array, args):
     screen_properties = ScreenProperties(args.full_screen)
