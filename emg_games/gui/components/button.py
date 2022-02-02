@@ -13,6 +13,8 @@ class Button(object):
         self.__font = pygame.font.SysFont('Teko', font_size)
         self.__func = func
 
+        self.pressed = False
+
         self.__add_rectangular()
         self.__add_text()
 
@@ -36,4 +38,5 @@ class Button(object):
 
             # checks if mouse position is over the button
             if self.rectangular.collidepoint(mouse_position):
+                self.pressed = True
                 self.__func()
