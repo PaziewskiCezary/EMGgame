@@ -25,7 +25,7 @@ from emg_games.gui.components import palette
 class AbstractGame:
     """AbstractGame"""
 
-    def __init__(self, queue, lock, sample_array, full_screen, lives=3, name=''): #, color_pallet=COLOR_PALLET):
+    def __init__(self, queue, lock, sample_array, full_screen, player, lives=3, name=''): #, color_pallet=COLOR_PALLET):
         self.__queue = queue
         self.__lock = lock
         self.__sample_array = sample_array
@@ -78,6 +78,8 @@ class AbstractGame:
         # TODO move up
         self._game_name = 'Falling trash'
 
+        self.__player = player
+
         print('init')
 
 
@@ -120,7 +122,6 @@ class AbstractGame:
         pygame.display.update()
 
     def __start(self):
-        self.__player = Player(self.__screen, self.__use_keyboard, self.__lock, self.__sample_array)
         self.__calibrate_value_min, self.__calibrate_value_max = self.__player.calibrate_values
 
         self.__name = self.__player.name
