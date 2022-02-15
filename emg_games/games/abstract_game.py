@@ -26,7 +26,6 @@ class AbstractGame:
     """AbstractGame"""
 
     def __init__(self, queue, lock, sample_array, full_screen, lives=3, name=''): #, color_pallet=COLOR_PALLET):
-
         self.__queue = queue
         self.__lock = lock
         self.__sample_array = sample_array
@@ -78,6 +77,10 @@ class AbstractGame:
 
         # TODO move up
         self._game_name = 'Falling trash'
+
+        print('init')
+
+
     def __kill(self):
         self.__queue.put(1)
         pygame.quit()
@@ -410,7 +413,7 @@ class AbstractGame:
                     if event.key == pygame.K_ESCAPE:
                         self._menu()
 
-    def _menu(self):
+    def menu(self):
 
         self.__screen.fill(self.__background_colour)
 
