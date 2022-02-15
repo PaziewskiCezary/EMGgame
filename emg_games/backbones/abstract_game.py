@@ -1,22 +1,20 @@
 import pygame
 import os
 import time
-import math
 import pickle
 import numpy as np
+import math
 
 from abc import ABC, abstractmethod
 
 from emg_games.gui.components import Button
 from emg_games.gui.components import text
-
+from emg_games.gui.scenes.screen_properties import ScreenProperties
+from emg_games.gui.components import palette
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
 MOVE_DOWN = 0
-
-from emg_games.gui.scenes.screen_properties import ScreenProperties
-from emg_games.gui.components import palette
 
 
 class AbstractGame(ABC):
@@ -30,6 +28,7 @@ class AbstractGame(ABC):
 
         self._use_keyboard = True
         self._name = name
+        self._lives = lives
 
         self._background_colour = palette.YELLOW_RGB
         self._text_colour = palette.PINK_RGB
@@ -66,6 +65,9 @@ class AbstractGame(ABC):
         self._projectiles = []
 
         self._game_name = ''
+
+        self._projectile = None
+        self._score = math.inf
 
         print('init')
 
