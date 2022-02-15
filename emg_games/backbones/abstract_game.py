@@ -21,17 +21,14 @@ MOVE_DOWN = 0
 from emg_games.gui.scenes.screen_properties import ScreenProperties
 from emg_games.gui.components import palette
 
+
 # class AbstractGame(ABC):
 class AbstractGame:
     """AbstractGame"""
 
-    def __init__(self, queue, lock, sample_array, full_screen, player, lives=3, name=''): #, color_pallet=COLOR_PALLET):
-        self.__queue = queue
-        self.__lock = lock
-        self.__sample_array = sample_array
+    def __init__(self, app, full_screen, player):
+        self.app = app
 
-        self.__use_keyboard = True
-        self._name = name
 
         self.__background_colour = palette.YELLOW_RGB
         self.__text_colour = palette.PINK_RGB
@@ -46,10 +43,8 @@ class AbstractGame:
         self.__y_screen = self.__screen_properties.y_screen
         self.__screen.fill(self.__background_colour)
         # TODO move up
-        pygame.init()
 
-
-        self.__max_lives = lives
+        self.__max_lives = 3
 
         pygame.display.flip()
 
@@ -80,11 +75,8 @@ class AbstractGame:
 
         self.__player = player
 
-        print('init')
-
 
     def __kill(self):
-        self.__queue.put(1)
         pygame.quit()
         exit()
 
@@ -287,12 +279,11 @@ class AbstractGame:
                 if break_loop:
                     break
 
-                if not self.__use_keyboard:
-                    self.__lock.acquire()
-                    signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
+                if self.app.is_using_amp:
+                    with self.lock:
+                        signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
                     signal -= np.mean(signal)
                     signal = np.abs(signal)
-                    self.__lock.release()
                     move_value = self.__muscle_move(np.mean(signal)) / 10   # comm why 10?
                     self.__move_projectile(move_value)
                 else:
