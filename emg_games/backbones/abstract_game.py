@@ -12,7 +12,6 @@ from emg_games.gui.components import Button
 from emg_games.backbones import Projectile
 from emg_games.backbones import Target
 from emg_games.gui.components import text
-from .player import Player
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
@@ -26,8 +25,7 @@ from emg_games.gui.components import palette
 class AbstractGame:
     """AbstractGame"""
 
-    def __init__(self, app, full_screen, player):
-        self.app = app
+    def __init__(self, full_screen, player):
 
 
         self.__background_colour = palette.YELLOW_RGB
@@ -279,7 +277,7 @@ class AbstractGame:
                 if break_loop:
                     break
 
-                if self.app.is_using_amp:
+                if not self.__player._use_keyboard:
                     with self.lock:
                         signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
                     signal -= np.mean(signal)

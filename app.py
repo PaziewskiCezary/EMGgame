@@ -19,9 +19,9 @@ from types import SimpleNamespace
 from emg_games.games import Player
 from emg_games.gui.scenes import ScreenProperties
 
-from emg_games.games import AbstractGame
+from emg_games.backbones import AbstractGame
+#from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
-from emg_games.amplifier import Amplifier
 
 
 import emg_games.gui.scenes.game_chooser as game_chooser
@@ -39,10 +39,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if not args.use_keyboard and not args.use_amplifier:
-        args.use_amplifier = False
-        args.use_keyboard = True
-
 
     screen_properties = ScreenProperties(args.full_screen)
 
@@ -53,10 +49,9 @@ if __name__ == '__main__':
 
     if name_game == "ŚMIECI":
         game = AbstractGame(
-            app,
             full_screen=args.full_screen,
             player=player)
     game.menu()
 
-    if args.use_amplifier:
-        amp.terminate()
+    if not player.__use_keyboard:
+        player.amp.terminate()

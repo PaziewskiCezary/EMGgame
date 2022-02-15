@@ -7,14 +7,14 @@ import time
 import traceback
 
 from .utils import singleton
-
+#from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
 # TODO need cleanup and other
 # @singleton
 class Amplifier:
 
-    def __init__(self, fs=512, samples=2*512, sleep_time=1, channels=(0, 1)):
-        from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
+    def __init__(self, TmsiCppAmplifier, fs=512, samples=2*512, sleep_time=1, channels=(0, 1)):
+        
 
         self._sleep_time = sleep_time
 
