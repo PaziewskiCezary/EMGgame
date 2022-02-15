@@ -82,7 +82,7 @@ class Player:
             events = pygame.event.get()
             for event in events:
                 if event.type == pygame.QUIT:
-                    self.__kill()
+                    self.kill()
 
             input_name.update(events)
             text_length = input_name.font_object.size(input_name.get_text())[0]
@@ -132,7 +132,7 @@ class Player:
                 muscle_button.on_click(event)
                 keyboard_button.on_click(event)
                 if event.type == pygame.QUIT:
-                    self.__kill()
+                    self.kill()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        self.__kill()
+                        self.kill()
