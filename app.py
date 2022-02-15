@@ -61,7 +61,7 @@ if __name__ == '__main__':
     parser.add_argument('--name', dest='name', default='', type=str, help='set name')
 
     args = parser.parse_args()
-    print(args)
+
     if args.use_amplifier:
         from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
