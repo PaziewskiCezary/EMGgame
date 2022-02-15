@@ -7,7 +7,6 @@ import os
 import signal
 import platform
 
-from multiprocessing import Process
 import time
 
 import numpy as np
@@ -32,24 +31,6 @@ import emg_games.gui.scenes.game_chooser as game_chooser
 from emg_games.games.abstract_game import AbstractGame
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
-
-
-def play_game(app, args):
-    screen_properties = ScreenProperties(args.full_screen)
-
-    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, app=app)
-
-    name_game = game_chooser.choose_game(screen_properties=screen_properties, kill_game=player.kill)
-    print("name_game ", name_game)
-
-    if name_game == "ŚMIECI":
-        game = AbstractGame(
-                     app,
-                     full_screen=args.full_screen,
-                     player=player)  # ,
-    game.menu()
-
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='EMG game')
@@ -61,9 +42,10 @@ if __name__ == '__main__':
     parser.add_argument('--name', dest='name', default='', type=str, help='set name')
 
     args = parser.parse_args()
-    print(args)
+
     if args.use_amplifier:
         from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
+
 
     if args.use_keyboard and args.use_amplifier:
         sys.exit('Can\'t use --amplifier and --keyboard at the same time')
@@ -80,12 +62,20 @@ if __name__ == '__main__':
 
     app.is_using_amp = bool(app.amp)
 
-    game_process = Process(target=play_game,
-                           args=(app, args))
-    game_process.start()
 
-    while game_process.is_alive():
-        pass
+    screen_properties = ScreenProperties(args.full_screen)
+
+    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, app=app)
+
+    name_game = game_chooser.choose_game(screen_properties=screen_properties, kill_game=player.kill)
+    print("name_game ", name_game)
+
+    if name_game == "ŚMIECI":
+        game = AbstractGame(
+            app,
+            full_screen=args.full_screen,
+            player=player)
+    game.menu()
 
     if args.use_amplifier:
         amp.terminate()
