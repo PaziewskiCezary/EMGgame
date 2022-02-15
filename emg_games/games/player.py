@@ -12,9 +12,9 @@ pygame.init()
 
 class Player:
 
-    def __init__(self, screen_properties, use_keyboard, lock, sample_array, queue):
+    def __init__(self, screen_properties, use_keyboard, app):
 
-        self.__use_keyboard = use_keyboard
+        self._use_keyboard = use_keyboard
 
         self.__name = ''
         self.__calibrate_value_min = 0
@@ -23,9 +23,7 @@ class Player:
 
         self.__screen_properties = screen_properties
         self.__screen = self.__screen_properties.screen
-        self.__lock = lock # TODO decouple this
-        self.__sample_array = sample_array # TODO decouple this
-        self.__queue = queue
+        self.app = app
 
         self.__x_screen, self.__y_screen = self.__screen.get_size()
 
@@ -33,14 +31,13 @@ class Player:
         self.__get_input_type()
 
         if not self.__use_keyboard:
-            calibrate = Calibration(self.__screen, lock, self.__sample_array)
+            calibrate = Calibration(self.__screen, self.app.amp.lock, self.app.amp.data)
             calibrate.calibrate()
 
     def __bool__(self):
         return self.name != '' and self.calibrate_values != (0, float('inf')) and self.__input_type is not None
 
     def kill(self):
-        self.__queue.put(1)
         pygame.quit()
         exit()
 

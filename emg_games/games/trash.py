@@ -15,9 +15,9 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class Trash(AbstractGame):
 
-    def __init__(self, queue, lock, sample_array, full_screen, player, lives=3, name=''):
+    def __init__(self, app, full_screen, player):
 
-        super().__init__(queue, lock, sample_array, full_screen, player, lives, name)
+        super().__init__(app, full_screen, player)
 
         self._backgrounds = sorted([x for x in utils.get_backgrounds()])
         self._backgrounds = [pygame.image.load(x) for x in self._backgrounds]
@@ -107,14 +107,14 @@ class Trash(AbstractGame):
                 if break_loop:
                     break
 
-                if not self._use_keyboard:
-                    self._lock.acquire()
-                    signal = self._sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
-                    signal -= np.mean(signal)
-                    signal = np.abs(signal)
-                    self._lock.release()
-                    move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
-                    self._move_projectile(move_value)
+                if self.app.is_using_amp:
+                    with self.app.amp.lock:
+
+                        signal = self.app.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
+                        signal -= np.mean(signal)
+                        signal = np.abs(signal)
+                        move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
+                        self._move_projectile(move_value)
                 else:
                     for event in pygame.event.get():
                         if event.type == pygame.KEYDOWN:

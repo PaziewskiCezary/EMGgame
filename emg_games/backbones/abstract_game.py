@@ -20,15 +20,9 @@ MOVE_DOWN = 0
 class AbstractGame(ABC):
     """AbstractGame"""
 
-    def __init__(self, queue, lock, sample_array, full_screen, player, lives=3,
-                 name=''):  # , color_pallet=COLOR_PALLET):
-        self._queue = queue
-        self._lock = lock
-        self._sample_array = sample_array
-
-        self._use_keyboard = True
-        self._name = name
-        self._lives = lives
+    def __init__(self, app, full_screen, player):
+        self.app = app
+        self._player = player
 
         self._background_colour = palette.YELLOW_RGB
         self._text_colour = palette.PINK_RGB
@@ -43,9 +37,10 @@ class AbstractGame(ABC):
         self._y_screen = self._screen_properties.y_screen
         self._screen.fill(self._background_colour)
         # TODO move up
+
         pygame.init()
 
-        self._max_lives = lives
+        self._max_lives = 3
 
         pygame.display.flip()
 
@@ -69,10 +64,9 @@ class AbstractGame(ABC):
         self._projectile = None
         self._score = math.inf
 
-        print('init')
+        self._lives = math.inf
 
     def _kill(self):
-        self._queue.put(1)
         pygame.quit()
         exit()
 
