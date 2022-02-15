@@ -149,7 +149,7 @@ class AbstractGame:
         points_font_size = self.__y_screen // 16
 
         return_btn = Button(self.__screen, 'Menu', (x_button, y_button), (x_button * 2, y_button * 2),
-                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self._menu,
+                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self.menu,
                             font_size=button_font_size)
         again_btn = Button(self.__screen, 'Zagraj jeszcze raz!', (self.__x_screen // 2, 7 * self.__y_screen // 8),
                            (x_button * 7, y_button * 3),
@@ -210,7 +210,7 @@ class AbstractGame:
                     self.__kill()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        self._menu()
+                        self.menu()
 
     def __set_targets(self):
 
@@ -392,7 +392,7 @@ class AbstractGame:
         x_button, y_button = self.__x_screen // 20, self.__y_screen // 20
         button_font_size = self.__y_screen // 18
         return_btn = Button(self.__screen, 'Wróć', (x_button, y_button), (x_button * 2, y_button * 2),
-                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self._menu,
+                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self.menu,
                             font_size=button_font_size)
         text(self.__screen, self.__text_colour, 'WYNIKI', self.__x_screen // 2, self.__y_screen // 10 - 25, font_size=48)
         y_offset = 55
@@ -411,7 +411,7 @@ class AbstractGame:
                     self.__kill()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        self._menu()
+                        self.menu()
 
     def menu(self):
 
