@@ -10,7 +10,6 @@ from emg_games.gui.components.button import Button
 pygame.init()
 
 
-
 class Player:
 
     def __init__(self, screen_properties, use_keyboard, lock, sample_array, queue):

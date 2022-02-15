@@ -25,8 +25,7 @@ from emg_games.gui.components import palette
 class AbstractGame:
     """AbstractGame"""
 
-    def __init__(self, queue, lock, sample_array, full_screen, lives=3, name=''): #, color_pallet=COLOR_PALLET):
-
+    def __init__(self, queue, lock, sample_array, full_screen, player, lives=3, name=''): #, color_pallet=COLOR_PALLET):
         self.__queue = queue
         self.__lock = lock
         self.__sample_array = sample_array
@@ -78,6 +77,12 @@ class AbstractGame:
 
         # TODO move up
         self._game_name = 'Falling trash'
+
+        self.__player = player
+
+        print('init')
+
+
     def __kill(self):
         self.__queue.put(1)
         pygame.quit()
@@ -117,7 +122,6 @@ class AbstractGame:
         pygame.display.update()
 
     def __start(self):
-        self.__player = Player(self.__screen, self.__use_keyboard, self.__lock, self.__sample_array)
         self.__calibrate_value_min, self.__calibrate_value_max = self.__player.calibrate_values
 
         self.__name = self.__player.name
@@ -146,7 +150,7 @@ class AbstractGame:
         points_font_size = self.__y_screen // 16
 
         return_btn = Button(self.__screen, 'Menu', (x_button, y_button), (x_button * 2, y_button * 2),
-                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self._menu,
+                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self.menu,
                             font_size=button_font_size)
         again_btn = Button(self.__screen, 'Zagraj jeszcze raz!', (self.__x_screen // 2, 7 * self.__y_screen // 8),
                            (x_button * 7, y_button * 3),
@@ -207,7 +211,7 @@ class AbstractGame:
                     self.__kill()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        self._menu()
+                        self.menu()
 
     def __set_targets(self):
 
@@ -389,7 +393,7 @@ class AbstractGame:
         x_button, y_button = self.__x_screen // 20, self.__y_screen // 20
         button_font_size = self.__y_screen // 18
         return_btn = Button(self.__screen, 'Wróć', (x_button, y_button), (x_button * 2, y_button * 2),
-                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self._menu,
+                            button_color=self.__button_colour, label_color=self.__button_text_colour, func=self.menu,
                             font_size=button_font_size)
         text(self.__screen, self.__text_colour, 'WYNIKI', self.__x_screen // 2, self.__y_screen // 10 - 25, font_size=48)
         y_offset = 55
@@ -408,9 +412,9 @@ class AbstractGame:
                     self.__kill()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        self._menu()
+                        self.menu()
 
-    def _menu(self):
+    def menu(self):
 
         self.__screen.fill(self.__background_colour)
 

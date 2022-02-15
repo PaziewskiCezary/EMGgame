@@ -54,11 +54,15 @@ def play_game(queue, process_lock, samples_array, args):
     # game._menu()
 
     if name_game == "ŚMIECI":
-        AbstractGame(queue=queue, lock=process_lock, sample_array=samples_array,
+        game = AbstractGame(queue=queue, lock=process_lock, sample_array=samples_array,
                      full_screen=args.full_screen,
                      lives=args.lives,
-                     name=player.name)  # ,
+                     name=player.name,
+                     player=player)  # ,
         # screen_properties=screen_properties)
+    game.menu()
+
+    # queue, lock, sample_array, full_screen, lives = 3, name = ''
 
 
 if __name__ == '__main__':
@@ -83,7 +87,6 @@ if __name__ == '__main__':
     if not args.use_keyboard and not args.use_amplifier:
         args.use_amplifier = False
         args.use_keyboard = True
-
 
     samples_array = Array('d', np.zeros(512 * 2))
     processes_queue = mp.Queue()
