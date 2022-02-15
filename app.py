@@ -48,11 +48,12 @@ def play_game(queue, process_lock, samples_array, args):
     # game._menu()
 
     if name_game == "ŚMIECI":
-        AbstractGame(queue=queue, lock=process_lock, sample_array=samples_array,
+        game = AbstractGame(queue=queue, lock=process_lock, sample_array=samples_array,
                      full_screen=args.full_screen,
                      lives=args.lives,
                      name=player.name)  # ,
         # screen_properties=screen_properties)
+    game.menu()
 
 
 if __name__ == '__main__':
