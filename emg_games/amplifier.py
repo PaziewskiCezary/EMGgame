@@ -4,11 +4,13 @@ from multiprocessing.sharedctypes import Array
 import numpy as np
 import time
 
+import traceback
+
 from .utils import singleton
 
 
 # TODO need cleanup and other
-@singleton
+# @singleton
 class Amplifier:
 
     def __init__(self, fs=512, samples=2*512, sleep_time=1, channels=(0, 1)):
@@ -19,6 +21,7 @@ class Amplifier:
         self.__data = Array('d', np.zeros(samples))
 
         amplifiers = TmsiCppAmplifier.get_available_amplifiers('usb')
+        print('amplifiers:', *amplifiers)
         if not amplifiers:
             raise ValueError("Nie ma wzmacniacza")
 
@@ -40,7 +43,13 @@ class Amplifier:
 
     def __get_data(self):
         number_of_samples = 64  # TODO fix magic number
-        samples = self.amplifier.get_samples(number_of_samples).samples * self.gains + self.offsets
+        try:  # TODO
+            samples = self.amplifier.get_samples(number_of_samples).samples
+        except Exception as exception:
+            traceback.print_exc()
+            exit()
+
+        samples = samples * self.gains + self.offsets
         samples = samples[:, self.channels[0]] - samples[:, self.channels[1]]
         with self.__lock:
             self.__data[:-number_of_samples] = self.__data[number_of_samples:]
