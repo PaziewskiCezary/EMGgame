@@ -20,7 +20,13 @@ from os import environ
 from emg_games.games import Player
 from emg_games.gui.scenes import ScreenProperties
 
+
+from emg_games.games.player import Player
+from emg_games.gui.scenes import ScreenProperties
+from emg_games.games import AbstractGame
+
 from emg_games.amplifier import Amplifier
+
 
 import emg_games.gui.scenes.game_chooser as game_chooser
 from emg_games.games.abstract_game import AbstractGame
@@ -59,29 +65,22 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='EMG game')
 
-    parser.add_argument('--amplifier', nargs='*', dest='use_amplifier', default=False, help='run with amplifier')
-    parser.add_argument('--keyboard', nargs='*', dest='use_keyboard', default=False, help='run without amplifier')
-    parser.add_argument('--not-full', nargs='*', dest='full_screen', default=True, help='turn off full screen')
+    parser.add_argument('--amplifier', dest='use_amplifier', action='store_true', help='run with amplifier')
+    parser.add_argument('--keyboard', dest='use_keyboard', action='store_true', help='run without amplifier')
+    parser.add_argument('--not-full', dest='full_screen', action='store_true', help='turn off full screen')
 
     parser.add_argument('--lives', dest='lives', default=3, type=int, help='set lives number')
     parser.add_argument('--name', dest='name', default='', type=str, help='set name')
 
     args = parser.parse_args()
-    if args.use_keyboard is not False:
-        args.use_keyboard = True
-
-    if args.full_screen is not False:
-        args.full_screen = False
-
-    if args.use_amplifier is not False:
+    print(args)
+    if args.use_amplifier:
         from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
-
-        args.use_amplifier = True
 
     if args.use_keyboard and args.use_amplifier:
         sys.exit('Can\'t use --amplifier and --keyboard at the same time')
 
-    if not (args.use_keyboard or args.use_amplifier):
+    if not args.use_keyboard and not args.use_amplifier:
         args.use_amplifier = False
         args.use_keyboard = True
 
