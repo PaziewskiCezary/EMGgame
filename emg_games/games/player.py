@@ -12,7 +12,7 @@ pygame.init()
 
 class Player:
 
-    def __init__(self, screen_properties, use_keyboard, app):
+    def __init__(self, screen_properties):
 
         self.__use_keyboard = use_keyboard
 
@@ -23,7 +23,6 @@ class Player:
 
         self.__screen_properties = screen_properties
         self.__screen = self.__screen_properties.screen
-        self.app = app
 
         self.__x_screen, self.__y_screen = self.__screen.get_size()
 
@@ -31,7 +30,8 @@ class Player:
         self.__get_input_type()
 
         if not self.__use_keyboard:
-            calibrate = Calibration(self.__screen, self.app.amp.lock, self.app.amp.data)
+            self.amp = Amplifier()
+            calibrate = Calibration(self.__screen, self.amp.lock, self.amp.data)
             calibrate.calibrate()
 
     def __bool__(self):
@@ -60,6 +60,7 @@ class Player:
     @staticmethod
     def __update():
         pygame.display.update()
+
 
     def __get_name(self):
         print('starting get name')
