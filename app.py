@@ -30,12 +30,12 @@ from emg_games.amplifier import Amplifier
 
 import emg_games.gui.scenes.game_chooser as game_chooser
 from emg_games.games.abstract_game import AbstractGame
-
+from types import SimpleNamespace
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 
 
-def play_game(queue, process_lock, samples_array, args):
+def play_game(app, args):
     screen_properties = ScreenProperties(args.full_screen)
 
     '''abstract_game = AbstractGame(queue=queue,
@@ -46,23 +46,19 @@ def play_game(queue, process_lock, samples_array, args):
                                     name=args.name)#,
                                     #screen_properties=screen_properties)'''
 
-    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, lock=process_lock,
-                    sample_array=samples_array, queue=queue)
+    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, lock=app.lock,
+                    sample_array=app.samples_array, queue=app.queue)
 
     name_game = game_chooser.choose_game(screen_properties=screen_properties, kill_game=player.kill)
     print("name_game ", name_game)
-    # game._menu()
 
     if name_game == "ŚMIECI":
-        game = AbstractGame(queue=queue, lock=process_lock, sample_array=samples_array,
+        game = AbstractGame(queue=app.queue, lock=app.lock, sample_array=app.samples_array,
                      full_screen=args.full_screen,
                      lives=args.lives,
                      name=player.name,
                      player=player)  # ,
-        # screen_properties=screen_properties)
     game.menu()
-
-    # queue, lock, sample_array, full_screen, lives = 3, name = ''
 
 
 if __name__ == '__main__':
@@ -88,22 +84,24 @@ if __name__ == '__main__':
         args.use_amplifier = False
         args.use_keyboard = True
 
-    samples_array = Array('d', np.zeros(512 * 2))
-    processes_queue = mp.Queue()
-
-    lock = Lock()
+    app = SimpleNamespace()
     if args.use_amplifier:
-        # amp = Amplifier(fs=512, samples=2*512)
         amp = Amplifier()
+        app.lock = amp.lock
+        app.samples_array = amp.data
+    else:
+        amp = SimpleNamespace()  # dummy amplifier just not to get errors, temporary fix
+        app.amp = amp
+        app.lock = Lock()
+        app.samples_array =  Array('d', np.zeros(512 * 2))
+    app.queue = mp.Queue()
 
-        lock = amp.lock
-        samples_array = amp.data
     game_process = Process(target=play_game,
-                           args=(processes_queue, lock, samples_array, args))
+                           args=(app, args))
     game_process.start()
 
     try:
-        while processes_queue.empty():
+        while app.queue.empty():
             pass
     except KeyboardInterrupt:
         processes_queue.put(1)
