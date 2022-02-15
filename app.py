@@ -17,22 +17,16 @@ import multiprocessing as mp
 
 from os import environ
 
-from emg_games.games import Player
-from emg_games.gui.scenes import ScreenProperties
-
-
 from emg_games.games.player import Player
 from emg_games.gui.scenes import ScreenProperties
-from emg_games.games import AbstractGame
+from emg_games.games.trash import Trash
 
 from emg_games.amplifier import Amplifier
 
-
 import emg_games.gui.scenes.game_chooser as game_chooser
-from emg_games.games.abstract_game import AbstractGame
+from emg_games.backbones.abstract_game import AbstractGame
 from types import SimpleNamespace
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
-
 
 
 def play_game(app, args):
@@ -53,7 +47,7 @@ def play_game(app, args):
     print("name_game ", name_game)
 
     if name_game == "ŚMIECI":
-        game = AbstractGame(queue=app.queue, lock=app.lock, sample_array=app.samples_array,
+        game = Trash(queue=app.queue, lock=app.lock, sample_array=app.samples_array,
                      full_screen=args.full_screen,
                      lives=args.lives,
                      name=player.name,
