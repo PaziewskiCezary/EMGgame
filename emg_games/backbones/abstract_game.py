@@ -28,8 +28,6 @@ class AbstractGame(ABC):
         self._button_colour = palette.PINK_RGB
         self._button_text_colour = palette.YELLOW_RGB
 
-
-
         # TODO set full_screen
         self._full_screen = full_screen
         self._screen_properties = ScreenProperties(self._full_screen)
@@ -56,7 +54,7 @@ class AbstractGame(ABC):
 
         self._backgrounds = None
 
-        self._targets = None
+        self._targets = []
 
         self._projectiles = []
 
@@ -206,13 +204,9 @@ class AbstractGame(ABC):
                     if event.key == pygame.K_ESCAPE:
                         self.menu()
 
-
-    # @abstractmethod
-    def __update_background(self):
-        idx = math.log2(self.__max_lives - self.__lives + self.__missed + 1)
-        idx = int(idx)
-
-        idx = min(idx, len(self.__backgrounds) - 1)
+    @abstractmethod
+    def _update_background(self):
+        pass
 
     @abstractmethod
     def _set_targets(self):
