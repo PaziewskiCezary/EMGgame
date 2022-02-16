@@ -29,7 +29,9 @@ class Player:
         self.__get_input_type()
 
         if not self._use_keyboard:
+
             self.amp = Amplifier()
+
             calibrate = Calibration(self.__screen, self.amp.lock, self.amp.data)
             calibrate.calibrate()
 

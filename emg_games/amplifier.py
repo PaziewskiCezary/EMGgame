@@ -9,6 +9,9 @@ import traceback
 from .utils import singleton
 
 import importlib 
+
+
+
 # TODO need cleanup and other
 # @singleton
 class Amplifier:
@@ -16,6 +19,7 @@ class Amplifier:
     def __init__(self, fs=512, samples=2*512, sleep_time=1, channels=(0, 1)):
         importlib.import_module('obci_cpp_amplifiers.amplifiers')
         getattr(importlib.import_module('obci_cpp_amplifiers.amplifiers'), 'TmsiCppAmplifier')
+
 
         self._sleep_time = sleep_time
 

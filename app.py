@@ -20,7 +20,11 @@ from emg_games.games import Player
 from emg_games.gui.scenes import ScreenProperties
 
 from emg_games.backbones import AbstractGame
+
 from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
+
+
+>>>>>>> effdf072f9064e3f8b37b24f75083ba17f3be847
 
 import emg_games.gui.scenes.game_chooser as game_chooser
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
