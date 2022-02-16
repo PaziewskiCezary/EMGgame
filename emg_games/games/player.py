@@ -32,13 +32,15 @@ class Player:
 
             self.amp = Amplifier()
 
-            calibrate = Calibration(self.__screen, self.amp.lock, self.amp.data)
+            calibrate = Calibration(self.__screen, self.amp, kill_game=self.kill)
             calibrate.calibrate()
 
     def __bool__(self):
         return self.name != '' and self.calibrate_values != (0, float('inf')) and self.__input_type is not None
 
     def kill(self):
+        if not self._use_keyboard:
+            self.amp.terminate()
         pygame.quit()
         exit()
 

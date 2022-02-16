@@ -10,12 +10,11 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class Calibration:
 
-    def __init__(self, screen, lock, sample_array):
+    def __init__(self, screen, amp, kill_game):
         self.__screen = screen
         self.__x_screen, self.__y_screen = self.__screen.get_size()
-        self.__lock = lock
-        self.__sample_array = sample_array
-
+        self.__amp = amp
+        self.kill_game = kill_game
 
     @staticmethod
     def __update():
@@ -42,7 +41,7 @@ class Calibration:
         time.sleep(1)
 
         self.__calibrate_value_min = self.__get_calib_samples()
-
+        print("MIN", self.__calibrate_value_min)
         time.sleep(2)
 
         self.__screen.fill(palette.BACKGROUND_COLOUR)
@@ -52,6 +51,7 @@ class Calibration:
         time.sleep(1)
 
         self.__calibrate_value_max = self.__get_calib_samples()
+        print("MAX", self.__calibrate_value_max)
         self.__check_calib(text_x_position, text_y_position, font_size)
         self.__screen.fill(palette.BACKGROUND_COLOUR)
         text(self.__screen, palette.TEXT_COLOUR, 'KONIEC KALIBRACJI', text_x_position, text_y_position, font_size=font_size)
@@ -64,24 +64,20 @@ class Calibration:
         start_time_calibration_min = time.time()
 
         while time.time() - start_time_calibration_min <= calibration_time:
-            self.__lock.acquire()
-            signal = self.__sample_array[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
+            with self.__amp.lock:
+                signal = self.__amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
             signal -= np.mean(signal)
             signal = np.abs(signal)
-            self.__lock.release()
+
             samples.append(signal)
             start_quit_time = time.time()
             while time.time() - start_quit_time <= quit_time:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
-                        # self.__kill()
-                        pass
-                        # return 0
+                        self.kill_game()
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
-                            # self._menu()
-                            pass
-                            # return 1
+                            self.kill_game()
         samples_mean = np.mean(samples)
         del samples
         return samples_mean
