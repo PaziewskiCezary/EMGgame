@@ -1,3 +1,5 @@
-from emg_games.backbones.projectile import Projectile
-from emg_games.backbones.target import Target
-from emg_games.backbones.abstract_game import AbstractGame
+from .projectile import Projectile
+from .target import Target
+from .abstract_game import AbstractGame
+
+

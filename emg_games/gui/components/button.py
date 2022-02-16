@@ -3,7 +3,9 @@ from emg_games.gui.components import palette
 
 
 class Button(object):
-    def __init__(self, screen, label, pos, dims, button_color, label_color, func, font_size=None):
+
+    def __init__(self, screen, label, pos, dims, button_color, label_color, func, font_size=None, func_args={}):
+
 
         self.__screen = screen
         self.__label = label
@@ -13,6 +15,8 @@ class Button(object):
         self.__label_color = label_color
         self.__font = pygame.font.SysFont(palette.FONT_STYLE, font_size or palette.FONT_SIZE)
         self.__func = func
+        self.__func_args = func_args
+
 
         self.pressed = False
 
@@ -40,4 +44,7 @@ class Button(object):
             # checks if mouse position is over the button
             if self.rectangular.collidepoint(mouse_position):
                 self.pressed = True
-                self.__func()
+                if self.__func_args == {}:
+                    self.__func()
+                else:
+                    self.__func(self.__func_args)

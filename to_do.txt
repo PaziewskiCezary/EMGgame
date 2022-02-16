@@ -1,0 +1,28 @@
+1. simple_game:
+a) __show_score - pobieranie wyników w zależności od gry
+b)__make_emoji_lives - zamiana heart na emoji, pobieranie info o emoji i czcionce z klasy 
+c) wszędzie zamienić bins i trash 
+d) __play - do głównej logiki i pozmieniać nazwy
+e) __save_score - nazwa pliku w zależności gry
+f) wysyłać wyniki na serwer
+g) __scores - nazwa pliku w zależności od gry
+
+class GetPlayer:
+	* get_username()
+	* select_play_merthod()
+		* if `amplifier` -> `calibrate()`
+-- dziadek
+class AbstractGame:
+"""old SimpleGame"""
+* menu
+	* play NotImplemented
+	* scores
+	* exit
+
+-- rodzic
+class AbstractLogic(AbstractGame):
+	overload play()
+
+-- dziecko
+class ExampleGame(AbstarctLogic):
+	overload load_images()

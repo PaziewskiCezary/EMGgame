@@ -16,9 +16,9 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 class Trash(AbstractGame):
     game_name = 'Spadające śmieci'
 
-    def __init__(self, app, full_screen, player):
+    def __init__(self, full_screen, player):
 
-        super().__init__(app, full_screen, player)
+        super().__init__(full_screen, player)
 
         self._backgrounds = sorted([x for x in utils.get_backgrounds()])
         self._backgrounds = [pygame.image.load(x) for x in self._backgrounds]
@@ -106,10 +106,10 @@ class Trash(AbstractGame):
                 if break_loop:
                     break
 
-                if self.app.is_using_amp:
-                    with self.app.amp.lock:
+                if not self._player._use_keyboard:
+                    with self._player.amp.lock:
 
-                        signal = self.app.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
+                        signal = self._player.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
                         signal -= np.mean(signal)
                         signal = np.abs(signal)
                         move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?

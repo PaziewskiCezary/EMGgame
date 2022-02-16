@@ -15,28 +15,16 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 def main(args):
 
-    app = SimpleNamespace()
-    if args.use_amplifier:
-        amp = Amplifier()
-    else:
-        app.amp = None
-
-    app.is_using_amp = bool(app.amp)
-
     screen_properties = ScreenProperties(args.full_screen)
 
-    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, app=app)
+    player = Player(screen_properties=screen_properties)
 
     game = choose_game(screen_properties=screen_properties, kill_game=player.kill)
 
     game = game(
-        app,
         full_screen=args.full_screen,
         player=player)
     game.menu()
-
-    if args.use_amplifier:
-        amp.terminate()
 
 
 if __name__ == '__main__':

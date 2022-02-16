@@ -71,6 +71,7 @@ def choose_game(screen_properties, kill_game):
                              font_size)
         game_buttons.append(game_button)
 
+
     update()
 
     while True:

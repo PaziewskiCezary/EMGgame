@@ -9,6 +9,7 @@ from abc import ABC, abstractmethod
 
 from emg_games.gui.components import Button
 from emg_games.gui.components import text
+
 from emg_games.gui.scenes.screen_properties import ScreenProperties
 from emg_games.gui.components import palette
 
@@ -20,14 +21,14 @@ MOVE_DOWN = 0
 class AbstractGame(ABC):
     """AbstractGame"""
 
-    def __init__(self, app, full_screen, player):
-        self.app = app
-        self._player = player
+    def __init__(self, full_screen, player):
 
         self._background_colour = palette.YELLOW_RGB
         self._text_colour = palette.PINK_RGB
         self._button_colour = palette.PINK_RGB
         self._button_text_colour = palette.YELLOW_RGB
+
+
 
         # TODO set full_screen
         self._full_screen = full_screen
@@ -204,6 +205,14 @@ class AbstractGame(ABC):
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.menu()
+
+
+    # @abstractmethod
+    def __update_background(self):
+        idx = math.log2(self.__max_lives - self.__lives + self.__missed + 1)
+        idx = int(idx)
+
+        idx = min(idx, len(self.__backgrounds) - 1)
 
     @abstractmethod
     def _set_targets(self):
