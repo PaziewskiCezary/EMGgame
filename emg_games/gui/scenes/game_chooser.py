@@ -49,7 +49,7 @@ def choose_game(screen_properties, kill_game):
     button_dimension = [button_width, button_height]
 
     width = button_width * 0.9
-    font_size = _calc_font_size(list_of_games, button_width)
+    font_size = _calc_font_size(list_of_games, width)
 
     # place buttons
     game_buttons = []
@@ -78,4 +78,3 @@ def choose_game(screen_properties, kill_game):
             # if event.type == pygame.KEYDOWN:
             #     if event.key == pygame.K_ESCAPE:
             #         self._menu()
-
