@@ -16,9 +16,11 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class Figures(FallingObjects):
 
-    def __init__(self, app, full_screen, player):
+    game_name = 'FIGURY'
 
-        super().__init__(app, full_screen, player)
+    def __init__(self, full_screen, player):
+
+        super().__init__(full_screen, player)
 
         class_name = "Figures"
 

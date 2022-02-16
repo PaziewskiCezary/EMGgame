@@ -5,16 +5,15 @@ from emg_games.gui.components.pygame_text import text
 from emg_games.games.calibration import Calibration
 from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
-
+from emg_games.amplifier import Amplifier
 
 pygame.init()
 
 
 class Player:
 
-    def __init__(self, screen_properties, use_keyboard, app):
+    def __init__(self, screen_properties):
 
-        self._use_keyboard = use_keyboard
 
         self.__name = ''
         self.__calibrate_value_min = 0
@@ -23,15 +22,17 @@ class Player:
 
         self.__screen_properties = screen_properties
         self.__screen = self.__screen_properties.screen
-        self.app = app
 
         self.__x_screen, self.__y_screen = self.__screen.get_size()
 
         self.__get_name()
         self.__get_input_type()
 
-        if not self.__use_keyboard:
-            calibrate = Calibration(self.__screen, self.app.amp.lock, self.app.amp.data)
+        if not self._use_keyboard:
+
+            self.amp = Amplifier()
+
+            calibrate = Calibration(self.__screen, self.amp.lock, self.amp.data)
             calibrate.calibrate()
 
     def __bool__(self):
@@ -60,6 +61,7 @@ class Player:
     @staticmethod
     def __update():
         pygame.display.update()
+
 
     def __get_name(self):
         print('starting get name')
@@ -95,13 +97,10 @@ class Player:
                         is_input = False
                         break
 
-    def __use_keyboard_true(self):
-        self.__use_keyboard = True
+    def _set_input_type(self, args):
+        self._use_keyboard = args['a']
         self._is_waiting_for_option = False
 
-    def __use_keyboard_false(self):
-        self.__use_keyboard = False
-        self._is_waiting_for_option = False
 
     def __get_input_type(self):
 
@@ -114,12 +113,10 @@ class Player:
         y_button = self.__y_screen / 5
         font_size = int(x_button // 5)
 
-        muscle_button = Button(self.__screen, 'Mięsień', (self.__x_screen / 2, self.__y_screen / 2 - 0.75 * y_button),
-                               (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_false,
-                               font_size=font_size)
-        keyboard_button = Button(self.__screen, 'Klawiatura', (self.__x_screen / 2,
-                                                               self.__y_screen / 2 + 0.75 * y_button),
-                                 (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_true,
+        muscle_button = Button(screen=self.__screen, label='Mięsień', pos=(self.__x_screen / 2, self.__y_screen / 2 - 0.75 * y_button),
+                               dims=(x_button, y_button), button_color=palette.PINK_RGB, label_color=palette.YELLOW_RGB, func=self._set_input_type, func_args={'a':False}, font_size=font_size)
+        keyboard_button = Button(screen=self.__screen, label='Klawiatura', pos=(self.__x_screen / 2, self.__y_screen / 2 + 0.75 * y_button),
+                                 dims=(x_button, y_button), button_color=palette.PINK_RGB, label_color=palette.YELLOW_RGB, func=self._set_input_type, func_args={'a':True},
                                  font_size=font_size)
 
         self.__update()

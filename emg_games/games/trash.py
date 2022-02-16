@@ -1,3 +1,5 @@
+from abc import ABC
+
 import pygame
 import numpy as np
 import math
@@ -16,9 +18,10 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class Trash(FallingObjects):
 
-    def __init__(self, app, full_screen, player):
+    game_name = 'ŚMIECI'
 
-        super().__init__(app, full_screen, player)
+    def __init__(self, full_screen, player):
+        super().__init__(full_screen, player)
 
         class_name = "Trash"
 
@@ -35,8 +38,6 @@ class Trash(FallingObjects):
                                     img_path=projectile_path, projectile_type=projectile_type)
 
             self._projectiles.append(projectile)
-
-        self._game_name = 'Falling trash'
 
     def _update_background(self):
         idx = math.log2(self._max_lives - self._lives + self._missed + 1)

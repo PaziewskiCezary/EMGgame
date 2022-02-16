@@ -15,9 +15,9 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class FallingObjects(AbstractGame):
 
-    def __init__(self, app, full_screen, player):
+    def __init__(self, full_screen, player):
 
-        super().__init__(app, full_screen, player)
+        super().__init__(full_screen, player)
 
         self._backgrounds = []
 
@@ -101,8 +101,8 @@ class FallingObjects(AbstractGame):
                 if break_loop:
                     break
 
-                if self.app.is_using_amp:
-                    with self.app.amp.lock:
+                if not self._player._use_keyboard:
+                    with self._player.amp.lock:
 
                         signal = self.app.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
                         signal -= np.mean(signal)

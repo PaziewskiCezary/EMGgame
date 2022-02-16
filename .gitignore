@@ -103,7 +103,8 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-*_scores.pkl
+
+.wyniki.pkl
 
 
 #pycharm
