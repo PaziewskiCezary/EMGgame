@@ -41,8 +41,6 @@ def choose_game(screen_properties, kill_game):
 
     screen.fill(palette.BACKGROUND_COLOUR)
 
-    update()
-
     number_of_rows = round(math.sqrt(len(list_of_games)))
     number_of_columns = math.ceil(len(list_of_games) / number_of_rows)
 
@@ -51,10 +49,7 @@ def choose_game(screen_properties, kill_game):
     button_dimension = [button_width, button_height]
 
     width = button_width * 0.9
-    # width = button_width
     font_size = _calc_font_size(list_of_games, button_width)
-    font_size = 33
-    print(font_size)
 
     # place buttons
     game_buttons = []
@@ -68,7 +63,6 @@ def choose_game(screen_properties, kill_game):
                              palette.PINK_RGB, palette.YELLOW_RGB, lambda idx=index: game_name,
                              font_size)
         game_buttons.append(game_button)
-
 
     update()
 
