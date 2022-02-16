@@ -33,8 +33,6 @@ def choose_game(screen_properties, kill_game):
     list_of_games = [obj for name, obj in inspect.getmembers(emg_games.games, inspect.isclass) if
                      issubclass(obj, emg_games.backbones.AbstractGame)]
 
-    list_of_games = [list_of_games[0]] * 5
-
     screen_size = screen_properties.screen_size
     x_screen = screen_properties.x_screen
     y_screen = screen_properties.y_screen
