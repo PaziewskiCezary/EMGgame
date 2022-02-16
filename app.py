@@ -14,6 +14,7 @@ from emg_games.amplifier import Amplifier
 import emg_games.gui.scenes.game_chooser as game_chooser
 
 from emg_games.games.trash import Trash
+from emg_games.games.figures import Figures
 from types import SimpleNamespace
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
@@ -57,6 +58,12 @@ if __name__ == '__main__':
 
     if name_game == "ŚMIECI":
         game = Trash(
+            app,
+            full_screen=args.full_screen,
+            player=player)
+
+    if name_game == "FIGURY":
+        game = Figures(
             app,
             full_screen=args.full_screen,
             player=player)

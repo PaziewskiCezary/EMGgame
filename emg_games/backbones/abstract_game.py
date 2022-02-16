@@ -55,7 +55,7 @@ class AbstractGame(ABC):
 
         self._backgrounds = None
 
-        self._targets = None
+        self._targets = []
 
         self._projectiles = []
 

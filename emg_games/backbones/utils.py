@@ -13,7 +13,8 @@ def collide_in(obj1, obj2):
     return False
 
 
-def get_targets(path="static/bins/"):
+def get_targets(class_name):
+    path = "static/" + class_name + "/target/"
     for root, dirs, files in os.walk(path):
         for name in files:
             path = os.path.join(root, name)
@@ -21,7 +22,8 @@ def get_targets(path="static/bins/"):
             yield target_type, path
 
 
-def get_projectiles(path="static/trash/"):
+def get_projectiles(class_name):
+    path = "static/" + class_name + "/projectile/"
     for root, dirs, files in os.walk(path):
         for name in files:
             path = os.path.join(root, name)
@@ -29,7 +31,8 @@ def get_projectiles(path="static/trash/"):
             yield trash_type, path
 
 
-def get_backgrounds(path="static/backgrounds"):
+def get_backgrounds(class_name):
+    path = "static/" + class_name + "/backgrounds/"
     for root, dirs, files in os.walk(path):
         for name in files:
             path = os.path.join(root, name)
