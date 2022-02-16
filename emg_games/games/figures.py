@@ -20,14 +20,17 @@ class Figures(FallingObjects):
 
         super().__init__(app, full_screen, player)
 
-        self._backgrounds = sorted([x for x in utils.get_backgrounds("Figures")])
+        class_name = "Figures"
+
+        self._backgrounds = sorted([x for x in utils.get_backgrounds(class_name)])
         self._backgrounds = [pygame.image.load(x) for x in self._backgrounds]
 
         self._targets = [Target(desired_width=self._x_screen * Target.percentage, img_path=target_path,
-                                target_type=target_type) for (target_type, target_path) in utils.get_targets("Figures")]
+                                target_type=target_type) for (target_type, target_path) in
+                         utils.get_targets(class_name)]
 
         self._projectiles = []
-        for i, (projectile_type, projectile_path) in enumerate(utils.get_projectiles("Figures")):
+        for i, (projectile_type, projectile_path) in enumerate(utils.get_projectiles(class_name)):
             projectile = Projectile(desired_width=self._x_screen * Projectile.percentage,
                                     img_path=projectile_path, projectile_type=projectile_type)
 
