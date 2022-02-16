@@ -5,7 +5,7 @@ from emg_games.gui.components.pygame_text import text
 from emg_games.games.calibration import Calibration
 from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
-
+from emg_games.amplifier import Amplifier
 
 pygame.init()
 
@@ -14,7 +14,6 @@ class Player:
 
     def __init__(self, screen_properties):
 
-        self.__use_keyboard = use_keyboard
 
         self.__name = ''
         self.__calibrate_value_min = 0
@@ -29,7 +28,7 @@ class Player:
         self.__get_name()
         self.__get_input_type()
 
-        if not self.__use_keyboard:
+        if not self._use_keyboard:
             self.amp = Amplifier()
             calibrate = Calibration(self.__screen, self.amp.lock, self.amp.data)
             calibrate.calibrate()
@@ -96,12 +95,12 @@ class Player:
                         is_input = False
                         break
 
-    def __use_keyboard_true(self):
-        self.__use_keyboard = True
+    def _use_keyboard_true(self):
+        self._use_keyboard = True
         self._is_waiting_for_option = False
 
-    def __use_keyboard_false(self):
-        self.__use_keyboard = False
+    def _use_keyboard_false(self):
+        self._use_keyboard = False
         self._is_waiting_for_option = False
 
     def __get_input_type(self):
@@ -116,11 +115,11 @@ class Player:
         font_size = int(x_button // 5)
 
         muscle_button = Button(self.__screen, 'Mięsień', (self.__x_screen / 2, self.__y_screen / 2 - 0.75 * y_button),
-                               (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_false,
+                               (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self._use_keyboard_false,
                                font_size=font_size)
         keyboard_button = Button(self.__screen, 'Klawiatura', (self.__x_screen / 2,
                                                                self.__y_screen / 2 + 0.75 * y_button),
-                                 (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self.__use_keyboard_true,
+                                 (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self._use_keyboard_true,
                                  font_size=font_size)
 
         self.__update()

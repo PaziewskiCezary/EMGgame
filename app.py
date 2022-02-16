@@ -19,10 +19,8 @@ from types import SimpleNamespace
 from emg_games.games import Player
 from emg_games.gui.scenes import ScreenProperties
 
-from emg_games.games import AbstractGame
-
-from emg_games.amplifier import Amplifier
-
+from emg_games.backbones import AbstractGame
+from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
 import emg_games.gui.scenes.game_chooser as game_chooser
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
@@ -39,11 +37,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    
-
-    if not args.use_keyboard and not args.use_amplifier:
-        args.use_amplifier = False
-        args.use_keyboard = True
 
 
     screen_properties = ScreenProperties(args.full_screen)
@@ -55,10 +48,7 @@ if __name__ == '__main__':
 
     if name_game == "ŚMIECI":
         game = AbstractGame(
-            app,
             full_screen=args.full_screen,
             player=player)
     game.menu()
 
-    if args.use_amplifier:
-        amp.terminate()
