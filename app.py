@@ -5,8 +5,6 @@ from os import environ
 from emg_games.games.player import Player
 from emg_games.gui.scenes import ScreenProperties
 
-from emg_games.amplifier import Amplifier
-
 from emg_games.gui.scenes import choose_game
 
 from types import SimpleNamespace
