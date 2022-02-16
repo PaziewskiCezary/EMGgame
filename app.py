@@ -1,21 +1,42 @@
-'''Simple game with falling stuff'''
-# python game.py --keyboard --name fsdf --not-full
-
 import argparse
 import sys
 from os import environ
-
 
 from emg_games.games.player import Player
 from emg_games.gui.scenes import ScreenProperties
 
 from emg_games.amplifier import Amplifier
 
-import emg_games.gui.scenes.game_chooser as game_chooser
+from emg_games.gui.scenes import choose_game
 
-from emg_games.games.trash import Trash
 from types import SimpleNamespace
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
+
+
+def main(args):
+
+    app = SimpleNamespace()
+    if args.use_amplifier:
+        amp = Amplifier()
+    else:
+        app.amp = None
+
+    app.is_using_amp = bool(app.amp)
+
+    screen_properties = ScreenProperties(args.full_screen)
+
+    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, app=app)
+
+    game = choose_game(screen_properties=screen_properties, kill_game=player.kill)
+
+    game = game(
+        app,
+        full_screen=args.full_screen,
+        player=player)
+    game.menu()
+
+    if args.use_amplifier:
+        amp.terminate()
 
 
 if __name__ == '__main__':
@@ -30,6 +51,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    # TODO remove later
     if args.use_amplifier:
         from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
@@ -40,25 +62,4 @@ if __name__ == '__main__':
         args.use_amplifier = False
         args.use_keyboard = True
 
-    app = SimpleNamespace()
-    if args.use_amplifier:
-        amp = Amplifier()
-    else:
-        app.amp = None
-
-    app.is_using_amp = bool(app.amp)
-
-    screen_properties = ScreenProperties(args.full_screen)
-
-    player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, app=app)
-
-    game = game_chooser.choose_game(screen_properties=screen_properties, kill_game=player.kill)
-
-    game = game(
-        app,
-        full_screen=args.full_screen,
-        player=player)
-    game.menu()
-
-    if args.use_amplifier:
-        amp.terminate()
+    main(args)

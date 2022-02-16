@@ -1,8 +1,9 @@
 import pygame
+from emg_games.gui.components import palette
 
 
 class Button(object):
-    def __init__(self, screen, label, pos, dims, button_color, label_color, func, font_size):
+    def __init__(self, screen, label, pos, dims, button_color, label_color, func, font_size=None):
 
         self.__screen = screen
         self.__label = label
@@ -10,7 +11,7 @@ class Button(object):
         self.__dims = dims
         self.__button_color = button_color
         self.__label_color = label_color
-        self.__font = pygame.font.SysFont('Teko', font_size)
+        self.__font = pygame.font.SysFont(palette.FONT_STYLE, font_size or palette.FONT_SIZE)
         self.__func = func
 
         self.pressed = False
