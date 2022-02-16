@@ -97,13 +97,10 @@ class Player:
                         is_input = False
                         break
 
-    def _use_keyboard_true(self):
-        self._use_keyboard = True
+    def _set_input_type(self, args):
+        self._use_keyboard = args['a']
         self._is_waiting_for_option = False
 
-    def _use_keyboard_false(self):
-        self._use_keyboard = False
-        self._is_waiting_for_option = False
 
     def __get_input_type(self):
 
@@ -116,12 +113,10 @@ class Player:
         y_button = self.__y_screen / 5
         font_size = int(x_button // 5)
 
-        muscle_button = Button(self.__screen, 'Mięsień', (self.__x_screen / 2, self.__y_screen / 2 - 0.75 * y_button),
-                               (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self._use_keyboard_false,
-                               font_size=font_size)
-        keyboard_button = Button(self.__screen, 'Klawiatura', (self.__x_screen / 2,
-                                                               self.__y_screen / 2 + 0.75 * y_button),
-                                 (x_button, y_button), palette.PINK_RGB, palette.YELLOW_RGB, self._use_keyboard_true,
+        muscle_button = Button(screen=self.__screen, label='Mięsień', pos=(self.__x_screen / 2, self.__y_screen / 2 - 0.75 * y_button),
+                               dims=(x_button, y_button), button_color=palette.PINK_RGB, label_color=palette.YELLOW_RGB, func=self._set_input_type, func_args={'a':False}, font_size=font_size)
+        keyboard_button = Button(screen=self.__screen, label='Klawiatura', pos=(self.__x_screen / 2, self.__y_screen / 2 + 0.75 * y_button),
+                                 dims=(x_button, y_button), button_color=palette.PINK_RGB, label_color=palette.YELLOW_RGB, func=self._set_input_type, func_args={'a':True},
                                  font_size=font_size)
 
         self.__update()

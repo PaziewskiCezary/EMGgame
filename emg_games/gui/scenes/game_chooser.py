@@ -16,8 +16,8 @@ list_of_games = [obj for name, obj in inspect.getmembers(games, inspect.isclass)
 
 print(list_of_games)
 
-def get_game_name(index):
-    return list_of_games[index]
+def get_game_name(args):
+    return list_of_games[args['idx']]
 
 
 def update():
@@ -66,8 +66,8 @@ def choose_game(screen_properties, kill_game):
             if index >= len(list_of_games):
                 break
             game_button = Button(screen, list_of_games[index].game_name, [x_position, y_position], button_dimension,
-                                 palette.PINK_RGB, palette.YELLOW_RGB, lambda idx=index: get_game_name(idx),
-                                 final_font_size)
+                                 palette.PINK_RGB, palette.YELLOW_RGB, get_game_name,
+                                 final_font_size, {'idx':index})
             game_buttons.append(game_button)
     update()
 
