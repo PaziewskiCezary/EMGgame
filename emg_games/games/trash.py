@@ -14,6 +14,7 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 
 class Trash(AbstractGame):
+    game_name = 'Spadające śmieci'
 
     def __init__(self, app, full_screen, player):
 
@@ -31,8 +32,6 @@ class Trash(AbstractGame):
                                     img_path=projectile_path, projectile_type=projectile_type)
 
             self._projectiles.append(projectile)
-
-        self._game_name = 'Falling trash'
 
     def _set_targets(self):
         number_of_targets = len(self._targets)

@@ -52,14 +52,12 @@ if __name__ == '__main__':
 
     player = Player(screen_properties=screen_properties, use_keyboard=args.use_keyboard, app=app)
 
-    name_game = game_chooser.choose_game(screen_properties=screen_properties, kill_game=player.kill)
-    print("name_game ", name_game)
+    game = game_chooser.choose_game(screen_properties=screen_properties, kill_game=player.kill)
 
-    if name_game == "ŚMIECI":
-        game = Trash(
-            app,
-            full_screen=args.full_screen,
-            player=player)
+    game = game(
+        app,
+        full_screen=args.full_screen,
+        player=player)
     game.menu()
 
     if args.use_amplifier:
