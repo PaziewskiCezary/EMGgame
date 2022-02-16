@@ -3,29 +3,20 @@
 
 import argparse
 import sys
-import os
-import signal
-import platform
-
-import time
-
-import numpy as np
-
-import multiprocessing as mp
-
 from os import environ
-from types import SimpleNamespace
-
-from emg_games.games import Player
-from emg_games.gui.scenes import ScreenProperties
 
 from emg_games.backbones import AbstractGame
 
-from obci_cpp_amplifiers.amplifiers import TmsiCppAmplifier
 
+from emg_games.games.player import Player
+from emg_games.gui.scenes import ScreenProperties
 
 import emg_games.gui.scenes.game_chooser as game_chooser
+
+from emg_games.games.trash import Trash
+
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
+
 
 if __name__ == '__main__':
 
@@ -40,17 +31,14 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
 
-
     screen_properties = ScreenProperties(args.full_screen)
 
     player = Player(screen_properties=screen_properties)
 
-    name_game = game_chooser.choose_game(screen_properties=screen_properties, kill_game=player.kill)
-    print("name_game ", name_game)
+    game = game_chooser.choose_game(screen_properties=screen_properties, kill_game=player.kill)
 
-    if name_game == "ŚMIECI":
-        game = AbstractGame(
-            full_screen=args.full_screen,
-            player=player)
+    game = game(
+        full_screen=args.full_screen,
+        player=player)
     game.menu()
 

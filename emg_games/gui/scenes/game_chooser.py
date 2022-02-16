@@ -1,12 +1,20 @@
-import pygame
+import inspect
 import math
 
-from emg_games.gui.components.button import Button
+import pygame
+
+import emg_games.games as games
+
 from emg_games.gui.components import palette
+from emg_games.gui.components.button import Button
+from emg_games.backbones import AbstractGame
+
 
 list_of_games = ["ŚMIECI", "FIGURY", "KOLORY", "WODA", "ADA", "MARTYNA", "CEZARY", "ŻÓŁW", "DELFIN", "KOT",
                  "ALA MA KOTA"]
+list_of_games = [obj for name, obj in inspect.getmembers(games, inspect.isclass) if issubclass(obj, AbstractGame)]
 
+print(list_of_games)
 
 def get_game_name(index):
     return list_of_games[index]
@@ -41,9 +49,10 @@ def choose_game(screen_properties, kill_game):
 
     final_font_size = 200
 
+    # make this a function
     for game in list_of_games:
         for font_size in range(final_font_size, 0, -1):
-            text_width, _ = pygame.font.SysFont(font_style, font_size).size(game)
+            text_width, _ = pygame.font.SysFont(font_style, font_size).size(game.game_name)
             if text_width < button_width:
                 final_font_size = font_size
                 break
@@ -56,7 +65,7 @@ def choose_game(screen_properties, kill_game):
             index = i * number_of_columns + j
             if index >= len(list_of_games):
                 break
-            game_button = Button(screen, list_of_games[index], [x_position, y_position], button_dimension,
+            game_button = Button(screen, list_of_games[index].game_name, [x_position, y_position], button_dimension,
                                  palette.PINK_RGB, palette.YELLOW_RGB, lambda idx=index: get_game_name(idx),
                                  final_font_size)
             game_buttons.append(game_button)
