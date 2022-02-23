@@ -25,6 +25,3 @@ class Figures(FallingObjects):
                                     img_path=projectile_path, projectile_type=projectile_type)
 
             self._projectiles.append(projectile)
-
-        self._game_name = 'Falling figures'
-
