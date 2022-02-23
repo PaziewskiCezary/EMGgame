@@ -69,14 +69,6 @@ class AbstractGame(ABC):
         pygame.quit()
         exit()
 
-    def _move_projectile(self, shift):
-        if not self._projectile:
-            raise ValueError('self.__projectile not set')
-        if abs(shift) > 1:
-            raise ValueError('arg must be between -1 and 1')
-
-        self._projectile.x_position += self._max_shift * shift
-
     def _muscle_move(self, muscle_tension):
         calibration_difference = self._player.calibrate_value_max - self._player.calibrate_value_min
         number_of_movement_interval = 3

@@ -38,8 +38,16 @@ class Projectile(pygame.sprite.Sprite):
         return self.image.get_rect()[1] + self.get_position[1]
 
     @property
+    def right(self):
+        return self.image.get_rect()[2] + self.get_position[0]
+
+    @property
+    def left(self):
+        return self.image.get_rect()[0] + self.get_position[0]
+
+    @property
     def corners(self):
-        trash_width, trash_height = self.size
+        projectile_width, projectile_height = self.size
         corner1_position = (self.x_position, self.y_position)
-        corner2_position = (self.x_position + trash_width, self.y_position + trash_height)
+        corner2_position = (self.x_position + projectile_width, self.y_position + projectile_height)
         return corner1_position, corner2_position

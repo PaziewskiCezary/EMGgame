@@ -6,18 +6,16 @@ from emg_games.backbones import utils
 from emg_games.backbones import Projectile
 from emg_games.backbones import Target
 
-from emg_games.games.falling_objects import FallingObjects
+from emg_games.games.running_objects import RunningObjects
 
 
-class Figures(FallingObjects):
-
-    game_name = 'FIGURY'
+class Turtle(RunningObjects):
+    game_name = 'ŻÓŁW'
 
     def __init__(self, full_screen, player):
-
         super().__init__(full_screen, player)
 
-        class_name = "Figures"
+        class_name = "Turtle"
 
         self._targets = [Target(desired_width=self._x_screen * Target.percentage, img_path=target_path,
                                 target_type=target_type) for (target_type, target_path) in
