@@ -4,15 +4,12 @@ Copyright 2017, Silas Gyger, silasgyger@gmail.com, All rights reserved.
 Borrowed from https://github.com/Nearoo/pygame-text-input under the MIT license.
 """
 
-# TODO `esc` fix
-
 import os.path
 
 import pygame
 import pygame.locals as pl
 
-pygame.font.init()
-
+import unicodedata
 
 class TextInput:
     """
@@ -28,7 +25,7 @@ class TextInput:
             antialias=True,
             text_color=(0, 0, 0),
             cursor_color=(0, 0, 1),
-            repeat_keys_initial_ms=400,
+            repeat_keys_initial_ms=250,
             repeat_keys_interval_ms=35,
             max_string_length=-1):
         """
@@ -74,8 +71,6 @@ class TextInput:
 
         self.clock = pygame.time.Clock()
 
-
-
     def update(self, events):
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -115,6 +110,15 @@ class TextInput:
 
                 elif event.key == pl.K_HOME:
                     self.cursor_position = 0
+
+                elif event.key == pl.K_ESCAPE:
+                    return True
+
+                elif event.key == pl.K_TAB:
+                    return True
+
+                elif event.unicode and 'C' in unicodedata.category(event.unicode):
+                    return True
 
                 elif len(self.input_string) < self.max_string_length or self.max_string_length == -1:
                     # If no special key is pressed, add unicode of key to input_string
@@ -182,31 +186,3 @@ class TextInput:
     def clear_text(self):
         self.input_string = ""
         self.cursor_position = 0
-
-
-"""
-if __name__ == "__main__":
-    pygame.init()
-
-    # Create TextInput-object
-    textinput = TextInput()
-
-    screen = pygame.display.set_mode((1000, 200))
-    clock = pygame.time.Clock()
-
-    while True:
-        screen.fill((225, 225, 225))
-
-        events = pygame.event.get()
-        for event in events:
-            if event.type == pygame.QUIT:
-                exit()
-
-        # Feed it with events every frame
-        textinput.update(events)
-        # Blit its surface onto the screen
-        screen.blit(textinput.get_surface(), (10, 10))
-
-        pygame.display.update()
-        clock.tick(30)
-"""
