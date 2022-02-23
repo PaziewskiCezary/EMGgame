@@ -8,6 +8,8 @@ from emg_games.backbones import utils
 from emg_games.backbones import Projectile
 from emg_games.backbones import Target
 
+from copy import copy
+
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
 MOVE_DOWN = 0
@@ -54,18 +56,18 @@ class RunningObjects(AbstractGame):
 
         return target_y_position
 
-    def _set_new_projectile(self, running_projectiles, projectile_number):
+    def _set_new_projectile(self):
 
         projectile_index = random.randint(0, len(self._projectiles) - 1)
-        self._projectile = self._projectiles[projectile_index]
-        running_projectiles.append(self._projectile)
-        projectile_number += 1
+        self._projectile = copy(self._projectiles[projectile_index])
 
         self._projectile.x_position = random.randint(0 + self._projectile.size[0] // 2, self._x_screen -
                                                      self._projectile.size[0] // 2)
         self._projectile.y_position = 100
 
-        return running_projectiles, projectile_number
+        self.running_projectiles.append(self._projectile)
+
+        self.time_since_new_projectile = time.time()
 
     def _play(self):
 
@@ -74,31 +76,32 @@ class RunningObjects(AbstractGame):
         self._missed = 0
 
         self._background_idx = 0
-        speed_rate = 0.0003
+        speed_rate = 0.003
         projectile_number = 0
 
         np.random.shuffle(self._projectiles)
-        target_y_position = self._set_targets()
+        self._set_targets()
 
         play = True
-        new_projectile = True
-        actual_projectile = None
+        new_projectiles = 1
         self._update_background()
 
-        running_projectiles = []
+        self.running_projectiles = []
 
+        self.time_since_new_projectile = time.time()
         while play and self._lives > 0:
-            if new_projectile:
 
-                running_projectiles, projectile_number = self._set_new_projectile(running_projectiles, projectile_number)
-                new_projectile = False
-                actual_projectile = True
+            if time.time() - self.time_since_new_projectile >= 3 ** projectile_number:
+                self._set_new_projectile()
+
+            while new_projectiles:
+                self._set_new_projectile()
+                new_projectiles -= 1
 
             if not self._lives:
                 play = False
 
-            while len(running_projectiles) != 0:
-
+            while self.running_projectiles:
                 break_loop = False
 
                 for event in pygame.event.get():
@@ -125,7 +128,7 @@ class RunningObjects(AbstractGame):
                         signal = np.abs(signal)
                         move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
                         self._move_target(move_value)
-                # else:  #przesunięte o tab wszystko do if break_loop
+
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -141,54 +144,51 @@ class RunningObjects(AbstractGame):
                 if break_loop:
                     break
 
-                time1 = time.time()
-                for (i, projectile_) in enumerate(running_projectiles):
-                    time0 = time.time()
-                    if time1 - time0 >= 10.98 ** projectile_number:
-                        running_projectiles, projectile_number = self._set_new_projectile(running_projectiles,
-                                                                                          projectile_number)
-                        new_projectile = False
-                        actual_projectile = True
 
+
+                print(len(self.running_projectiles))
+                for (i, projectile_) in enumerate(self.running_projectiles):
                     projectile_x_position, projectile_y_position = projectile_.get_position
 
                     acceleration = 1.02 ** projectile_number
 
                     y_step = self._y_screen * speed_rate * acceleration
-                    projectile_.x_position, projectile_.y_position = \
-                        projectile_x_position, projectile_y_position + y_step
-                    if projectile_.bottom > target_y_position:
-                        collision = False
+                    projectile_.y_position = projectile_y_position + y_step
+                    if projectile_.bottom > self._target.y_position:
 
+                        new_projectile = False
                         if utils.collide_in(projectile_, self._target):
-                            collision = True
-                            if target_.type == self._projectile.type:
+                            if self._target.type == projectile_.type:
                                 self._score += 10
-
                             else:
                                 self._lives -= 1
                                 self._score += -100
                                 self._missed += 1
 
-                        if not collision:
-                            if target_.type == self._projectile.type:
+                            if self._target.type == projectile_.type:
                                 self._score -= 10
                             else:
                                 self._score += 100
 
-                        new_projectile = True
-                        actual_projectile = False
-                        running_projectiles.remove(projectile_)
-                        time1 = time.time()
-                    # if projectile_.bottom > self._y_screen
+                            new_projectile = True
+
+                        elif projectile_.top > self._y_screen:
+                            new_projectile = True
+
+                        if new_projectile:
+                            new_projectiles += 1
+                            self.running_projectiles.remove(projectile_)
+
 
                 # showing bins
                 self._screen.fill(self._background_colour)
                 self._update_background()
 
-                for target_ in self._targets:
-                    self._screen.blit(target_.image, target_.get_position)
-                self._screen.blit(self._projectile.image, self._projectile.get_position)
+                self._screen.blit(self._target.image, self._target.get_position)
+
+                for projectile_ in self.running_projectiles:
+                    print(projectile_.image, projectile_.get_position)
+                    self._screen.blit(projectile_.image, projectile_.get_position)
 
                 # labels with lives and score
                 self._make_health_text()
