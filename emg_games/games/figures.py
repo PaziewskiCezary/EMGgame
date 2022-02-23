@@ -1,12 +1,8 @@
-import pygame
-import numpy as np
-import math
-
 from emg_games.backbones import utils
 from emg_games.backbones import Projectile
 from emg_games.backbones import Target
 
-from emg_games.games.falling_objects import FallingObjects
+from emg_games.backbones.falling_objects import FallingObjects
 
 
 class Figures(FallingObjects):
