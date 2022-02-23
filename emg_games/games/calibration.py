@@ -20,8 +20,8 @@ class Calibration:
     def __update():
         pygame.display.update()
 
-    def calibrate(self):
-
+    def calibrate(self, player):
+        self.player = player
         text_x_position = self.__x_screen // 2
         text_y_position = self.__y_screen // 2
         font_size = self.__y_screen // 10
@@ -41,7 +41,8 @@ class Calibration:
         time.sleep(1)
 
         self.__calibrate_value_min = self.__get_calib_samples()
-        print("MIN", self.__calibrate_value_min)
+        player._calibrate_value_min = self.__calibrate_value_min
+        print("MIN", player._calibrate_value_min)
         time.sleep(2)
 
         self.__screen.fill(palette.BACKGROUND_COLOUR)
@@ -51,11 +52,13 @@ class Calibration:
         time.sleep(1)
 
         self.__calibrate_value_max = self.__get_calib_samples()
-        print("MAX", self.__calibrate_value_max)
+        player._calibrate_value_max = self.__calibrate_value_max
+
         self.__check_calib(text_x_position, text_y_position, font_size)
         self.__screen.fill(palette.BACKGROUND_COLOUR)
         text(self.__screen, palette.TEXT_COLOUR, 'KONIEC KALIBRACJI', text_x_position, text_y_position, font_size=font_size)
         self.__update()
+        self.player = None
 
     def __get_calib_samples(self):
         calibration_time = 5
@@ -93,4 +96,4 @@ class Calibration:
                  font_size=font_size)
             self.__update()
             time.sleep(2)
-            self.calibrate()
+            self.calibrate(self.player)

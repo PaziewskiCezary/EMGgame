@@ -58,8 +58,6 @@ class Amplifier:
             self.__data[-number_of_samples:] = Array('d', samples)
 
 
-
-        print(self.data[:])
     @property
     def data(self):
         return self.__data

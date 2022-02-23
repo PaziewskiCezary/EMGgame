@@ -78,8 +78,7 @@ class AbstractGame(ABC):
         self._projectile.x_position += self._max_shift * shift
 
     def _muscle_move(self, muscle_tension):
-
-        calibration_difference = self._calibrate_value_max - self._calibrate_value_min
+        calibration_difference = self._player.calibrate_value_max - self._player.calibrate_value_min
         number_of_movement_interval = 3
         movement_interval = calibration_difference / number_of_movement_interval
         second_movement_interval = 2 * movement_interval

@@ -16,8 +16,8 @@ class Player:
 
 
         self.__name = ''
-        self.__calibrate_value_min = 0
-        self.__calibrate_value_max = float('inf')
+        self._calibrate_value_min = 0
+        self._calibrate_value_max = float('inf')
         self.__input_type = None
 
         self.__screen_properties = screen_properties
@@ -33,7 +33,7 @@ class Player:
             self.amp = Amplifier()
 
             calibrate = Calibration(self.__screen, self.amp, kill_game=self.kill)
-            calibrate.calibrate()
+            calibrate.calibrate(self)
 
     def __bool__(self):
         return self.name != '' and self.calibrate_values != (0, float('inf')) and self.__input_type is not None
@@ -50,11 +50,11 @@ class Player:
 
     @property
     def calibrate_value_min(self):
-        return self.__calibrate_value_min
+        return self._calibrate_value_min
 
     @property
     def calibrate_value_max(self):
-        return self.__calibrate_value_max
+        return self._calibrate_value_max
     
     @property
     def calibrate_values(self):

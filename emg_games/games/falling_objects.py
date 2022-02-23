@@ -103,12 +103,13 @@ class FallingObjects(AbstractGame):
 
                 if not self._player._use_keyboard:
                     with self._player.amp.lock:
+                        signal = self._player.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
+                    signal -= np.mean(signal)
+                    signal = np.abs(signal)
 
-                        signal = self.app.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
-                        signal -= np.mean(signal)
-                        signal = np.abs(signal)
-                        move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
-                        self._move_projectile(move_value)
+                    mean_signal_value = np.mean(signal)
+                    move_value = self._muscle_move(mean_signal_value) / 10  # comm why 10?
+                    self._move_projectile(move_value)
                 # else:  #przesunięte o tab wszystko do if break_loop
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
@@ -151,15 +152,17 @@ class FallingObjects(AbstractGame):
                     new_projectile = True
                     actual_projectile = False
 
-                # showing bins
+                # show stuff on screen
                 self._screen.fill(self._background_colour)
+
                 self._update_background()
 
                 for target_ in self._targets:
                     self._screen.blit(target_.image, target_.get_position)
+
+
                 self._screen.blit(self._projectile.image, self._projectile.get_position)
 
-                # labels with lives and score
                 self._make_health_text()
 
                 self._clock.tick(60)
