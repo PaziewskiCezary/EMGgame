@@ -2,7 +2,7 @@ import pygame
 
 from emg_games.gui.components.pygame_textinput import TextInput
 from emg_games.gui.components.pygame_text import text
-from emg_games.games.calibration import Calibration
+from emg_games.backbones.components.calibration import Calibration
 from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
 from emg_games.amplifier import Amplifier

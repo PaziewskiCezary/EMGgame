@@ -1,8 +1,7 @@
 import argparse
-import sys
 from os import environ
 
-from emg_games.games.player import Player
+from emg_games.backbones.components.player import Player
 from emg_games.gui.scenes import ScreenProperties
 
 from emg_games.gui.scenes import choose_game
