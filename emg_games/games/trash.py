@@ -10,11 +10,6 @@ from emg_games.backbones import Target
 
 from emg_games.games.falling_objects import FallingObjects
 
-MOVE_LEFT = -1
-MOVE_RIGHT = 1
-MOVE_DOWN = 0
-NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
-
 
 class Trash(FallingObjects):
 
