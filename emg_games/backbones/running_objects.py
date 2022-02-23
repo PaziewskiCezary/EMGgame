@@ -72,7 +72,6 @@ class RunningObjects(AbstractGame):
     def _play(self):
 
         self._lives = self._max_lives
-        self._lives = self._max_lives
         self._score = 0
         self._missed = 0
 
