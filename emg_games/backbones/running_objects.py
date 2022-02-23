@@ -63,7 +63,7 @@ class RunningObjects(AbstractGame):
 
         self._projectile.x_position = random.randint(0 + self._projectile.size[0] // 2, self._x_screen -
                                                      self._projectile.size[0] // 2)
-        self._projectile.y_position = 100
+        self._projectile.y_position = random.randint(-200, 0)
 
         self.running_projectiles.append(self._projectile)
 
@@ -71,6 +71,7 @@ class RunningObjects(AbstractGame):
 
     def _play(self):
 
+        self._lives = self._max_lives
         self._lives = self._max_lives
         self._score = 0
         self._missed = 0
@@ -89,10 +90,9 @@ class RunningObjects(AbstractGame):
         self.running_projectiles = []
 
         self.time_since_new_projectile = time.time()
-        while play and self._lives > 0:
 
-            if time.time() - self.time_since_new_projectile >= 3 ** projectile_number:
-                self._set_new_projectile()
+        self.new_projectile_counter = time.time() + 10
+        while play and self._lives > 0:
 
             while new_projectiles:
                 self._set_new_projectile()
@@ -102,6 +102,11 @@ class RunningObjects(AbstractGame):
                 play = False
 
             while self.running_projectiles:
+
+                if time.time() - self.new_projectile_counter > 0:
+                    self._set_new_projectile()
+                    self.new_projectile_counter = time.time() + 3 ** projectile_number
+
                 break_loop = False
 
                 for event in pygame.event.get():
