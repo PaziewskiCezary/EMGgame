@@ -5,6 +5,7 @@ from emg_games.backbones.components.player import Player
 from emg_games.gui.scenes import ScreenProperties
 
 from emg_games.gui.scenes import choose_game
+# from emg_games.gui.scenes import options_screen
 
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
@@ -12,6 +13,8 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 def main(args):
 
     screen_properties = ScreenProperties(args.full_screen)
+
+    # options_screen(screen_properties=screen_properties)
 
     player = Player(screen_properties=screen_properties)
 

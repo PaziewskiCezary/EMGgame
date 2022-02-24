@@ -1,17 +1,10 @@
-# Rzeczy do zrobienia do gry EMG
+# TODOs
+* [ ] make screen updates same everywhere
+* [ ] make amplifier lsl `gitlab.com/fuw_scripts`?
+* [ ] better collision
+* [ ] signal showing
 
-## Obrazki
-* [] Znaleźć obrazki
-* [] Wyciąć
-* [] Przeskalować
+* [ ] add back buttons
 
-## Gra
-
-* Napisać Menu
-	* Jeden przycisk graj
-* Napisać główną cześć gry
-	* Kalibrachja
-	* Gra
-* Ekran z zapisywaniem wyniku
-* Serwer wyświetlający wyniki
-
+* [ ] image scaling
+* [ ] fix all images

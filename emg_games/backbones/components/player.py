@@ -95,7 +95,7 @@ class Player:
                         break
 
     def _set_input_type(self, args):
-        self._use_keyboard = args['a']
+        self._use_keyboard = args['use_keyboard']
         self._is_waiting_for_option = False
 
     def __get_input_type(self):
@@ -108,10 +108,23 @@ class Player:
         y_button = self.__y_screen / 5
         font_size = int(x_button // 5)
 
-        muscle_button = Button(screen=self.__screen, label='Mięsień', pos=(self.__x_screen / 2, self.__y_screen / 2 - 0.75 * y_button),
-                               dims=(x_button, y_button), button_color=palette.PINK_RGB, label_color=palette.YELLOW_RGB, func=self._set_input_type, func_args={'a':False}, font_size=font_size)
-        keyboard_button = Button(screen=self.__screen, label='Klawiatura', pos=(self.__x_screen / 2, self.__y_screen / 2 + 0.75 * y_button),
-                                 dims=(x_button, y_button), button_color=palette.PINK_RGB, label_color=palette.YELLOW_RGB, func=self._set_input_type, func_args={'a':True},
+        muscle_button = Button(screen=self.__screen,
+                               label='Mięsień',
+                               pos=(self.__x_screen / 2, self.__y_screen / 2 - 0.75 * y_button),
+                               dims=(x_button, y_button),
+                               button_color=palette.PINK_RGB,
+                               label_color=palette.YELLOW_RGB,
+                               func=self._set_input_type,
+                               func_args={'use_keyboard': False},
+                               font_size=font_size)
+
+        keyboard_button = Button(screen=self.__screen,
+                                 label='Klawiatura',
+                                 pos=(self.__x_screen / 2, self.__y_screen / 2 + 0.75 * y_button),
+                                 dims=(x_button, y_button),
+                                 button_color=palette.PINK_RGB,
+                                 label_color=palette.YELLOW_RGB,
+                                 func=self._set_input_type, func_args={'use_keyboard': True},
                                  font_size=font_size)
 
         self.__update()
