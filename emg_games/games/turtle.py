@@ -6,7 +6,7 @@ from emg_games.backbones.running_objects import RunningObjects
 
 
 class Turtle(RunningObjects):
-    game_name = 'ŻÓŁW'
+    game_name = 'żółw'
 
     def __init__(self, full_screen, player):
         super().__init__(full_screen, player)

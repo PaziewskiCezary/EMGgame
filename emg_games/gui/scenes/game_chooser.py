@@ -58,7 +58,7 @@ def choose_game(screen_properties, kill_game):
         x_position = button_width + j * 1.5 * button_width
         y_position = button_height + i * 1.5 * button_height
 
-        game_name = list_of_games[index].game_name
+        game_name = list_of_games[index].game_name.upper()
         game_button = Button(screen, game_name, (x_position, y_position), button_dimension,
                              palette.PINK_RGB, palette.YELLOW_RGB, lambda idx=index: game_name,
                              font_size)

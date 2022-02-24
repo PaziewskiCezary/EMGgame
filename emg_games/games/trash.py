@@ -10,7 +10,7 @@ from emg_games.backbones.falling_objects import FallingObjects
 
 class Trash(FallingObjects):
 
-    game_name = 'ŚMIECI'
+    game_name = 'śmieci'
 
     def __init__(self, full_screen, player):
         super().__init__(full_screen, player)

@@ -1,4 +1,4 @@
-from .trash import Trash as Thrash
-from .figures import Figures as Figures
+from .trash import Trash
+from .figures import Figures
 from .turtle import Turtle
 

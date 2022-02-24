@@ -55,6 +55,10 @@ class AbstractGame(ABC):
 
         self._lives = math.inf
 
+        if not hasattr(self, 'game_name'):
+            raise ValueError(f'no "game_name" set as class variable for {self.__class__}')
+            exit(1)
+
     def _kill(self):
         pygame.quit()
         exit()
@@ -91,9 +95,9 @@ class AbstractGame(ABC):
         self._play()
 
     def _show_score(self):
-
+        path = self.get_scores_path
         try:
-            scores = pickle.load(open(f'../{self._game_name}_scores.pkl', 'rb'))
+            scores = pickle.load(open(path, 'rb'))
         except FileNotFoundError:
             scores = []
 
@@ -204,7 +208,8 @@ class AbstractGame(ABC):
         pass
 
     def _save_score(self):
-        path = Path().home() / f'{self._game_name} scores.pkl'
+        path = self.get_scores_path
+
         if not os.path.isfile(path):
             scores = []
             pickle.dump(scores, open(path, 'wb'))
@@ -213,11 +218,14 @@ class AbstractGame(ABC):
         scores.append((self._score, self._name))
         pickle.dump(scores, open(path, 'wb'))
 
+    @property
+    def get_scores_path(self):
+        return Path().home() / f'{self.game_name} scores.pkl'
+
     def _scores(self):
-        path = Path().home() / f'{self._game_name} scores.pkl'
+        path = self.get_scores_path
         try:
             scores = pickle.load(open(path, 'rb'))
-
         except FileNotFoundError:
             scores = []
 

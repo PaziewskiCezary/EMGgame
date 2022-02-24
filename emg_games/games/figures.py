@@ -7,7 +7,7 @@ from emg_games.backbones.falling_objects import FallingObjects
 
 class Figures(FallingObjects):
 
-    game_name = 'FIGURY'
+    game_name = 'figury'
 
     def __init__(self, full_screen, player):
 

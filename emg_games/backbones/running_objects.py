@@ -150,8 +150,6 @@ class RunningObjects(AbstractGame):
                 if break_loop:
                     break
 
-
-
                 for (i, projectile_) in enumerate(self.running_projectiles):
                     projectile_x_position, projectile_y_position = projectile_.get_position
 
