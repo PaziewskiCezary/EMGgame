@@ -155,19 +155,21 @@ class AbstractGame(ABC):
         score_text = "Punkty: " + str(self._score)
         lives_text = "Życia: "
         health_text = u"♥"
-        width_heart, height_heart = pygame.font.SysFont(palette.FONT_STYLE, font_size_heart).size(health_text)
+        heart_font = 'DejaVu Sans Mono'
+        heart_color = red = (255, 0, 0)
+        width_heart, height_heart = pygame.font.SysFont(heart_font, font_size_heart).size(health_text)
         width_score, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(score_text)
         width_lives, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(lives_text)
-        # 'DejaVu Sans Mono'
         pygame.draw.rect(self._screen, palette.PRIMARY_COLOR,
                          (0, 0, self._x_screen, self._y_screen // 14), False)
+
         text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, 25, font_style=palette.FONT_STYLE,
              font_size=font_size)
         text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, 25, font_style=palette.FONT_STYLE,
              font_size=font_size)
-        text(self._screen, palette.SECONDARY_COLOR, health_text * self._lives,
+        text(self._screen, heart_color, health_text * self._lives,
              self._x_screen // 2 + width_lives // 2 + 0.5 * self._lives * width_heart,
-             25, font_style=palette.FONT_STYLE, font_size=font_size_heart)
+             25, font_style=heart_font, font_size=font_size_heart)
 
         self._update()
 
