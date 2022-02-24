@@ -17,6 +17,7 @@ class Trash(FallingObjects):
 
         class_name = "Trash"
 
+        # TODO load this all in super __init__
         self._backgrounds = sorted([x for x in utils.get_backgrounds(class_name)])
         self._backgrounds = [pygame.image.load(x) for x in self._backgrounds]
 

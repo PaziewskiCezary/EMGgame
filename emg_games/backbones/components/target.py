@@ -2,7 +2,6 @@ import pygame
 
 
 class Target(pygame.sprite.Sprite):
-    """docstring for Trash"""
 
     percentage = 0.1
 

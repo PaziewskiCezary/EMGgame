@@ -10,7 +10,7 @@ from emg_games.backbones.abstract_game import AbstractGame
 from emg_games.backbones import utils
 from emg_games.gui.components import palette
 
-
+# TODO move to utils
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
 MOVE_DOWN = 0

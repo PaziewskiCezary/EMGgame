@@ -12,6 +12,7 @@ class Turtle(RunningObjects):
         super().__init__(full_screen, player)
 
         class_name = "Turtle"
+        # TODO load this all in super __init__
 
         self._targets = [Target(desired_width=self._x_screen * Target.percentage, img_path=target_path,
                                 target_type=target_type) for (target_type, target_path) in

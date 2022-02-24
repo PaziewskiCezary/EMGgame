@@ -24,7 +24,6 @@ class AbstractGame(ABC):
 
     def __init__(self, full_screen, player):
 
-
         # TODO set full_screen
         self._full_screen = full_screen
         self._screen_properties = ScreenProperties(self._full_screen)
@@ -48,8 +47,6 @@ class AbstractGame(ABC):
 
         self._projectiles = []
 
-        self._game_name = ''
-
         self._projectile = None
         self._score = math.inf
 
@@ -58,8 +55,8 @@ class AbstractGame(ABC):
         if not hasattr(self, 'game_name'):
             raise ValueError(f'no "game_name" set as class variable for {self.__class__}')
 
-    @staticmethod
-    def _kill():
+    # TODO Move to utils
+    def _kill(self):
         pygame.quit()
         exit()
 
@@ -132,6 +129,7 @@ class AbstractGame(ABC):
         text(self._screen, palette.SECONDARY_COLOR, 'Pozycja', self._x_screen // 4, self._y_screen // 2,
              font_size=subtitle_font_size)
 
+        # TODO allow for braking "animation"
         self._update()
         time.sleep(1)
 
@@ -203,10 +201,6 @@ class AbstractGame(ABC):
     def _play(self):
         pass
 
-    @abstractmethod
-    def _update_background(self):
-        pass
-
     def _save_score(self):
         path = self.get_scores_path
 
@@ -270,7 +264,7 @@ class AbstractGame(ABC):
 
         self._screen.fill(palette.PRIMARY_COLOR)
 
-        pygame.display.set_caption('Segreguj smieci')
+        pygame.display.set_caption(self.game_name)
 
         x_button = self._x_screen / 4
         y_button = self._y_screen / 5

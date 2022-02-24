@@ -13,6 +13,7 @@ class Figures(FallingObjects):
 
         super().__init__(full_screen, player)
 
+        # TODO load this all in super __init__
         class_name = "Figures"
 
         self._targets = [Target(desired_width=self._x_screen * Target.percentage, img_path=target_path,

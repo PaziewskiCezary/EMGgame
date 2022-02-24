@@ -7,13 +7,10 @@ from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
 from emg_games.amplifier import Amplifier
 
-pygame.init()
-
 
 class Player:
 
     def __init__(self, screen_properties):
-
 
         self.__name = ''
         self._calibrate_value_min = 0
@@ -64,7 +61,6 @@ class Player:
     def __update():
         pygame.display.update()
 
-
     def __get_name(self):
         input_name = TextInput(font_family=palette.FONT_STYLE, font_size=self.__y_screen // 13,
                                text_color=palette.TEXT_COLOR, max_string_length=15)
@@ -101,7 +97,6 @@ class Player:
     def _set_input_type(self, args):
         self._use_keyboard = args['a']
         self._is_waiting_for_option = False
-
 
     def __get_input_type(self):
 

@@ -57,7 +57,6 @@ class Amplifier:
             self.__data[:-number_of_samples] = self.__data[number_of_samples:]
             self.__data[-number_of_samples:] = Array('d', samples)
 
-
     @property
     def data(self):
         return self.__data
@@ -84,29 +83,3 @@ class Amplifier:
     @property
     def lock(self):
         return self.__lock
-
-
-if __name__ == '__main__':
-
-    amp = Amplifier()
-    amp2 = Amplifier()
-
-    time.sleep(1)
-
-    print(1, amp.id)
-    print(2, amp2.id)
-
-    print('8'*100)
-
-    time.sleep(1)
-    print()
-    print(1, amp.get_signal())
-    print(2, amp.get_signal(10))
-
-    time.sleep(1)
-
-    print()
-    print(1, amp.get_signal())
-    print(2, amp.get_signal(10))
-
-    amp.terminate()

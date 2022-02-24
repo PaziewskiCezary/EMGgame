@@ -11,6 +11,7 @@ import pygame.locals as pl
 
 import unicodedata
 
+
 class TextInput:
     """
     This class lets the user input a piece of text, e.g. a name or a message.

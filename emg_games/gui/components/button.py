@@ -6,7 +6,6 @@ class Button(object):
 
     def __init__(self, screen, label, pos, dims, button_color, label_color, func, font_size=None, func_args={}):
 
-
         self.__screen = screen
         self.__label = label
         self.__x_position, self.__y_position = pos
@@ -16,7 +15,6 @@ class Button(object):
         self.__font = pygame.font.SysFont(palette.FONT_STYLE, font_size or palette.FONT_SIZE)
         self.__func = func
         self.__func_args = func_args
-
 
         self.pressed = False
 

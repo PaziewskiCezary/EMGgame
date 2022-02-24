@@ -2,7 +2,6 @@ import pygame
 
 
 class Projectile(pygame.sprite.Sprite):
-    """docstring for Trash"""
 
     percentage = 0.05
 
