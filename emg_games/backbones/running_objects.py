@@ -152,7 +152,6 @@ class RunningObjects(AbstractGame):
 
 
 
-                print(len(self.running_projectiles))
                 for (i, projectile_) in enumerate(self.running_projectiles):
                     projectile_x_position, projectile_y_position = projectile_.get_position
 
@@ -193,7 +192,6 @@ class RunningObjects(AbstractGame):
                 self._screen.blit(self._target.image, self._target.get_position)
 
                 for projectile_ in self.running_projectiles:
-                    print(projectile_.image, projectile_.get_position)
                     self._screen.blit(projectile_.image, projectile_.get_position)
 
                 # labels with lives and score
