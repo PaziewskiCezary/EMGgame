@@ -37,16 +37,9 @@ class AbstractGame(ABC):
         self._screen.fill(self._background_colour)
         # TODO move up
 
-        pygame.init()
-
         self._max_lives = 3
 
-        pygame.display.flip()
-
         self._clock = pygame.time.Clock()
-
-        self._font_style = 'DejaVu Sans Mono'
-        self._font_size = 30
 
         self._player = player
 
@@ -274,23 +267,26 @@ class AbstractGame(ABC):
         y_button = self._y_screen / 5
         font_size = int(x_button // 5)
 
-        b_s = Button(self._screen, 'Start', (self._x_screen / 2, self._y_screen / 2 - 1.5 * y_button),
+        button_start = Button(self._screen, 'Start', (self._x_screen / 2, self._y_screen / 2 - 1.5 * y_button),
                      (x_button, y_button), self._button_colour, self._button_text_colour, self._start,
                      font_size=font_size)
-        b_w = Button(self._screen, 'Wyniki', (self._x_screen / 2, self._y_screen / 2), (x_button, y_button),
+        button_scores = Button(self._screen, 'Wyniki', (self._x_screen / 2, self._y_screen / 2), (x_button, y_button),
                      self._button_colour, self._button_text_colour, self._scores, font_size=font_size)
-        b_e = Button(self._screen, 'Wyjdź', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
+        button_exit = Button(self._screen, 'Wyjdź', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
                      (x_button, y_button), self._button_colour, self._button_text_colour, self._kill,
                      font_size=font_size)
 
         self._update()
         while True:
             for event in pygame.event.get():
-                b_s.on_click(event)
-                b_w.on_click(event)
-                b_e.on_click(event)
+
+                button_start.on_click(event)
+                button_scores.on_click(event)
+                button_exit.on_click(event)
+
                 if event.type == pygame.QUIT:
                     self._kill()
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self._kill()
