@@ -57,15 +57,49 @@ class FallingObjects(AbstractGame):
 
         return target_y_position
 
+    def _set_new_projectile(self):
+
+        projectile_index = random.randint(0, len(self._projectiles) - 1)
+        self._projectile = self._projectiles[projectile_index]
+
+        # recalculate x to be in center
+        self._projectile.x_position = self._x_screen // 2 - self._projectile.size[1] // 2
+        self._projectile.y_position = 100
+
+    def _punctation(self, target_y_position):
+
+        new_projectile = False
+        actual_projectile = True
+
+        projectile_x_position, projectile_y_position = self._projectile.get_position
+
+        acceleration = 1.02 ** self._projectile_number
+
+        y_step = self._y_screen * self._speed_rate * acceleration
+        self._projectile.x_position, self._projectile.y_position = \
+            projectile_x_position, projectile_y_position + y_step
+        if self._projectile.bottom > target_y_position:
+            collision = False
+            for (i, target_) in enumerate(self._targets):
+
+                if utils.collide_in(self._projectile, target_):
+                    collision = True
+                    if target_.type == self._projectile.type:
+                        self._score += 100
+
+                    else:
+                        self._score += -10
+                        self._missed += 1
+
+            if not collision:
+                self._lives -= 1
+
+            new_projectile = True
+            actual_projectile = False
+
+        return new_projectile, actual_projectile
+
     def _play(self):
-
-        self._lives = self._max_lives
-        self._score = 0
-        self._missed = 0
-
-        self._background_idx = 0
-        speed_rate = 0.0003
-        projectile_number = 0
 
         target_y_position = self._set_targets()
         np.random.shuffle(self._projectiles)
@@ -77,15 +111,12 @@ class FallingObjects(AbstractGame):
 
         while play and self._lives > 0:
             if new_projectile:
-                projectile_index = random.randint(0, len(self._projectiles)-1)
-                self._projectile = self._projectiles[projectile_index]
-                projectile_number += 1
 
-                # recalculate x to be in center
-                self._projectile.x_position = self._x_screen // 2 - self._projectile.size[1] // 2
-                self._projectile.y_position = 100
+                self._set_new_projectile()
+
                 new_projectile = False
                 actual_projectile = True
+                self._projectile_number += 1
 
             if not self._lives:
                 play = False
@@ -95,72 +126,23 @@ class FallingObjects(AbstractGame):
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self._kill()
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            play = False
-                            break_loop = True
+                    play, break_loop = self._escape_game(event)
 
-                        if event.key == pygame.K_LEFT:
-                            self._move_projectile(MOVE_LEFT)
+                    self._keyboard_control(event, self._move_projectile)
 
-                        if event.key == pygame.K_RIGHT:
-                            self._move_projectile(MOVE_RIGHT)
-
-                        if event.key == pygame.K_DOWN:
-                            self._projectile.y_position += 10
                 if break_loop:
                     break
 
                 if not self._player._use_keyboard:
-                    with self._player.amp.lock:
-                        signal = self._player.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
-                    signal -= np.mean(signal)
-                    signal = np.abs(signal)
+                    self._muscle_control(self._move_projectile)
 
-                    mean_signal_value = np.mean(signal)
-                    move_value = self._muscle_move(mean_signal_value) / 10  # comm why 10?
-                    self._move_projectile(move_value)
-                # else:  #przesunięte o tab wszystko do if break_loop
                 for event in pygame.event.get():
-                    if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_ESCAPE:
-                            play = False
-                            break_loop = True
-
-                        # if event.key == pygame.K_LEFT:
-                        #     self._move_projectile(MOVE_LEFT)
-                        #
-                        # if event.key == pygame.K_RIGHT:
-                        #     self._move_projectile(MOVE_RIGHT)
+                    play, break_loop = self._escape_game(event)
 
                 if break_loop:
                     break
 
-                projectile_x_position, projectile_y_position = self._projectile.get_position
-
-                acceleration = 1.02 ** projectile_number
-
-                y_step = self._y_screen * speed_rate * acceleration
-                self._projectile.x_position, self._projectile.y_position = \
-                    projectile_x_position, projectile_y_position + y_step
-                if self._projectile.bottom > target_y_position:
-                    collision = False
-                    for (i, target_) in enumerate(self._targets):
-
-                        if utils.collide_in(self._projectile, target_):
-                            collision = True
-                            if target_.type == self._projectile.type:
-                                self._score += 100
-
-                            else:
-                                self._score += -10
-                                self._missed += 1
-
-                    if not collision:
-                        self._lives -= 1
-
-                    new_projectile = True
-                    actual_projectile = False
+                new_projectile, actual_projectile = self._punctation(target_y_position)
 
                 # show stuff on screen
                 self._screen.fill(palette.BACKGROUND_COLOR)
