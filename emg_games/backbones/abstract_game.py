@@ -193,7 +193,7 @@ class AbstractGame(ABC):
         lives_text = "Życia: "
         health_text = u"♥"
         heart_font = 'DejaVu Sans Mono'
-        heart_color = red = (255, 0, 0)
+        heart_color = (255, 0, 0)
         width_heart, height_heart = pygame.font.SysFont(heart_font, font_size_heart).size(health_text)
         width_score, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(score_text)
         width_lives, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(lives_text)

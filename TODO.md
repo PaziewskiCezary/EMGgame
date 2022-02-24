@@ -1,4 +1,7 @@
 # TODOs
+* [ ] captions
+* [ ] emojis as lives
+
 * [ ] make screen updates same everywhere
 * [ ] make amplifier lsl `gitlab.com/fuw_scripts`?
 * [ ] better collision
