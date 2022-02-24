@@ -66,16 +66,15 @@ class Player:
 
 
     def __get_name(self):
-        print('starting get name')
         input_name = TextInput(font_family=palette.FONT_STYLE, font_size=self.__y_screen // 13,
-                               text_color=palette.TEXT_COLOUR, max_string_length=15)
+                               text_color=palette.TEXT_COLOR, max_string_length=15)
 
         clock = pygame.time.Clock()
         is_input = True
         while is_input:
 
-            self.__screen.fill(palette.BACKGROUND_COLOUR)
-            text(self.__screen, palette.TEXT_COLOUR, "PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4,
+            self.__screen.fill(palette.BACKGROUND_COLOR)
+            text(self.__screen, palette.TEXT_COLOR, "PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4,
                  font_size=self.__y_screen // 13)
 
             # TODO exiting
@@ -106,10 +105,9 @@ class Player:
 
     def __get_input_type(self):
 
-        print('start input type')
         self._is_waiting_for_option = True
 
-        self.__screen.fill(palette.BACKGROUND_COLOUR)
+        self.__screen.fill(palette.BACKGROUND_COLOR)
 
         x_button = self.__x_screen / 4
         y_button = self.__y_screen / 5

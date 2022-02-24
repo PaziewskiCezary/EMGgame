@@ -1,11 +1,16 @@
 import pygame
 import numpy as np
 import random
+import time
 
 from emg_games.backbones.abstract_game import AbstractGame
 from emg_games.backbones import utils
 from emg_games.backbones import Projectile
 from emg_games.backbones import Target
+from emg_games.gui.components import palette
+
+
+from copy import copy
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
@@ -41,13 +46,30 @@ class RunningObjects(AbstractGame):
 
     def _set_targets(self):
 
-        first_target = 0
+        only_target = 0
 
-        target_width, target_height = self._targets[first_target].size
+        self._target = self._targets[only_target]
+
+        target_width, target_height = self._targets[only_target].size
 
         target_y_position = self._y_screen - target_height
+        self._target.y_position = target_y_position
+        self._target.x_position = self._x_screen // 2 - self._target.size[1] // 2
 
         return target_y_position
+
+    def _set_new_projectile(self):
+
+        projectile_index = random.randint(0, len(self._projectiles) - 1)
+        self._projectile = copy(self._projectiles[projectile_index])
+
+        self._projectile.x_position = random.randint(0 + self._projectile.size[0] // 2, self._x_screen -
+                                                     self._projectile.size[0] // 2)
+        self._projectile.y_position = random.randint(-200, 0)
+
+        self.running_projectiles.append(self._projectile)
+
+        self.time_since_new_projectile = time.time()
 
     def _play(self):
 
@@ -56,35 +78,38 @@ class RunningObjects(AbstractGame):
         self._missed = 0
 
         self._background_idx = 0
-        speed_rate = 0.0003
+        speed_rate = 0.003
         projectile_number = 0
 
-        target_y_position = self._set_targets()
         np.random.shuffle(self._projectiles)
-        self._target = self._targets[0]
+        self._set_targets()
 
         play = True
-        new_projectile = True
-        actual_projectile = None
+        new_projectiles = 1
         self._update_background()
 
-        while play and self._lives > 0:
-            if new_projectile:
-                projectile_index = random.randint(0, len(self._projectiles) - 1)
-                self._projectile = self._projectiles[projectile_index]
-                projectile_number += 1
+        self.running_projectiles = []
 
-                # recalculate x to be in center
-                self._projectile.x_position = random.randint(0, self._x_screen)
-                self._projectile.y_position = 100
-                new_projectile = False
-                actual_projectile = True
+        self.time_since_new_projectile = time.time()
+
+        self.new_projectile_counter = time.time() + 10
+        while play and self._lives > 0:
+
+            while new_projectiles:
+                self._set_new_projectile()
+                new_projectiles -= 1
 
             if not self._lives:
                 play = False
 
-            while actual_projectile:
+            while self.running_projectiles:
+
+                if time.time() - self.new_projectile_counter > 0:
+                    self._set_new_projectile()
+                    self.new_projectile_counter = time.time() + 3 ** projectile_number
+
                 break_loop = False
+
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         self._kill()
@@ -99,8 +124,6 @@ class RunningObjects(AbstractGame):
                         if event.key == pygame.K_RIGHT:
                             self._move_target(MOVE_RIGHT)
 
-                        if event.key == pygame.K_DOWN:
-                            self._projectile.y_position += 10
                 if break_loop:
                     break
 
@@ -111,7 +134,7 @@ class RunningObjects(AbstractGame):
                         signal = np.abs(signal)
                         move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
                         self._move_target(move_value)
-                # else:  #przesunięte o tab wszystko do if break_loop
+
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_ESCAPE:
@@ -127,44 +150,51 @@ class RunningObjects(AbstractGame):
                 if break_loop:
                     break
 
-                projectile_x_position, projectile_y_position = self._projectile.get_position
-                target_x_position, target_y_position = self._target.get_position
 
-                acceleration = 1.02 ** projectile_number
 
-                y_step = self._y_screen * speed_rate * acceleration
-                self._projectile.x_position, self._projectile.y_position = \
-                    projectile_x_position, projectile_y_position + y_step
-                if self._projectile.bottom > target_y_position:
-                    collision = False
-                    for (i, target_) in enumerate(self._targets):
+                print(len(self.running_projectiles))
+                for (i, projectile_) in enumerate(self.running_projectiles):
+                    projectile_x_position, projectile_y_position = projectile_.get_position
 
-                        if utils.collide_in(self._projectile, target_):
-                            collision = True
-                            if target_.type == self._projectile.type:
+                    acceleration = 1.02 ** projectile_number
+
+                    y_step = self._y_screen * speed_rate * acceleration
+                    projectile_.y_position = projectile_y_position + y_step
+                    if projectile_.bottom > self._target.y_position:
+
+                        new_projectile = False
+                        if utils.collide_in(projectile_, self._target):
+                            if self._target.type == projectile_.type:
                                 self._score += 10
-
                             else:
                                 self._lives -= 1
                                 self._score += -100
                                 self._missed += 1
 
-                    if not collision:
-                        if target_.type == self._projectile.type:
-                            self._score -= 10
-                        else:
-                            self._score += 100
+                            if self._target.type == projectile_.type:
+                                self._score -= 10
+                            else:
+                                self._score += 100
 
-                    new_projectile = True
-                    actual_projectile = False
+                            new_projectile = True
+
+                        elif projectile_.top > self._y_screen:
+                            new_projectile = True
+
+                        if new_projectile:
+                            new_projectiles += 1
+                            self.running_projectiles.remove(projectile_)
+
 
                 # showing bins
-                self._screen.fill(self._background_colour)
+                self._screen.fill(palette.BACKGROUND_COLOR)
                 self._update_background()
 
-                for target_ in self._targets:
-                    self._screen.blit(target_.image, target_.get_position)
-                self._screen.blit(self._projectile.image, self._projectile.get_position)
+                self._screen.blit(self._target.image, self._target.get_position)
+
+                for projectile_ in self.running_projectiles:
+                    print(projectile_.image, projectile_.get_position)
+                    self._screen.blit(projectile_.image, projectile_.get_position)
 
                 # labels with lives and score
                 self._make_health_text()

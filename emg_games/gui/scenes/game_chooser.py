@@ -39,7 +39,7 @@ def choose_game(screen_properties, kill_game):
 
     screen = pygame.display.set_mode(screen_size)
 
-    screen.fill(palette.BACKGROUND_COLOUR)
+    screen.fill(palette.BACKGROUND_COLOR)
 
     number_of_rows = round(math.sqrt(len(list_of_games)))
     number_of_columns = math.ceil(len(list_of_games) / number_of_rows)

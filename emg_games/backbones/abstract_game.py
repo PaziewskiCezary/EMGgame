@@ -6,6 +6,7 @@ import numpy as np
 import math
 
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 from emg_games.gui.components import Button
 from emg_games.gui.components import text
@@ -23,10 +24,6 @@ class AbstractGame(ABC):
 
     def __init__(self, full_screen, player):
 
-        self._background_colour = palette.YELLOW_RGB
-        self._text_colour = palette.PINK_RGB
-        self._button_colour = palette.PINK_RGB
-        self._button_text_colour = palette.YELLOW_RGB
 
         # TODO set full_screen
         self._full_screen = full_screen
@@ -34,19 +31,12 @@ class AbstractGame(ABC):
         self._screen = self._screen_properties.screen
         self._x_screen = self._screen_properties.x_screen
         self._y_screen = self._screen_properties.y_screen
-        self._screen.fill(self._background_colour)
+        self._screen.fill(palette.PRIMARY_COLOR)
         # TODO move up
-
-        pygame.init()
 
         self._max_lives = 3
 
-        pygame.display.flip()
-
         self._clock = pygame.time.Clock()
-
-        self._font_style = 'DejaVu Sans Mono'
-        self._font_size = 30
 
         self._player = player
 
@@ -113,7 +103,7 @@ class AbstractGame(ABC):
 
         place = np.argmax(index) + 1
 
-        self._screen.fill(self._background_colour)
+        self._screen.fill(palette.PRIMARY_COLOR)
         self._update()
         x_button, y_button = self._x_screen // 20, self._y_screen // 20
         button_font_size = self._y_screen // 18
@@ -122,36 +112,36 @@ class AbstractGame(ABC):
         points_font_size = self._y_screen // 16
 
         return_btn = Button(self._screen, 'Menu', (x_button, y_button), (x_button * 2, y_button * 2),
-                            button_color=self._button_colour, label_color=self._button_text_colour, func=self.menu,
+                            button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=self.menu,
                             font_size=button_font_size)
         again_btn = Button(self._screen, 'Zagraj jeszcze raz!', (self._x_screen // 2, 7 * self._y_screen // 8),
                            (x_button * 7, y_button * 3),
-                           button_color=self._button_colour, label_color=self._button_text_colour, func=self._play,
+                           button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=self._play,
                            font_size=button_font_size)
 
-        text(self._screen, self._text_colour, 'WYNIK', self._x_screen // 2, self._y_screen // 4,
+        text(self._screen, palette.SECONDARY_COLOR, 'WYNIK', self._x_screen // 2, self._y_screen // 4,
              font_size=title_font_size)
-        text(self._screen, self._text_colour, 'Punkty', 3 * self._x_screen // 4, self._y_screen // 2,
+        text(self._screen, palette.SECONDARY_COLOR, 'Punkty', 3 * self._x_screen // 4, self._y_screen // 2,
              font_size=subtitle_font_size)
-        text(self._screen, self._text_colour, 'Imię', 2 * self._x_screen // 4, self._y_screen // 2,
+        text(self._screen, palette.SECONDARY_COLOR, 'Imię', 2 * self._x_screen // 4, self._y_screen // 2,
              font_size=subtitle_font_size)
-        text(self._screen, self._text_colour, 'Pozycja', self._x_screen // 4, self._y_screen // 2,
+        text(self._screen, palette.SECONDARY_COLOR, 'Pozycja', self._x_screen // 4, self._y_screen // 2,
              font_size=subtitle_font_size)
 
         self._update()
         time.sleep(1)
 
-        text(self._screen, self._text_colour, str(self._score), 3 * self._x_screen // 4, self._y_screen // 2 + 100,
+        text(self._screen, palette.SECONDARY_COLOR, str(self._score), 3 * self._x_screen // 4, self._y_screen // 2 + 100,
              font_size=points_font_size)
         self._update()
         time.sleep(1)
 
-        text(self._screen, self._text_colour, self._name, 2 * self._x_screen // 4, self._y_screen // 2 + 100,
+        text(self._screen, palette.SECONDARY_COLOR, self._name, 2 * self._x_screen // 4, self._y_screen // 2 + 100,
              font_size=points_font_size)
         self._update()
         time.sleep(1)
 
-        text(self._screen, self._text_colour, f' {str(place) if place < 10 else str(place)}.', self._x_screen // 4,
+        text(self._screen, palette.SECONDARY_COLOR, f' {str(place) if place < 10 else str(place)}.', self._x_screen // 4,
              self._y_screen // 2 + 100,
              font_size=points_font_size)
         self._update()
@@ -165,19 +155,19 @@ class AbstractGame(ABC):
         score_text = "Punkty: " + str(self._score)
         lives_text = "Życia: "
         health_text = u"♥"
-        width_heart, height_heart = pygame.font.SysFont(self._font_style, font_size_heart).size(health_text)
-        width_score, _ = pygame.font.SysFont(self._font_style, font_size).size(score_text)
-        width_lives, _ = pygame.font.SysFont(self._font_style, font_size).size(lives_text)
+        width_heart, height_heart = pygame.font.SysFont(palette.FONT_STYLE, font_size_heart).size(health_text)
+        width_score, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(score_text)
+        width_lives, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(lives_text)
         # 'DejaVu Sans Mono'
-        pygame.draw.rect(self._screen, self._background_colour,
+        pygame.draw.rect(self._screen, palette.PRIMARY_COLOR,
                          (0, 0, self._x_screen, self._y_screen // 14), False)
-        text(self._screen, self._text_colour, score_text, width_score / 2, 25, font_style=self._font_style,
+        text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, 25, font_style=palette.FONT_STYLE,
              font_size=font_size)
-        text(self._screen, self._text_colour, lives_text, self._x_screen // 2, 25, font_style=self._font_style,
+        text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, 25, font_style=palette.FONT_STYLE,
              font_size=font_size)
-        text(self._screen, self._text_colour, health_text * self._lives,
+        text(self._screen, palette.SECONDARY_COLOR, health_text * self._lives,
              self._x_screen // 2 + width_lives // 2 + 0.5 * self._lives * width_heart,
-             25, font_style=self._font_style, font_size=font_size_heart)
+             25, font_style=palette.FONT_STYLE, font_size=font_size_heart)
 
         self._update()
 
@@ -234,23 +224,23 @@ class AbstractGame(ABC):
         except ValueError:
             scores, index = ['brak wyników'], [0]
 
-        self._screen.fill(self._background_colour)
+        self._screen.fill(palette.PRIMARY_COLOR)
         self._update()
         x_button, y_button = self._x_screen // 20, self._y_screen // 20
         button_font_size = self._y_screen // 18
         return_btn = Button(self._screen, 'Wróć', (x_button, y_button), (x_button * 2, y_button * 2),
-                            button_color=self._button_colour, label_color=self._button_text_colour, func=self.menu,
+                            button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=self.menu,
                             font_size=button_font_size)
-        text(self._screen, self._text_colour, 'WYNIKI', self._x_screen // 2, self._y_screen // 10 - 25,
+        text(self._screen, palette.SECONDARY_COLOR, 'WYNIKI', self._x_screen // 2, self._y_screen // 10 - 25,
              font_size=48)
         y_offset = 55
         for i in range(min(len(scores), 10)):
-            text(self._screen, self._text_colour, f'{" " + str(i + 1) if i < 10 else str(i + 1)}.',
+            text(self._screen, palette.SECONDARY_COLOR, f'{" " + str(i + 1) if i < 10 else str(i + 1)}.',
                  self._x_screen // 4,
                  self._y_screen // 10 + (i + 1) * y_offset)
-            text(self._screen, self._text_colour, str(scores[i][1]), 2 * self._x_screen // 4,
+            text(self._screen, palette.SECONDARY_COLOR, str(scores[i][1]), 2 * self._x_screen // 4,
                  self._y_screen // 10 + (i + 1) * y_offset)
-            text(self._screen, self._text_colour, str(scores[i][0]), 3 * self._x_screen // 4,
+            text(self._screen, palette.SECONDARY_COLOR, str(scores[i][0]), 3 * self._x_screen // 4,
                  self._y_screen // 10 + (i + 1) * y_offset)
             time.sleep(0.1)
             self._update()
@@ -266,7 +256,7 @@ class AbstractGame(ABC):
 
     def menu(self):
 
-        self._screen.fill(self._background_colour)
+        self._screen.fill(palette.PRIMARY_COLOR)
 
         pygame.display.set_caption('Segreguj smieci')
 
@@ -274,23 +264,26 @@ class AbstractGame(ABC):
         y_button = self._y_screen / 5
         font_size = int(x_button // 5)
 
-        b_s = Button(self._screen, 'Start', (self._x_screen / 2, self._y_screen / 2 - 1.5 * y_button),
-                     (x_button, y_button), self._button_colour, self._button_text_colour, self._start,
+        button_start = Button(self._screen, 'Start', (self._x_screen / 2, self._y_screen / 2 - 1.5 * y_button),
+                     (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._start,
                      font_size=font_size)
-        b_w = Button(self._screen, 'Wyniki', (self._x_screen / 2, self._y_screen / 2), (x_button, y_button),
-                     self._button_colour, self._button_text_colour, self._scores, font_size=font_size)
-        b_e = Button(self._screen, 'Wyjdź', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
-                     (x_button, y_button), self._button_colour, self._button_text_colour, self._kill,
+        button_scores = Button(self._screen, 'Wyniki', (self._x_screen / 2, self._y_screen / 2), (x_button, y_button),
+                     palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._scores, font_size=font_size)
+        button_exit = Button(self._screen, 'Wyjdź', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
+                     (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._kill,
                      font_size=font_size)
 
         self._update()
         while True:
             for event in pygame.event.get():
-                b_s.on_click(event)
-                b_w.on_click(event)
-                b_e.on_click(event)
+
+                button_start.on_click(event)
+                button_scores.on_click(event)
+                button_exit.on_click(event)
+
                 if event.type == pygame.QUIT:
                     self._kill()
+
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self._kill()
