@@ -202,17 +202,19 @@ class AbstractGame(ABC):
         pass
 
     def _save_score(self):
-        if not os.path.isfile(f'../{self._game_name}_scores.pkl'):
+        path = Path().home() / f'{self._game_name} scores.pkl'
+        if not os.path.isfile(path):
             scores = []
-            pickle.dump(scores, open(f'../{self._game_name}_scores.pkl', "wb"))
+            pickle.dump(scores, open(path, 'wb'))
 
-        scores = pickle.load(open(f'../{self._game_name}_scores.pkl', "rb"))
+        scores = pickle.load(open(path, 'rb'))
         scores.append((self._score, self._name))
-        pickle.dump(scores, open(f'../{self._game_name}_scores.pkl', "wb"))
+        pickle.dump(scores, open(path, 'wb'))
 
     def _scores(self):
+        path = Path().home() / f'{self._game_name} scores.pkl'
         try:
-            scores = pickle.load(open(f'../{self._game_name}_scores.pkl', "rb"))
+            scores = pickle.load(open(path, 'rb'))
 
         except FileNotFoundError:
             scores = []

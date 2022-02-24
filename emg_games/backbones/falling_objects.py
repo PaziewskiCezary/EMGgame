@@ -4,7 +4,6 @@ import random
 
 from emg_games.backbones.abstract_game import AbstractGame
 from emg_games.backbones import utils
-from emg_games.backbones import Projectile
 from emg_games.backbones import Target
 from emg_games.gui.components import palette
 
@@ -169,7 +168,6 @@ class FallingObjects(AbstractGame):
 
                 for target_ in self._targets:
                     self._screen.blit(target_.image, target_.get_position)
-
 
                 self._screen.blit(self._projectile.image, self._projectile.get_position)
 
