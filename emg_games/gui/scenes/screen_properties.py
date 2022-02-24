@@ -1,7 +1,7 @@
 import pygame
 
 
-class ScreenProperties():
+class ScreenProperties:
     """Screen"""
 
     def __init__(self, full_screen):
