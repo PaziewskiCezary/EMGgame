@@ -7,6 +7,8 @@ from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
 from emg_games.amplifier import Amplifier
 
+pygame.init()
+
 
 class Player:
 

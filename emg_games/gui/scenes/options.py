@@ -8,7 +8,7 @@ def update():
     pygame.display.update()
 
 
-def options(screen_properties):
+def options_screen(screen_properties):
     is_waiting_for_option = True
 
     screen_properties.screen.fill(palette.BACKGROUND_COLOR)

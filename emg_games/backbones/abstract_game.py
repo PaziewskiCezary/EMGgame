@@ -17,6 +17,7 @@ from emg_games.gui.components import palette
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
 MOVE_DOWN = 0
+NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 
 class AbstractGame(ABC):
@@ -35,11 +36,20 @@ class AbstractGame(ABC):
 
         self._max_lives = 3
 
+        self._lives = self._max_lives
+        self._score = 0
+        self._missed = 0
+
+        self._background_idx = 0
+        self._projectile_number = 0
+
         self._clock = pygame.time.Clock()
 
         self._player = player
 
         self._max_shift = 10
+
+        self._speed_rate = 0.0003
 
         self._backgrounds = None
 
@@ -48,9 +58,6 @@ class AbstractGame(ABC):
         self._projectiles = []
 
         self._projectile = None
-        self._score = math.inf
-
-        self._lives = math.inf
 
         if not hasattr(self, 'game_name'):
             raise ValueError(f'no "game_name" set as class variable for {self.__class__}')
@@ -79,6 +86,36 @@ class AbstractGame(ABC):
                 return MOVE_DOWN
             elif second_movement_interval < actual_muscle_tension <= third_movement_interval:
                 return (actual_muscle_tension - second_movement_interval) / movement_interval
+
+    def _escape_game(self, event):
+
+        play = True
+        break_loop = False
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                play = False
+                break_loop = True
+
+        return play, break_loop
+
+    def _keyboard_control(self, event, moving_function):
+
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_LEFT:
+                moving_function(MOVE_LEFT)
+
+            if event.key == pygame.K_RIGHT:
+                moving_function(MOVE_RIGHT)
+
+    def _muscle_control(self, moving_function):
+
+        with self._player.amp.lock:
+            signal = self.app.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
+            signal -= np.mean(signal)
+            signal = np.abs(signal)
+            move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
+            moving_function(move_value)
 
     @staticmethod
     def _update():
@@ -198,6 +235,14 @@ class AbstractGame(ABC):
         pass
 
     @abstractmethod
+    def _set_new_projectile(self):
+        pass
+
+    @abstractmethod
+    def _punctation(self):
+        pass
+
+    @abstractmethod
     def _play(self):
         pass
 
@@ -275,7 +320,7 @@ class AbstractGame(ABC):
                      font_size=font_size)
         button_scores = Button(self._screen, 'Wyniki', (self._x_screen / 2, self._y_screen / 2), (x_button, y_button),
                      palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._scores, font_size=font_size)
-        button_exit = Button(self._screen, 'Wyjdź', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
+        button_exit = Button(self._screen, 'Cofnij', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
                      (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._kill,
                      font_size=font_size)
 
