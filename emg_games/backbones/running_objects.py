@@ -33,16 +33,13 @@ class RunningObjects(AbstractGame):
         self._game_name = 'Running Object'
 
     def _move_target(self, shift):
-        # if not self._projectile:
-        #     raise ValueError('self.__projectile not set')
-        # if abs(shift) > 1:
-        #     raise ValueError('arg must be between -1 and 1')
+
+        if not self._target:
+            raise ValueError('self._target not set')
+        if abs(shift) > 1:
+            raise ValueError('arg must be between -1 and 1')
 
         self._target.x_position += self._max_shift * shift
-
-    def _set_projectiles(self):
-
-        pass
 
     def _set_targets(self):
 
@@ -63,8 +60,8 @@ class RunningObjects(AbstractGame):
         projectile_index = random.randint(0, len(self._projectiles) - 1)
         self._projectile = copy(self._projectiles[projectile_index])
 
-        self._projectile.x_position = random.randint(0 + self._projectile.size[0] // 2, self._x_screen -
-                                                     self._projectile.size[0] // 2)
+        self._projectile.x_position = random.randint(self._projectile.size[0], self._x_screen -
+                                                     self._projectile.size[0])
         self._projectile.y_position = random.randint(-200, 0)
 
         self.running_projectiles.append(self._projectile)
@@ -93,6 +90,7 @@ class RunningObjects(AbstractGame):
         self.time_since_new_projectile = time.time()
 
         self.new_projectile_counter = time.time() + 10
+
         while play and self._lives > 0:
 
             while new_projectiles:
@@ -150,9 +148,6 @@ class RunningObjects(AbstractGame):
                 if break_loop:
                     break
 
-
-
-                print(len(self.running_projectiles))
                 for (i, projectile_) in enumerate(self.running_projectiles):
                     projectile_x_position, projectile_y_position = projectile_.get_position
 
@@ -171,29 +166,31 @@ class RunningObjects(AbstractGame):
                                 self._score += -100
                                 self._missed += 1
 
+                            new_projectile = True
+
+                        elif projectile_.top > self._y_screen:
                             if self._target.type == projectile_.type:
                                 self._score -= 10
                             else:
                                 self._score += 100
-
-                            new_projectile = True
-
-                        elif projectile_.top > self._y_screen:
                             new_projectile = True
 
                         if new_projectile:
                             new_projectiles += 1
                             self.running_projectiles.remove(projectile_)
 
+                        if self._lives <= 0:
+                            break_loop = True
 
-                # showing bins
+                if break_loop:
+                    break
+
                 self._screen.fill(palette.BACKGROUND_COLOR)
                 self._update_background()
 
                 self._screen.blit(self._target.image, self._target.get_position)
 
                 for projectile_ in self.running_projectiles:
-                    print(projectile_.image, projectile_.get_position)
                     self._screen.blit(projectile_.image, projectile_.get_position)
 
                 # labels with lives and score
