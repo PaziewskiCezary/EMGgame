@@ -7,6 +7,8 @@ from emg_games.backbones.abstract_game import AbstractGame
 from emg_games.backbones import utils
 from emg_games.backbones import Projectile
 from emg_games.backbones import Target
+from emg_games.gui.components import palette
+
 
 from copy import copy
 
@@ -185,7 +187,7 @@ class RunningObjects(AbstractGame):
 
 
                 # showing bins
-                self._screen.fill(self._background_colour)
+                self._screen.fill(palette.BACKGROUND_COLOR)
                 self._update_background()
 
                 self._screen.blit(self._target.image, self._target.get_position)
