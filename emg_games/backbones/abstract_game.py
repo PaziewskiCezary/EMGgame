@@ -57,9 +57,9 @@ class AbstractGame(ABC):
 
         if not hasattr(self, 'game_name'):
             raise ValueError(f'no "game_name" set as class variable for {self.__class__}')
-            exit(1)
 
-    def _kill(self):
+    @staticmethod
+    def _kill():
         pygame.quit()
         exit()
 

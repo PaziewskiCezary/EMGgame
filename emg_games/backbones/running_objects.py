@@ -1,16 +1,15 @@
 import pygame
-import numpy as np
 import random
 import time
 
-from emg_games.backbones.abstract_game import AbstractGame
-from emg_games.backbones import utils
-from emg_games.backbones import Projectile
-from emg_games.backbones import Target
-from emg_games.gui.components import palette
-
+import numpy as np
 
 from copy import copy
+
+from emg_games.backbones.abstract_game import AbstractGame
+from emg_games.backbones import utils
+from emg_games.gui.components import palette
+
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
@@ -182,8 +181,6 @@ class RunningObjects(AbstractGame):
                             new_projectiles += 1
                             self.running_projectiles.remove(projectile_)
 
-
-                # showing bins
                 self._screen.fill(palette.BACKGROUND_COLOR)
                 self._update_background()
 
