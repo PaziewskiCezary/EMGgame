@@ -65,10 +65,12 @@ class FallingObjects(AbstractGame):
         self._projectile.x_position = self._x_screen // 2 - self._projectile.size[1] // 2
         self._projectile.y_position = 100
 
-    def _punctation(self, target_y_position):
+    def _punctation(self):
 
         new_projectile = False
         actual_projectile = True
+
+        target_y_position = self._set_targets()
 
         projectile_x_position, projectile_y_position = self._projectile.get_position
 
@@ -100,7 +102,6 @@ class FallingObjects(AbstractGame):
 
     def _play(self):
 
-        target_y_position = self._set_targets()
         np.random.shuffle(self._projectiles)
 
         play = True
@@ -141,7 +142,7 @@ class FallingObjects(AbstractGame):
                 if break_loop:
                     break
 
-                new_projectile, actual_projectile = self._punctation(target_y_position)
+                new_projectile, actual_projectile = self._punctation()
 
                 # show stuff on screen
                 self._screen.fill(palette.BACKGROUND_COLOR)

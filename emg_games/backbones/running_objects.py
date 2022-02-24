@@ -69,14 +69,14 @@ class RunningObjects(AbstractGame):
 
         self._projectile_number += 1
 
-    def _punctation(self, new_projectiles):
+    def _punctation(self):
 
         break_loop = False
         new_projectile = False
 
         acceleration = 1.02 ** self._projectile_number
 
-        y_step = self._y_screen * self._speed_rate * acceleration * 10 # tak jest ciekawiej na razie
+        y_step = self._y_screen * self._speed_rate * acceleration * 10  # tak jest ciekawiej na razie
 
         for (i, projectile_) in enumerate(self.running_projectiles):
             projectile_x_position, projectile_y_position = projectile_.get_position
@@ -102,13 +102,13 @@ class RunningObjects(AbstractGame):
                     new_projectile = True
 
                 if new_projectile:
-                    new_projectiles += 1
+                    self._new_projectiles += 1
                     self.running_projectiles.remove(projectile_)
 
                 if self._lives <= 0:
                     break_loop = True
 
-        return break_loop, new_projectile, new_projectiles
+        return break_loop, new_projectile
 
     def _play(self):
 
@@ -116,7 +116,7 @@ class RunningObjects(AbstractGame):
         self._set_targets()
 
         play = True
-        new_projectiles = 1
+        self._new_projectiles = 1
         self._update_background()
 
         self.running_projectiles = []
@@ -127,9 +127,9 @@ class RunningObjects(AbstractGame):
 
         while play and self._lives > 0:
 
-            while new_projectiles:
+            while self._new_projectiles:
                 self._set_new_projectile()
-                new_projectiles -= 1
+                self._new_projectiles -= 1
 
             if not self._lives:
                 play = False
@@ -138,7 +138,7 @@ class RunningObjects(AbstractGame):
 
                 if time.time() - self.new_projectile_counter > 0:
                     self._set_new_projectile()
-                    self.new_projectile_counter = time.time() + 1 #+ 3 ** self._projectile_number
+                    self.new_projectile_counter = time.time() + 1  # + 3 ** self._projectile_number
 
                 break_loop = False
 
@@ -162,8 +162,7 @@ class RunningObjects(AbstractGame):
                 if break_loop:
                     break
 
-
-                break_loop, new_projectile, new_projectiles = self._punctation(new_projectiles)
+                break_loop, new_projectile = self._punctation()
 
                 if break_loop:
                     break
