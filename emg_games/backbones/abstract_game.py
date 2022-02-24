@@ -3,7 +3,6 @@ import os
 import time
 import pickle
 import numpy as np
-import math
 
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -111,7 +110,7 @@ class AbstractGame(ABC):
     def _muscle_control(self, moving_function):
 
         with self._player.amp.lock:
-            signal = self.app.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
+            signal = self.app.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]  # chyba nie powinno być app
             signal -= np.mean(signal)
             signal = np.abs(signal)
             move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
@@ -170,8 +169,8 @@ class AbstractGame(ABC):
         self._update()
         time.sleep(1)
 
-        text(self._screen, palette.SECONDARY_COLOR, str(self._score), 3 * self._x_screen // 4, self._y_screen // 2 + 100,
-             font_size=points_font_size)
+        text(self._screen, palette.SECONDARY_COLOR, str(self._score), 3 * self._x_screen // 4,
+             self._y_screen // 2 + 100, font_size=points_font_size)
         self._update()
         time.sleep(1)
 
@@ -180,9 +179,8 @@ class AbstractGame(ABC):
         self._update()
         time.sleep(1)
 
-        text(self._screen, palette.SECONDARY_COLOR, f' {str(place) if place < 10 else str(place)}.', self._x_screen // 4,
-             self._y_screen // 2 + 100,
-             font_size=points_font_size)
+        text(self._screen, palette.SECONDARY_COLOR, f' {str(place) if place < 10 else str(place)}.',
+             self._x_screen // 4, self._y_screen // 2 + 100, font_size=points_font_size)
         self._update()
 
         return return_btn, again_btn
@@ -316,13 +314,13 @@ class AbstractGame(ABC):
         font_size = int(x_button // 5)
 
         button_start = Button(self._screen, 'Start', (self._x_screen / 2, self._y_screen / 2 - 1.5 * y_button),
-                     (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._start,
-                     font_size=font_size)
+                              (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._start,
+                              font_size=font_size)
         button_scores = Button(self._screen, 'Wyniki', (self._x_screen / 2, self._y_screen / 2), (x_button, y_button),
-                     palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._scores, font_size=font_size)
+                               palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._scores, font_size=font_size)
         button_exit = Button(self._screen, 'Cofnij', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
-                     (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._kill,
-                     font_size=font_size)
+                             (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._kill,
+                             font_size=font_size)
 
         self._update()
         while True:
