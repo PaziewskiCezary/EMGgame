@@ -323,30 +323,36 @@ class AbstractGame(ABC):
 
         x_button = self._x_screen / 4
         y_button = self._y_screen / 5
-        list_of_buttons = ["Start", "Wyniki", "Cofnij"]
+        list_of_buttons = ["Start", "Wyniki", 'Wyjdź', 'Zmień grę', 'Zmień gracza', 'Zmień sterowanie']
         font_size = calc_font_size(list_of_buttons, x_button)
 
-        button_start = Button(self._screen, 'Start', (self._x_screen / 4, self._y_screen / 2 - 1.5 * y_button),
+        button_start = Button(self._screen, list_of_buttons[0], (self._x_screen / 4,
+                                                                 self._y_screen / 2 - 1.5 * y_button),
                               (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._start,
                               font_size=font_size)
-        button_scores = Button(self._screen, 'Wyniki', (self._x_screen / 4, self._y_screen / 2), (x_button, y_button),
+        button_scores = Button(self._screen, list_of_buttons[1], (self._x_screen / 4, self._y_screen / 2), (x_button,
+                                                                                                            y_button),
                                palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._scores, font_size=font_size)
         
-        button_exit = Button(self._screen, 'Wyjdź', (self._x_screen / 4, self._y_screen / 2 + 1.5 * y_button),
+        button_exit = Button(self._screen, list_of_buttons[2], (self._x_screen / 4,
+                                                                self._y_screen / 2 + 1.5 * y_button),
                              (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._kill,
                              font_size=font_size)
 
+        button_change_game = Button(self._screen, list_of_buttons[3], (self._x_screen - self._x_screen / 4,
+                                                                       self._y_screen / 2 - 1.5 * y_button),
+                                    (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR,
+                                    self.main_game._new_game, font_size=font_size)
 
-        button_change_game = Button(self._screen, 'Zmień grę', (self._x_screen - self._x_screen / 4, self._y_screen / 2 - 1.5 * y_button),
-                                                     (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_game,
-                                                     font_size=font_size)
-
-        button_change_player = Button(self._screen, 'Zmień gracza', (self._x_screen - self._x_screen / 4, self._y_screen / 2), (x_button, y_button),
-                               palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_player, font_size=font_size)
+        button_change_player = Button(self._screen, list_of_buttons[4], (self._x_screen - self._x_screen / 4,
+                                                                     self._y_screen / 2), (x_button, y_button),
+                                      palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_player,
+                                      font_size=font_size)
         
-        button_change_input_type = Button(self._screen, 'Zmień sterowanie', (self._x_screen - self._x_screen / 4, self._y_screen / 2 + 1.5 * y_button),
-                             (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_input_type,
-                             font_size=font_size)
+        button_change_input_type = Button(self._screen, list_of_buttons[5], (self._x_screen - self._x_screen / 4,
+                                                                             self._y_screen / 2 + 1.5 * y_button),
+                                          (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR,
+                                          self.main_game._new_input_type, font_size=font_size)
          
 
         self._update()

@@ -12,6 +12,7 @@ import emg_games.backbones
 def update():
     pygame.display.update()
 
+
 def choose_game(screen_properties, kill_game):
     list_of_games = [obj for name, obj in inspect.getmembers(emg_games.games, inspect.isclass) if
                      issubclass(obj, emg_games.backbones.AbstractGame)]
