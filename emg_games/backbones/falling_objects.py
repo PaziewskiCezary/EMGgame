@@ -83,7 +83,7 @@ class FallingObjects(AbstractGame):
             collision = False
             for (i, target_) in enumerate(self._targets):
 
-                if utils.collide_in(self._projectile, target_):
+                if utils.collide_in(self._projectile, target_, 2):
                     collision = True
                     if target_.type == self._projectile.type:
                         self._score += 100

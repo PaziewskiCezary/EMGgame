@@ -13,22 +13,6 @@ def update():
     pygame.display.update()
 
 
-def _calc_font_size(list_of_games, width):
-    '''finds best fitting font size'''
-    width = int(width)
-    max_font_size = 200
-    font = pygame.font.SysFont(palette.FONT_STYLE, max_font_size)
-    names = [game.game_name for game in list_of_games]
-    widths = [font.size(name)[0] for name in names]
-    longest_name_idx = max(range(len(widths)), key=widths.__getitem__)
-    longest_name = names[longest_name_idx]
-
-    for font_size in range(max_font_size, 0, -1):
-        text_width, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(longest_name)
-        if text_width < width:
-            return font_size
-
-
 def choose_game(screen_properties, kill_game):
     list_of_games = [obj for name, obj in inspect.getmembers(emg_games.games, inspect.isclass) if
                      issubclass(obj, emg_games.backbones.AbstractGame)]
@@ -48,8 +32,8 @@ def choose_game(screen_properties, kill_game):
     button_height = y_screen / (1.5 * number_of_rows + 0.5)
     button_dimension = [button_width, button_height]
 
-    width = button_width * 0.9
-    font_size = _calc_font_size(list_of_games, width)
+    names = [game.game_name for game in list_of_games]
+    font_size = emg_games.backbones.utils.calc_font_size(names, button_width)
 
     # place buttons
     game_buttons = []
