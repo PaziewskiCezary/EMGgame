@@ -24,7 +24,7 @@ class Player:
 
         self.__x_screen, self.__y_screen = self.__screen.get_size()
 
-        self.__get_name()
+        self.get_name()
         self.__get_input_type()
 
         if not self._use_keyboard:

@@ -101,13 +101,12 @@ class FallingObjects(AbstractGame):
         return new_projectile, actual_projectile
 
     def _play(self):
-
-        np.random.shuffle(self._projectiles)
-
+        super()._play()
         play = True
+        
         new_projectile = True
         actual_projectile = None
-        self._update_background()
+        
 
         while play and self._lives > 0:
             if new_projectile:

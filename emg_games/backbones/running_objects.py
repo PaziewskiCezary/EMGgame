@@ -112,13 +112,13 @@ class RunningObjects(AbstractGame):
 
     def _play(self):
 
-        np.random.shuffle(self._projectiles)
+        super()._play()
+        play = True
         self._set_targets()
 
-        play = True
+        
         self._new_projectiles = 1
-        self._update_background()
-
+        
         self.running_projectiles = []
 
         self.time_since_new_projectile = time.time()

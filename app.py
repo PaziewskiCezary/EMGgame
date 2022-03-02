@@ -17,13 +17,14 @@ def main(args):
     # options_screen(screen_properties=screen_properties)
 
     player = Player(screen_properties=screen_properties)
+    gaming = True
+    while gaming:
+        game = choose_game(screen_properties=screen_properties, kill_game=player.kill)
 
-    game = choose_game(screen_properties=screen_properties, kill_game=player.kill)
-
-    game = game(
-        full_screen=args.full_screen,
-        player=player)
-    game.menu()
+        game = game(
+            full_screen=args.full_screen,
+            player=player)
+        gaming = game.menu()
 
     if not player._use_keyboard:
         player.amp.terminate()
