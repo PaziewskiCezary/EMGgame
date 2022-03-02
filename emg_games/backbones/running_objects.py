@@ -84,7 +84,7 @@ class RunningObjects(AbstractGame):
             if projectile_.bottom > self._target.y_position:
 
                 new_projectile = False
-                if utils.collide_in(projectile_, self._target):
+                if utils.collide_in(projectile_, self._target, 5/4):
                     if self._target.type == projectile_.type:
                         self._score += 10
                     else:
