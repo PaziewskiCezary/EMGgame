@@ -13,6 +13,8 @@ from emg_games.gui.components import text
 from emg_games.gui.scenes.screen_properties import ScreenProperties
 from emg_games.gui.components import palette
 
+import emg_games.gui.scenes.utils as utils
+
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
 MOVE_DOWN = 0
@@ -249,8 +251,14 @@ class AbstractGame(ABC):
         self._update_background()
 
 
-    def add_exit_button(self):
-        pass
+    def add_corner_button(self, func, text):
+        x_button, y_button = self._x_screen // 20, self._y_screen // 20
+        button_font_size = self._y_screen // 18
+        return_btn = Button(self._screen, text, (x_button, y_button), (x_button * 2, y_button * 2),
+                            button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=func,
+                            font_size=button_font_size)
+        self._update()
+        return return_btn
 
     def _save_score(self):
         path = self.get_scores_path
@@ -282,14 +290,11 @@ class AbstractGame(ABC):
             scores, index = ['brak wyników'], [0]
 
         self._screen.fill(palette.PRIMARY_COLOR)
+        
+        
+        return_btn = utils.add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen)
         self._update()
-        x_button, y_button = self._x_screen // 20, self._y_screen // 20
-        button_font_size = self._y_screen // 18
-        return_btn = Button(self._screen, 'Wróć', (x_button, y_button), (x_button * 2, y_button * 2),
-                            button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=self.menu,
-                            font_size=button_font_size)
-        text(self._screen, palette.SECONDARY_COLOR, 'WYNIKI', self._x_screen // 2, self._y_screen // 10 - 25,
-             font_size=48)
+        
         y_offset = 55
         for i in range(min(len(scores), 10)):
             text(self._screen, palette.SECONDARY_COLOR, f'{" " + str(i + 1) if i < 10 else str(i + 1)}.',

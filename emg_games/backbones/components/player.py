@@ -23,7 +23,7 @@ class Player:
         self.__screen = self.__screen_properties.screen
 
         self.__x_screen, self.__y_screen = self.__screen.get_size()
-
+        self._use_keyboard = False
         self.__get_name()
         self._get_input_type()
 
