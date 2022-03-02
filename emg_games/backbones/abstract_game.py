@@ -22,7 +22,7 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 class AbstractGame(ABC):
     """AbstractGame"""
 
-    def __init__(self, full_screen, player):
+    def __init__(self, full_screen, player, main_game):
 
         # TODO set full_screen
         self._full_screen = full_screen
@@ -33,9 +33,9 @@ class AbstractGame(ABC):
         self._screen.fill(palette.PRIMARY_COLOR)
         # TODO move up
 
-        self._max_lives = 3
+        self._max_lives = 1
 
-        
+        self.main_game = main_game
 
         self._clock = pygame.time.Clock()
 
@@ -43,7 +43,7 @@ class AbstractGame(ABC):
 
         self._max_shift = 10
 
-        self._speed_rate = 0.0003
+        self._speed_rate = 0.003
 
         self._backgrounds = None
 
@@ -249,6 +249,9 @@ class AbstractGame(ABC):
         self._update_background()
 
 
+    def add_exit_button(self):
+        pass
+
     def _save_score(self):
         path = self.get_scores_path
 
@@ -321,18 +324,28 @@ class AbstractGame(ABC):
         y_button = self._y_screen / 5
         font_size = int(x_button // 5)
 
-        button_start = Button(self._screen, 'Start', (self._x_screen / 2, self._y_screen / 2 - 1.5 * y_button),
+        button_start = Button(self._screen, 'Start', (self._x_screen / 4, self._y_screen / 2 - 1.5 * y_button),
                               (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._start,
                               font_size=font_size)
-        button_scores = Button(self._screen, 'Wyniki', (self._x_screen / 2, self._y_screen / 2), (x_button, y_button),
+        button_scores = Button(self._screen, 'Wyniki', (self._x_screen / 4, self._y_screen / 2), (x_button, y_button),
                                palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._scores, font_size=font_size)
-        '''button_exit = Button(self._screen, 'Wyjdź', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
+        
+        button_exit = Button(self._screen, 'Wyjdź', (self._x_screen / 4, self._y_screen / 2 + 1.5 * y_button),
                              (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._kill,
-                             font_size=font_size)'''
-
-        button_change_game = Button(self._screen, 'Zmień grę', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
-                             (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.change_game,
                              font_size=font_size)
+
+
+        button_change_game = Button(self._screen, 'Zmień grę', (self._x_screen - self._x_screen / 4, self._y_screen / 2 - 1.5 * y_button),
+                                                     (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_game,
+                                                     font_size=font_size)
+
+        button_change_player = Button(self._screen, 'Zmień gracza', (self._x_screen - self._x_screen / 4, self._y_screen / 2), (x_button, y_button),
+                               palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_player, font_size=font_size)
+        
+        button_change_input_type = Button(self._screen, 'Zmień sterowanie', (self._x_screen - self._x_screen / 4, self._y_screen / 2 + 1.5 * y_button),
+                             (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_input_type,
+                             font_size=font_size)
+         
 
         self._update()
         while True:
@@ -340,8 +353,10 @@ class AbstractGame(ABC):
 
                 button_start.on_click(event)
                 button_scores.on_click(event)
-                #button_exit.on_click(event)
-                v = button_change_game.on_click(event)
+                button_exit.on_click(event)
+                button_change_game.on_click(event)
+                button_change_player.on_click(event)
+                button_change_input_type.on_click(event)
 
                 if event.type == pygame.QUIT:
                     self._kill()

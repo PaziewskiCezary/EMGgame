@@ -16,9 +16,9 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class FallingObjects(AbstractGame):
 
-    def __init__(self, full_screen, player):
+    def __init__(self, full_screen, player, main_game):
 
-        super().__init__(full_screen, player)
+        super().__init__(full_screen, player, main_game)
 
         self._backgrounds = []
 

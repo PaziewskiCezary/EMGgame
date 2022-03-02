@@ -2,6 +2,7 @@ import argparse
 from os import environ
 
 from emg_games.backbones.components.player import Player
+from emg_games.backbones.main_game import MainGame
 from emg_games.gui.scenes import ScreenProperties
 
 from emg_games.gui.scenes import choose_game
@@ -38,4 +39,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args)
+    #main(args)
+    M = MainGame(args)
+    if not M.player._use_keyboard:
+        player.amp.terminate()
