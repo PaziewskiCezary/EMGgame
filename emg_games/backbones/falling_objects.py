@@ -16,9 +16,9 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 
 class FallingObjects(AbstractGame):
 
-    def __init__(self, full_screen, player):
+    def __init__(self, full_screen, player, main_game):
 
-        super().__init__(full_screen, player)
+        super().__init__(full_screen, player, main_game)
 
         self._backgrounds = []
 
@@ -101,13 +101,12 @@ class FallingObjects(AbstractGame):
         return new_projectile, actual_projectile
 
     def _play(self):
-
-        np.random.shuffle(self._projectiles)
-
+        super()._play()
         play = True
+        
         new_projectile = True
         actual_projectile = None
-        self._update_background()
+        
 
         while play and self._lives > 0:
             if new_projectile:

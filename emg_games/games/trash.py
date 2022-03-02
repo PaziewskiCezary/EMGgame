@@ -12,8 +12,8 @@ class Trash(FallingObjects):
 
     game_name = 'śmieci'
 
-    def __init__(self, full_screen, player):
-        super().__init__(full_screen, player)
+    def __init__(self, full_screen, player, main_game):
+        super().__init__(full_screen, player, main_game)
 
         class_name = "Trash"
 

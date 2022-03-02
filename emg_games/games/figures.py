@@ -9,9 +9,9 @@ class Figures(FallingObjects):
 
     game_name = 'figury'
 
-    def __init__(self, full_screen, player):
+    def __init__(self, full_screen, player, main_game):
 
-        super().__init__(full_screen, player)
+        super().__init__(full_screen, player, main_game)
 
         # TODO load this all in super __init__
         class_name = "Figures"

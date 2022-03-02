@@ -25,7 +25,7 @@ class Player:
         self.__x_screen, self.__y_screen = self.__screen.get_size()
 
         self.__get_name()
-        self.__get_input_type()
+        self._get_input_type()
 
         if not self._use_keyboard:
 
@@ -100,7 +100,7 @@ class Player:
         self._use_keyboard = args['use_keyboard']
         self._is_waiting_for_option = False
 
-    def __get_input_type(self):
+    def _get_input_type(self):
 
         self._is_waiting_for_option = True
 

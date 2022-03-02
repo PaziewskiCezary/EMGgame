@@ -23,7 +23,7 @@ NUMBER_OF_MUSCLE_TENSION_SAMPLES = 256
 class AbstractGame(ABC):
     """AbstractGame"""
 
-    def __init__(self, full_screen, player):
+    def __init__(self, full_screen, player, main_game):
 
         # TODO set full_screen
         self._full_screen = full_screen
@@ -34,14 +34,9 @@ class AbstractGame(ABC):
         self._screen.fill(palette.PRIMARY_COLOR)
         # TODO move up
 
-        self._max_lives = 3
+        self._max_lives = 1
 
-        self._lives = self._max_lives
-        self._score = 0
-        self._missed = 0
-
-        self._background_idx = 0
-        self._projectile_number = 0
+        self.main_game = main_game
 
         self._clock = pygame.time.Clock()
 
@@ -49,7 +44,7 @@ class AbstractGame(ABC):
 
         self._max_shift = 10
 
-        self._speed_rate = 0.0003
+        self._speed_rate = 0.003
 
         self._backgrounds = None
 
@@ -111,7 +106,7 @@ class AbstractGame(ABC):
     def _muscle_control(self, moving_function):
 
         with self._player.amp.lock:
-            signal = self.app.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]  # chyba nie powinno być app
+            signal = self._player.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:] 
             signal -= np.mean(signal)
             signal = np.abs(signal)
             move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
@@ -243,6 +238,19 @@ class AbstractGame(ABC):
 
     @abstractmethod
     def _play(self):
+        self._lives = self._max_lives
+        self._score = 0
+        self._missed = 0
+
+        self._background_idx = 0
+        self._projectile_number = 0
+        
+
+        np.random.shuffle(self._projectiles)
+        self._update_background()
+
+
+    def add_exit_button(self):
         pass
 
     def _save_score(self):
@@ -304,6 +312,9 @@ class AbstractGame(ABC):
                     if event.key == pygame.K_ESCAPE:
                         self.menu()
 
+    def change_game(self):
+        return True
+
     def menu(self):
 
         self._screen.fill(palette.PRIMARY_COLOR)
@@ -315,14 +326,28 @@ class AbstractGame(ABC):
         list_of_buttons = ["Start", "Wyniki", "Cofnij"]
         font_size = calc_font_size(list_of_buttons, x_button)
 
-        button_start = Button(self._screen, 'Start', (self._x_screen / 2, self._y_screen / 2 - 1.5 * y_button),
+        button_start = Button(self._screen, 'Start', (self._x_screen / 4, self._y_screen / 2 - 1.5 * y_button),
                               (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._start,
                               font_size=font_size)
-        button_scores = Button(self._screen, 'Wyniki', (self._x_screen / 2, self._y_screen / 2), (x_button, y_button),
+        button_scores = Button(self._screen, 'Wyniki', (self._x_screen / 4, self._y_screen / 2), (x_button, y_button),
                                palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._scores, font_size=font_size)
-        button_exit = Button(self._screen, 'Cofnij', (self._x_screen / 2, self._y_screen / 2 + 1.5 * y_button),
+        
+        button_exit = Button(self._screen, 'Wyjdź', (self._x_screen / 4, self._y_screen / 2 + 1.5 * y_button),
                              (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._kill,
                              font_size=font_size)
+
+
+        button_change_game = Button(self._screen, 'Zmień grę', (self._x_screen - self._x_screen / 4, self._y_screen / 2 - 1.5 * y_button),
+                                                     (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_game,
+                                                     font_size=font_size)
+
+        button_change_player = Button(self._screen, 'Zmień gracza', (self._x_screen - self._x_screen / 4, self._y_screen / 2), (x_button, y_button),
+                               palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_player, font_size=font_size)
+        
+        button_change_input_type = Button(self._screen, 'Zmień sterowanie', (self._x_screen - self._x_screen / 4, self._y_screen / 2 + 1.5 * y_button),
+                             (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self.main_game._new_input_type,
+                             font_size=font_size)
+         
 
         self._update()
         while True:
@@ -331,6 +356,9 @@ class AbstractGame(ABC):
                 button_start.on_click(event)
                 button_scores.on_click(event)
                 button_exit.on_click(event)
+                button_change_game.on_click(event)
+                button_change_player.on_click(event)
+                button_change_input_type.on_click(event)
 
                 if event.type == pygame.QUIT:
                     self._kill()

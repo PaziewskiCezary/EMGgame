@@ -2,6 +2,7 @@ import argparse
 from os import environ
 
 from emg_games.backbones.components.player import Player
+from emg_games.backbones.main_game import MainGame
 from emg_games.gui.scenes import ScreenProperties
 
 from emg_games.gui.scenes import choose_game
@@ -17,13 +18,14 @@ def main(args):
     # options_screen(screen_properties=screen_properties)
 
     player = Player(screen_properties=screen_properties)
+    gaming = True
+    while gaming:
+        game = choose_game(screen_properties=screen_properties, kill_game=player.kill)
 
-    game = choose_game(screen_properties=screen_properties, kill_game=player.kill)
-
-    game = game(
-        full_screen=args.full_screen,
-        player=player)
-    game.menu()
+        game = game(
+            full_screen=args.full_screen,
+            player=player)
+        gaming = game.menu()
 
     if not player._use_keyboard:
         player.amp.terminate()
@@ -37,4 +39,7 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    main(args)
+    #main(args)
+    M = MainGame(args)
+    if not M.player._use_keyboard:
+        player.amp.terminate()
