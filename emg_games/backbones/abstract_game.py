@@ -12,6 +12,7 @@ from emg_games.gui.components import text
 
 from emg_games.gui.scenes.screen_properties import ScreenProperties
 from emg_games.gui.components import palette
+from emg_games.backbones.utils import calc_font_size
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
@@ -311,7 +312,8 @@ class AbstractGame(ABC):
 
         x_button = self._x_screen / 4
         y_button = self._y_screen / 5
-        font_size = int(x_button // 5)
+        list_of_buttons = ["Start", "Wyniki", "Cofnij"]
+        font_size = calc_font_size(list_of_buttons, x_button)
 
         button_start = Button(self._screen, 'Start', (self._x_screen / 2, self._y_screen / 2 - 1.5 * y_button),
                               (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR, self._start,
