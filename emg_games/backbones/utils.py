@@ -6,7 +6,7 @@ __all__ = ['collide_in', 'get_targets', 'get_projectiles', 'get_backgrounds']
 
 
 # TODO write better collision function
-def collide_in(projectile, target, scale):
+def collide_in(projectile, target, scale=1):
     ((obj1_x1, obj1_y1), (obj1_x2, obj1_y2)) = projectile.corners
     ((obj2_x1, obj2_y1), (obj2_x2, obj2_y2)) = target.corners
     projectile_half_width = (obj1_x2 - obj1_x1) // scale

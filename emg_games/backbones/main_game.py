@@ -4,6 +4,8 @@ from emg_games.gui.scenes import ScreenProperties
 from emg_games.gui.scenes import choose_game
 
 import gc
+
+
 class MainGame():
 
 	def __init__(self, args):
@@ -16,12 +18,11 @@ class MainGame():
 		game = choose_game(screen_properties=self.screen_properties, kill_game=self.player.kill)
 
 		self.game = game(
-	        full_screen=self.full_screen,
-	        player=self.player, main_game=self)
+						full_screen=self.full_screen,
+						player=self.player, main_game=self)
 
 		gc.collect()
 		self.game.menu()
-
 
 	def _new_player(self):
 

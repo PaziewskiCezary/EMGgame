@@ -1,6 +1,8 @@
 import argparse
 from os import environ
 
+import pygame
+
 from emg_games.backbones.components.player import Player
 from emg_games.backbones.main_game import MainGame
 from emg_games.gui.scenes import ScreenProperties
@@ -38,6 +40,8 @@ if __name__ == '__main__':
     parser.add_argument('--not-full', dest='full_screen', action='store_true', help='turn off full screen')
 
     args = parser.parse_args()
+
+    pygame.init()
 
     #main(args)
     M = MainGame(args)

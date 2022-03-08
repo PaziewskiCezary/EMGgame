@@ -9,7 +9,7 @@ def singleton(class_):
                                                     **kwargs)
                 class_w._instance._sealed = False
             return class_w._instance
-        def __init__(self, *args, **kwargs):
+        def ____(self, *args, **kwargs):
             if self._sealed:
                 return
             super(class_w, self).__init__(*args, **kwargs)

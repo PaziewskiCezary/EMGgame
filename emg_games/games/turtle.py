@@ -8,8 +8,8 @@ from emg_games.backbones.running_objects import RunningObjects
 class Turtle(RunningObjects):
     game_name = 'żółw'
 
-    def __init__(self, full_screen, player):
-        super().__init__(full_screen, player)
+    def __init__(self, full_screen, player, main_game):
+        super().__init__(full_screen, player, main_game)
 
         class_name = "Turtle"
         # TODO load this all in super __init__
@@ -24,3 +24,6 @@ class Turtle(RunningObjects):
                                     img_path=projectile_path, projectile_type=projectile_type)
 
             self._projectiles.append(projectile)
+
+        self.emoji_name = ':turtle:'
+        self.emoji_color = (18, 156, 16)
