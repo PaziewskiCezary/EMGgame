@@ -6,14 +6,15 @@ class Target(pygame.sprite.Sprite):
 
     percentage = 0.1
 
-    def __init__(self, position=(0, 0), *, img_path, target_type=None, desired_width, flippable=False):
+    def __init__(self, position=(0, 0), *, img_path, target_type=None, desired_width, flippable=False, transparent=False):
         pygame.sprite.Sprite.__init__(self)
 
         self._x_position, self.y_position = position
         self._facing = 0
         self.type = target_type
         self._image = pygame.image.load(img_path).convert()
-        self._image.set_colorkey((173, 170, 218))
+        if transparent:
+            self._image.set_colorkey(self._image.get_at((0, 0)))
 
         self.flippable = flippable
 

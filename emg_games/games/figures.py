@@ -23,6 +23,7 @@ class Figures(FallingObjects):
         self._projectiles = []
         for i, (projectile_type, projectile_path) in enumerate(utils.get_projectiles(class_name)):
             projectile = Projectile(desired_width=self._x_screen * Projectile.percentage,
-                                    img_path=projectile_path, projectile_type=projectile_type)
+                                    img_path=projectile_path, projectile_type=projectile_type,
+                                    transparent=True)
 
             self._projectiles.append(projectile)
