@@ -158,10 +158,11 @@ class FallingObjects(AbstractGame):
 
                 self._screen.blit(self._projectile.image, self._projectile.get_position)
                 #self.exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+                
+                self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
                 menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
 
-                self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
-
+                self._update()
                 self._clock.tick(60)
 
         self._score = self._score

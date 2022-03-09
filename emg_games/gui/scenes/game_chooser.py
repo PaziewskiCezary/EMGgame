@@ -61,6 +61,7 @@ def choose_game(screen_properties, kill_game):
         for event in pygame.event.get():
             for idx, game_button in enumerate(game_buttons):
                 game_button.on_click(event)
+                exit_btn.on_click(event)
                 if game_button.pressed:
                     return list_of_games[idx]
 

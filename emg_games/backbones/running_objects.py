@@ -185,9 +185,10 @@ class RunningObjects(AbstractGame):
                     self._screen.blit(projectile_.image, projectile_.get_position)
 
                 # labels with lives and score
-                menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+                
                 self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
-
+                menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+                self._update()
                 self._clock.tick(60)
 
         self._score = self._score

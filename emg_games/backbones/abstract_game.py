@@ -235,7 +235,7 @@ class AbstractGame(ABC):
         width_lives, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(lives_text)
 
         pygame.draw.rect(self._screen, palette.PRIMARY_COLOR,
-                         (0, 0, self._x_screen * 0.5, self._y_screen // 14), False)
+                         (0, 0, self._x_screen * 19/10, self._y_screen // 10), False)
 
         MAGIC_NUMBER = 25  # why there was random 25  like 8 times!?!?!?
 
@@ -250,7 +250,7 @@ class AbstractGame(ABC):
         lives_text_rect.center = self._x_screen // 2 + width_lives // 2 + 0.5 * self._lives * emoji_heart, MAGIC_NUMBER
         emoji_font.render_to(self._screen, lives_text_rect, lives_text, emoji_color, size=emoji_font_size)
 
-        self._update()
+        #self._update()
 
     # TODO find better name
     def _what_next(self):
