@@ -73,3 +73,8 @@ def calc_font_size(list_of_names, button_width):
         text_width, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(longest_name)
         if text_width < width:
             return font_size
+
+
+def is_key_pressed(*keys):
+    pressed = pygame.key.get_pressed()
+    return any(pressed[key] for key in keys)

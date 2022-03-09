@@ -6,5 +6,3 @@ from .abstract_game import AbstractGame
 from .falling_objects import FallingObjects
 from .running_objects import RunningObjects
 from .simple_breakout import SimpleBreakout
-
-

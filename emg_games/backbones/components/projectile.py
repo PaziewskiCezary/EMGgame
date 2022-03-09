@@ -5,13 +5,14 @@ class Projectile(pygame.sprite.Sprite):
 
     percentage = 0.05
 
-    def __init__(self, position=(0, 0), *, img_path, projectile_type, desired_width):
+    def __init__(self, position=(0, 0), *, img_path, projectile_type, desired_width, transparent=False):
         pygame.sprite.Sprite.__init__(self)
 
         self.x_position, self.y_position = position
         self.type = projectile_type
         self.image = pygame.image.load(img_path).convert()
-        self.image.set_colorkey((255, 255, 255))
+        if transparent:
+            self.image.set_colorkey(self.image.get_at((0, 0)))
 
         original_width, original_height = self.image.get_size()
 

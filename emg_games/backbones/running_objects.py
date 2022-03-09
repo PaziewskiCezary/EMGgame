@@ -153,7 +153,11 @@ class RunningObjects(AbstractGame):
 
                     play, break_loop = self._escape_game(event)
 
-                    self._keyboard_control(event, self._move_target)
+                self._keyboard_control(self._move_target)
+                self._target.x_position = max(0,
+                                              min(self._target.x_position,
+                                                  self._screen_properties.x_screen - self._target.width)
+                                              )
 
                 if break_loop:
                     break
