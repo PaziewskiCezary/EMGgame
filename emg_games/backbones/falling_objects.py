@@ -110,7 +110,6 @@ class FallingObjects(AbstractGame):
         new_projectile = True
         actual_projectile = None
         
-
         while play and self._lives > 0:
             if new_projectile:
 

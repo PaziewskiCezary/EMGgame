@@ -5,6 +5,16 @@ from emg_games.gui.components import palette
 __all__ = ['collide_in', 'get_targets', 'get_projectiles', 'get_backgrounds']
 
 
+def collision(object1, object2):
+    pass
+
+
+def rect_collide(object1, object2):
+    rect1 = pygame.Rect(object1.x, object1.y, object1.width, object1.height)
+    rect2 = pygame.Rect(object2.x, object2.y, object2.width, object2.height)
+    return pygame.Rect.colliderect(rect1, rect2)
+
+
 # TODO write better collision function
 def collide_in(projectile, target, scale=1):
     ((obj1_x1, obj1_y1), (obj1_x2, obj1_y2)) = projectile.corners

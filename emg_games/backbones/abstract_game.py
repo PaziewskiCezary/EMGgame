@@ -108,9 +108,11 @@ class AbstractGame(ABC):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 moving_function(MOVE_LEFT)
+                return -1
 
             if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 moving_function(MOVE_RIGHT)
+                return 1
 
     def _muscle_control(self, moving_function):
 
