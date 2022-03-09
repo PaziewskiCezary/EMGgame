@@ -12,8 +12,7 @@ from emg_games.gui.components import text
 
 from emg_games.gui.scenes.screen_properties import ScreenProperties
 from emg_games.gui.components import palette
-from emg_games.backbones.utils import calc_font_size
-
+from emg_games.backbones.utils import calc_font_size, is_key_pressed
 
 import emoji
 from pathlib import Path
@@ -53,7 +52,7 @@ class AbstractGame(ABC):
 
         self._player = player
 
-        self._max_shift = 10
+        self._max_shift = 5
 
         self._speed_rate = 0.0003
 
@@ -105,16 +104,13 @@ class AbstractGame(ABC):
 
         return play, break_loop
 
-    def _keyboard_control(self, event, moving_function):
+    def _keyboard_control(self, moving_function):
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
-                moving_function(MOVE_LEFT)
-                return -1
+        if is_key_pressed(pygame.K_LEFT, pygame.K_a):
+            moving_function(MOVE_LEFT)
 
-            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
-                moving_function(MOVE_RIGHT)
-                return 1
+        if is_key_pressed(pygame.K_RIGHT, pygame.K_d):
+            moving_function(MOVE_RIGHT)
 
     def _muscle_control(self, moving_function):
 

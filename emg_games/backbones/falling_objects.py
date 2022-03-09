@@ -129,7 +129,7 @@ class FallingObjects(AbstractGame):
                         self._kill()
                     play, break_loop = self._escape_game(event)
 
-                    self._keyboard_control(event, self._move_projectile)
+                self._keyboard_control(self._move_projectile)
 
                 if break_loop:
                     break
