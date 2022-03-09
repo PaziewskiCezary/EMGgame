@@ -14,7 +14,10 @@ from emg_games.gui.scenes.screen_properties import ScreenProperties
 from emg_games.gui.components import palette
 from emg_games.backbones.utils import calc_font_size
 
-import emg_games.gui.scenes.utils as utils
+
+import emoji
+from pathlib import Path
+
 
 MOVE_LEFT = -1
 MOVE_RIGHT = 1
@@ -27,10 +30,16 @@ class AbstractGame(ABC):
 
     def __init__(self, full_screen, player, main_game):
 
+
         # TODO set full_screen
         self._full_screen = full_screen
         self._screen_properties = ScreenProperties(self._full_screen)
         self._screen = self._screen_properties.screen
+
+        # fix for blank space when creating game object
+        self._screen.fill(palette.PRIMARY_COLOR)
+        pygame.display.flip()
+
         self._x_screen = self._screen_properties.x_screen
         self._y_screen = self._screen_properties.y_screen
         self._screen.fill(palette.PRIMARY_COLOR)
@@ -46,7 +55,7 @@ class AbstractGame(ABC):
 
         self._max_shift = 10
 
-        self._speed_rate = 0.003
+        self._speed_rate = 0.0003
 
         self._backgrounds = None
 
@@ -99,11 +108,13 @@ class AbstractGame(ABC):
     def _keyboard_control(self, event, moving_function):
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
                 moving_function(MOVE_LEFT)
+                return -1
 
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT or event.key == pygame.K_d:
                 moving_function(MOVE_RIGHT)
+                return 1
 
     def _muscle_control(self, moving_function):
 
@@ -163,19 +174,36 @@ class AbstractGame(ABC):
         text(self._screen, palette.SECONDARY_COLOR, 'Pozycja', self._x_screen // 4, self._y_screen // 2,
              font_size=subtitle_font_size)
 
+        def animate_sleep(seconds=1):
+            start = time.time()
+
+            while time.time() - start < seconds:
+                for event in pygame.event.get():
+                    if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
+                        return False
+
+                    if event.type == pygame.QUIT:
+                        self._kill()
+
+            return True
+
+        animate = True
         # TODO allow for braking "animation"
         self._update()
-        time.sleep(1)
+        if animate:
+            animate = animate_sleep(1)
 
         text(self._screen, palette.SECONDARY_COLOR, str(self._score), 3 * self._x_screen // 4,
              self._y_screen // 2 + 100, font_size=points_font_size)
         self._update()
-        time.sleep(1)
+        if animate:
+            animate = animate_sleep(1)
 
         text(self._screen, palette.SECONDARY_COLOR, self._name, 2 * self._x_screen // 4, self._y_screen // 2 + 100,
              font_size=points_font_size)
         self._update()
-        time.sleep(1)
+        if animate:
+            animate = animate_sleep(1)
 
         text(self._screen, palette.SECONDARY_COLOR, f' {str(place) if place < 10 else str(place)}.',
              self._x_screen // 4, self._y_screen // 2 + 100, font_size=points_font_size)
@@ -183,28 +211,40 @@ class AbstractGame(ABC):
 
         return return_btn, again_btn
 
-    def _make_health_text(self):
+    def _make_health_text(self, emoji_name=':hearts:', emoji_color=palette.SECONDARY_COLOR):
+        emoji_name = emoji_name if emoji_name else ':hearts:'
+        emoji_color = emoji_color if emoji_color else palette.SECONDARY_COLOR
 
+        # most of this code should run once
         font_size = self._y_screen // 24
-        font_size_heart = self._y_screen // 20
+        emoji_font_size = self._y_screen // 30
         score_text = "Punkty: " + str(self._score)
         lives_text = "Życia: "
-        health_text = u"♥"
-        heart_font = 'DejaVu Sans Mono'
-        heart_color = (255, 0, 0)
-        width_heart, height_heart = pygame.font.SysFont(heart_font, font_size_heart).size(health_text)
+
+        emoji_text = emoji.emojize(emoji_name, use_aliases=True)[0]
+
+        emoji_font = Path(__file__).parent / 'components/NotoEmoji-Regular.ttf'
+        emoji_font = pygame.freetype.Font(emoji_font, emoji_font_size)
+
+        emoji_heart, emoji_heart = emoji_font.get_rect(emoji_text).size
         width_score, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(score_text)
         width_lives, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(lives_text)
+
         pygame.draw.rect(self._screen, palette.PRIMARY_COLOR,
                          (0, 0, self._x_screen, self._y_screen // 14), False)
 
-        text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, 25, font_style=palette.FONT_STYLE,
+        MAGIC_NUMBER = 25  # why there was random 25  like 8 times!?!?!?
+
+        text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, MAGIC_NUMBER, font_style=palette.FONT_STYLE,
              font_size=font_size)
-        text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, 25, font_style=palette.FONT_STYLE,
+        text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, MAGIC_NUMBER, font_style=palette.FONT_STYLE,
              font_size=font_size)
-        text(self._screen, heart_color, health_text * self._lives,
-             self._x_screen // 2 + width_lives // 2 + 0.5 * self._lives * width_heart,
-             25, font_style=heart_font, font_size=font_size_heart)
+
+        # place emojis
+        lives_text = emoji_text * self._lives
+        lives_text_rect = emoji_font.get_rect(lives_text)
+        lives_text_rect.center = self._x_screen // 2 + width_lives // 2 + 0.5 * self._lives * emoji_heart, MAGIC_NUMBER
+        emoji_font.render_to(self._screen, lives_text_rect, lives_text, emoji_color, size=emoji_font_size)
 
         self._update()
 
@@ -246,10 +286,10 @@ class AbstractGame(ABC):
 
         self._background_idx = 0
         self._projectile_number = 0
-        
 
         np.random.shuffle(self._projectiles)
         self._update_background()
+
 
 
     def add_corner_button(self, func, text):
@@ -260,6 +300,10 @@ class AbstractGame(ABC):
                             font_size=button_font_size)
         self._update()
         return return_btn
+
+    def add_exit_button(self):
+        pass
+
 
     def _save_score(self):
         path = self.get_scores_path
@@ -292,10 +336,19 @@ class AbstractGame(ABC):
 
         self._screen.fill(palette.PRIMARY_COLOR)
         
-        
+
         return_btn = utils.add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen)
         self._update()
-        
+
+        x_button, y_button = self._x_screen // 20, self._y_screen // 20
+        button_font_size = self._y_screen // 18
+        return_btn = Button(self._screen, 'Wróć', (x_button, y_button), (x_button * 2, y_button * 2),
+                            button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=self.menu,
+                            font_size=button_font_size)
+        MAGIC_NUMBER = 25
+        text(self._screen, palette.SECONDARY_COLOR, 'WYNIKI', self._x_screen // 2, self._y_screen // 10 - MAGIC_NUMBER,
+             font_size=48)
+
         y_offset = 55
         for i in range(min(len(scores), 10)):
             text(self._screen, palette.SECONDARY_COLOR, f'{" " + str(i + 1) if i < 10 else str(i + 1)}.',
@@ -358,7 +411,6 @@ class AbstractGame(ABC):
                                                                              self._y_screen / 2 + 1.5 * y_button),
                                           (x_button, y_button), palette.SECONDARY_COLOR, palette.PRIMARY_COLOR,
                                           self.main_game._new_input_type, font_size=font_size)
-         
 
         self._update()
         while True:

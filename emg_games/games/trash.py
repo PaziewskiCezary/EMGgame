@@ -32,6 +32,9 @@ class Trash(FallingObjects):
 
             self._projectiles.append(projectile)
 
+        self.emoji_name = ':earth_africa:'
+        self.emoji_color = (42, 189, 40)
+
     def _update_background(self):
         idx = math.log2(self._max_lives - self._lives + self._missed + 1)
         idx = int(idx)

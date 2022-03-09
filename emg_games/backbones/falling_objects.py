@@ -28,6 +28,9 @@ class FallingObjects(AbstractGame):
 
         self._game_name = 'Falling Object'
 
+        self.emoji_name = None
+        self.emoji_color = None
+
     def _move_projectile(self, shift):
         if not self._projectile:
             raise ValueError('self.__projectile not set')
@@ -107,7 +110,6 @@ class FallingObjects(AbstractGame):
         new_projectile = True
         actual_projectile = None
         
-
         while play and self._lives > 0:
             if new_projectile:
 
@@ -153,7 +155,7 @@ class FallingObjects(AbstractGame):
 
                 self._screen.blit(self._projectile.image, self._projectile.get_position)
 
-                self._make_health_text()
+                self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
 
                 self._clock.tick(60)
 

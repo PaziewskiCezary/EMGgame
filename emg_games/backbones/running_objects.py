@@ -31,6 +31,9 @@ class RunningObjects(AbstractGame):
 
         self._game_name = 'Running Object'
 
+        self.emoji_name = None
+        self.emoji_color = None
+
     def _move_target(self, shift):
 
         if not self._target:
@@ -176,7 +179,7 @@ class RunningObjects(AbstractGame):
                     self._screen.blit(projectile_.image, projectile_.get_position)
 
                 # labels with lives and score
-                self._make_health_text()
+                self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
 
                 self._clock.tick(60)
 

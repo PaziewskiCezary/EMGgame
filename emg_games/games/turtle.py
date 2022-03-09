@@ -24,3 +24,6 @@ class Turtle(RunningObjects):
                                     img_path=projectile_path, projectile_type=projectile_type)
 
             self._projectiles.append(projectile)
+
+        self.emoji_name = ':turtle:'
+        self.emoji_color = (18, 156, 16)
