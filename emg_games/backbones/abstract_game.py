@@ -210,6 +210,8 @@ class AbstractGame(ABC):
         return return_btn, again_btn
 
     def _make_health_text(self, emoji_name=':hearts:', emoji_color=palette.SECONDARY_COLOR):
+        emoji_name = emoji_name if emoji_name else ':hearts:'
+        emoji_color = emoji_color if emoji_color else palette.SECONDARY_COLOR
 
         # most of this code should run once
         font_size = self._y_screen // 24
