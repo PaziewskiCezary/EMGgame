@@ -6,6 +6,7 @@ from emg_games.backbones.components.calibration import Calibration
 from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
 from emg_games.amplifier import Amplifier
+from emg_games.gui.scenes.utils import add_corner_button 
 
 
 class Player:
@@ -21,7 +22,7 @@ class Player:
         self.__screen = self.__screen_properties.screen
 
         self.__x_screen, self.__y_screen = self.__screen.get_size()
-        self._use_keyboard = False
+        self._use_keyboard = True
         self.__get_name()
         self._get_input_type()
 
@@ -62,23 +63,22 @@ class Player:
         pygame.display.update()
 
     def __get_name(self):
+
+        
         input_name = TextInput(font_family=palette.FONT_STYLE, font_size=self.__y_screen // 13,
                                text_color=palette.TEXT_COLOR, max_string_length=15)
-
+        self.__screen.fill(palette.BACKGROUND_COLOR)
+        #self.__update()
         clock = pygame.time.Clock()
         is_input = True
         while is_input:
-
             self.__screen.fill(palette.BACKGROUND_COLOR)
+            exit_btn = add_corner_button(func=self.kill, text="Wyjdź", x_screen=self.__x_screen, y_screen=self.__y_screen, screen=self.__screen, loc='right')
             text(self.__screen, palette.TEXT_COLOR, "PODAJ SWÓJ NICK:", self.__x_screen // 2, self.__y_screen // 4,
                  font_size=self.__y_screen // 13)
-
-            # TODO exiting
+        
+            
             events = pygame.event.get()
-            for event in events:
-                if event.type == pygame.QUIT:
-                    self.kill()
-
             input_name.update(events)
             text_length = input_name.font_object.size(input_name.get_text())[0]
             self.__screen.blit(input_name.get_surface(),
@@ -86,8 +86,11 @@ class Player:
 
             self.__update()
             clock.tick(30)
-
+            
             for event in events:
+                exit_btn.on_click(event)
+                if event.type == pygame.QUIT:
+                    self.kill()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_RETURN:
                         self.__name = input_name.get_text()
@@ -99,10 +102,14 @@ class Player:
         self._is_waiting_for_option = False
 
     def _get_input_type(self):
+     
 
         self._is_waiting_for_option = True
 
         self.__screen.fill(palette.BACKGROUND_COLOR)
+
+        exit_btn = add_corner_button(func=self.kill, text="Wyjdź", x_screen=self.__x_screen, y_screen=self.__y_screen, screen=self.__screen, loc='right')
+        self.__update()
 
         x_button = self.__x_screen / 4
         y_button = self.__y_screen / 5
@@ -130,8 +137,10 @@ class Player:
         self.__update()
         while self._is_waiting_for_option:
             for event in pygame.event.get():
+                exit_btn.on_click(event)
                 muscle_button.on_click(event)
                 keyboard_button.on_click(event)
+                
                 if event.type == pygame.QUIT:
                     self.kill()
                 if event.type == pygame.KEYDOWN:

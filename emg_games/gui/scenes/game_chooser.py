@@ -7,6 +7,7 @@ import emg_games.games
 from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
 import emg_games.backbones
+from emg_games.gui.scenes.utils import add_corner_button 
 
 
 def update():
@@ -14,6 +15,9 @@ def update():
 
 
 def choose_game(screen_properties, kill_game):
+
+    
+
     list_of_games = [obj for name, obj in inspect.getmembers(emg_games.games, inspect.isclass) if
                      issubclass(obj, emg_games.backbones.AbstractGame)]
 
@@ -24,6 +28,9 @@ def choose_game(screen_properties, kill_game):
     screen = pygame.display.set_mode(screen_size)
 
     screen.fill(palette.BACKGROUND_COLOR)
+
+    exit_btn = add_corner_button(func=kill_game, text="Wyjdź", x_screen=screen_properties.x_screen, y_screen=screen_properties.y_screen, screen=screen_properties.screen, loc='right')
+    update()
 
     number_of_rows = round(math.sqrt(len(list_of_games)))
     number_of_columns = math.ceil(len(list_of_games) / number_of_rows)
@@ -59,6 +66,6 @@ def choose_game(screen_properties, kill_game):
 
             if event.type == pygame.QUIT:
                 kill_game()
-            # if event.type == pygame.KEYDOWN:
-            #     if event.key == pygame.K_ESCAPE:
-            #         self._menu()
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    self._menu()

@@ -9,6 +9,7 @@ from copy import copy
 from emg_games.backbones.abstract_game import AbstractGame
 from emg_games.backbones import utils
 from emg_games.gui.components import palette
+from emg_games.gui.scenes.utils import add_corner_button 
 
 # TODO move to utils
 MOVE_LEFT = -1
@@ -146,6 +147,7 @@ class RunningObjects(AbstractGame):
                 break_loop = False
 
                 for event in pygame.event.get():
+                    menu_btn.on_click(event)
                     if event.type == pygame.QUIT:
                         self._kill()
 
@@ -179,6 +181,7 @@ class RunningObjects(AbstractGame):
                     self._screen.blit(projectile_.image, projectile_.get_position)
 
                 # labels with lives and score
+                menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
                 self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
 
                 self._clock.tick(60)
