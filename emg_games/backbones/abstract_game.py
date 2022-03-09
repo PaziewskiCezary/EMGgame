@@ -337,7 +337,7 @@ class AbstractGame(ABC):
         self._screen.fill(palette.PRIMARY_COLOR)
         
 
-        return_btn = utils.add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen)
+        # return_btn = utils.add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen)
         self._update()
 
         x_button, y_button = self._x_screen // 20, self._y_screen // 20
