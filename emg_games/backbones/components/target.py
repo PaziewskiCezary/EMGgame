@@ -12,7 +12,7 @@ class Target(pygame.sprite.Sprite):
         self._x_position, self.y_position = position
         self._facing = 0
         self.type = target_type
-        self._image = pygame.image.load(img_path).convert()
+        self._image = pygame.image.load(img_path).convert_alpha()
         if transparent:
             self._image.set_colorkey(self._image.get_at((0, 0)))
 

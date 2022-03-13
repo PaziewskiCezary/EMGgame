@@ -10,7 +10,7 @@ class Projectile(pygame.sprite.Sprite):
 
         self.x_position, self.y_position = position
         self.type = projectile_type
-        self.image = pygame.image.load(img_path).convert()
+        self.image = pygame.image.load(img_path).convert_alpha()
         if transparent:
             self.image.set_colorkey(self.image.get_at((0, 0)))
 
