@@ -37,7 +37,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='EMG game')
 
-    parser.add_argument('--not-full', dest='full_screen', action='store_true', help='turn off full screen')
+    parser.add_argument('--not-full', dest='full_screen', action='store_false', help='turn off full screen')
 
     args = parser.parse_args()
 

@@ -237,17 +237,15 @@ class AbstractGame(ABC):
         pygame.draw.rect(self._screen, palette.PRIMARY_COLOR,
                          (0, 0, self._x_screen * 19/10, self._y_screen // 10), False)
 
-        MAGIC_NUMBER = 25  # why there was random 25  like 8 times!?!?!?
-
-        text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, MAGIC_NUMBER, font_style=palette.FONT_STYLE,
+        text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, self._y_screen * 0.05, font_style=palette.FONT_STYLE,
              font_size=font_size)
-        text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, MAGIC_NUMBER, font_style=palette.FONT_STYLE,
+        text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, self._y_screen * 0.05, font_style=palette.FONT_STYLE,
              font_size=font_size)
 
         # place emojis
         lives_text = emoji_text * self._lives
         lives_text_rect = emoji_font.get_rect(lives_text)
-        lives_text_rect.center = self._x_screen // 2 + width_lives // 2 + 0.5 * self._lives * emoji_heart, MAGIC_NUMBER
+        lives_text_rect.center = self._x_screen // 2 + width_lives // 2 + 0.5 * self._lives * emoji_heart, self._y_screen * 0.05
         emoji_font.render_to(self._screen, lives_text_rect, lives_text, emoji_color, size=emoji_font_size)
 
         #self._update()
@@ -342,8 +340,7 @@ class AbstractGame(ABC):
                                 return_btn = Button(self._screen, 'Wróć', (x_button, y_button), (x_button * 2, y_button * 2),
                                                     button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=self.menu,
                                                     font_size=button_font_size)'''
-        MAGIC_NUMBER = 25
-        text(self._screen, palette.SECONDARY_COLOR, 'WYNIKI', self._x_screen // 2, self._y_screen // 10 - MAGIC_NUMBER,
+        text(self._screen, palette.SECONDARY_COLOR, 'WYNIKI', self._x_screen // 2, self._y_screen // 10 - self._y_screen * 0.05,
              font_size=48)
 
         y_offset = 55
