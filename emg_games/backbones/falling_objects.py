@@ -125,25 +125,16 @@ class FallingObjects(AbstractGame):
 
             while actual_projectile:
                 break_loop = False
-                for event in pygame.event.get():
-                    # menu_btn.on_click(event)
-                    if event.type == pygame.QUIT:
-                        self._kill()
-                    play, break_loop = self._escape_game(event)
+                
 
                 self._keyboard_control(self._move_projectile)
 
-                if break_loop:
-                    break
+                
 
                 if not self._player._use_keyboard:
                     self._muscle_control(self._move_projectile)
 
-                for event in pygame.event.get():
-                    play, break_loop = self._escape_game(event)
-
-                if break_loop:
-                    break
+                
 
                 new_projectile, actual_projectile = self._punctation()
 
@@ -157,10 +148,21 @@ class FallingObjects(AbstractGame):
                     self._screen.blit(target_.image, target_.get_position)
 
                 self._screen.blit(self._projectile.image, self._projectile.get_position)
-                #self.exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+                #exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
                 
                 self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
-                # menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+                menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+
+                for event in pygame.event.get():
+                    menu_btn.on_click(event)
+                    #exit_btn.on_click(event)
+                    if event.type == pygame.QUIT:
+                        self._kill()
+
+                    play, break_loop = self._escape_game(event)
+                    
+                if break_loop:
+                    break
 
                 self._update()
                 self._clock.tick(60)
