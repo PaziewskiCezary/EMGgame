@@ -21,19 +21,12 @@ class Projectile(Image):
 
         scale = desired_width / original_width
 
-
         new_width = int(original_width * scale)
         new_height = int(original_height * scale)
         max_height = pygame.display.get_surface().get_size()[1] * max_height_ratio
         if new_height > max_height:
-            print(img_path)
-            print(new_width, new_height)
             new_width *= max_height / new_height
             new_height = max_height
-
-            print(new_width, new_height)
-
-            print('*'*8)
 
         self.image = pygame.transform.scale(self.image, (new_width, new_height))
 
