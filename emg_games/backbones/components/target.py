@@ -9,7 +9,7 @@ class Target(pygame.sprite.Sprite):
     def __init__(self, position=(0, 0), *, img_path, target_type=None, desired_width, flippable=False, transparent=False):
         pygame.sprite.Sprite.__init__(self)
 
-        self._x_position, self.y_position = position
+        self._x_position, self._y_position = position
         self._facing = 0
         self.type = target_type
         self._image = pygame.image.load(img_path).convert()
@@ -29,7 +29,9 @@ class Target(pygame.sprite.Sprite):
         if flippable:
             self._image_fliped = pygame.transform.flip(self._image.copy(), True, False)
 
-        self.size = self.image.get_size()
+        self._size = self.image.get_size()
+        self._rect = self._image.get_rect(center=(self._x_position, self._y_position))
+        self._mask = pygame.mask.from_surface(self._image)
 
     @property
     def x_position(self):
@@ -57,13 +59,13 @@ class Target(pygame.sprite.Sprite):
 
     @property
     def get_position(self):
-        return self.x_position, self.y_position
+        return self.x_position, self._y_position
 
     @property
     def corners(self):
-        target_width, target_height = self.size
-        corner1_position = (self.x_position, self.y_position)
-        corner2_position = (self.x_position + target_width, self.y_position + target_height)
+        target_width, target_height = self._size
+        corner1_position = (self.x_position, self._y_position)
+        corner2_position = (self.x_position + target_width, self._y_position + target_height)
         return corner1_position, corner2_position
 
     @property

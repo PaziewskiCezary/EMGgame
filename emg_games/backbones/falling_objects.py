@@ -38,7 +38,7 @@ class FallingObjects(AbstractGame):
         if abs(shift) > 1:
             raise ValueError('arg must be between -1 and 1')
 
-        self._projectile.x_position += self._max_shift * shift
+        self._projectile._x_position += self._max_shift * shift
 
     def _set_targets(self):
         number_of_targets = len(self._targets)
@@ -48,15 +48,15 @@ class FallingObjects(AbstractGame):
 
         first_target = 0
 
-        target_width, target_height = self._targets[first_target].size
+        target_width, target_height = self._targets[first_target]._size
 
         target_y_position = self._y_screen - target_height
 
         for target_number, target_ in enumerate(self._targets):
             target_x_position = target_width * target_number
             target_x_position += offset * (target_number + 1)
-            target_.x_position = target_x_position
-            target_.y_position = target_y_position
+            target_._x_position = target_x_position
+            target_._y_position = target_y_position
 
         return target_y_position
 
@@ -66,8 +66,8 @@ class FallingObjects(AbstractGame):
         self._projectile = self._projectiles[projectile_index]
 
         # recalculate x to be in center
-        self._projectile.x_position = self._x_screen // 2 - self._projectile.size[1] // 2
-        self._projectile.y_position = 100
+        self._projectile._x_position = self._x_screen // 2 - self._projectile._size[1] // 2
+        self._projectile._y_position = 100
 
     def _punctation(self):
 
@@ -81,20 +81,30 @@ class FallingObjects(AbstractGame):
         acceleration = 1.02 ** self._projectile_number
 
         y_step = self._y_screen * self._speed_rate * acceleration
-        self._projectile.x_position, self._projectile.y_position = \
+        self._projectile._x_position, self._projectile._y_position = \
             projectile_x_position, projectile_y_position + y_step
         if self._projectile.bottom > target_y_position:
             collision = False
             for (i, target_) in enumerate(self._targets):
 
                 if utils.collide_in(self._projectile, target_, 2):
-                    collision = True
-                    if target_.type == self._projectile.type:
-                        self._score += 100
+                    # if pygame.sprite.spritecollide(target_, pygame.sprite.Group(self._projectile), False,
+                    #                                pygame.sprite.collide_mask):
+                    #     print(pygame.sprite.spritecollide(target_, pygame.sprite.Group(self._projectile), False,
+                    #                                       pygame.sprite.collide_mask))
 
-                    else:
-                        self._score += -10
-                        self._missed += 1
+                    if target_._mask.overlap(self._projectile._mask, self._projectile._size):
+                    # if self._projectile._mask.overlap(target_._mask, target_._size):
+
+                        # print(pygame.surfarray.pixels2d(self._projectile._image))
+
+                        collision = True
+                        if target_.type == self._projectile.type:
+                            self._score += 100
+
+                        else:
+                            self._score += -10
+                            self._missed += 1
 
             if not collision:
                 self._lives -= 1
@@ -154,9 +164,9 @@ class FallingObjects(AbstractGame):
                 
 
                 for target_ in self._targets:
-                    self._screen.blit(target_.image, target_.get_position)
+                    self._screen.blit(target_._image, target_.get_position)
 
-                self._screen.blit(self._projectile.image, self._projectile.get_position)
+                self._screen.blit(self._projectile._image, self._projectile.get_position)
                 #self.exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
                 menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
 

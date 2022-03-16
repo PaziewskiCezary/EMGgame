@@ -42,7 +42,7 @@ class RunningObjects(AbstractGame):
         if abs(shift) > 1:
             raise ValueError('arg must be between -1 and 1')
 
-        self._target.x_position += self._max_shift * shift
+        self._target._x_position += self._max_shift * shift
 
     def _set_targets(self):
 
@@ -50,11 +50,11 @@ class RunningObjects(AbstractGame):
 
         self._target = self._targets[only_target]
 
-        target_width, target_height = self._targets[only_target].size
+        target_width, target_height = self._targets[only_target]._size
 
         target_y_position = self._y_screen - target_height
-        self._target.y_position = target_y_position
-        self._target.x_position = self._x_screen // 2 - self._target.size[1] // 2
+        self._target._y_position = target_y_position
+        self._target._x_position = self._x_screen // 2 - self._target._size[1] // 2
 
         return target_y_position
 
@@ -63,9 +63,9 @@ class RunningObjects(AbstractGame):
         projectile_index = random.randint(0, len(self._projectiles) - 1)
         self._projectile = copy(self._projectiles[projectile_index])
 
-        self._projectile.x_position = random.randint(self._projectile.size[0], self._x_screen -
-                                                     self._projectile.size[0])
-        self._projectile.y_position = random.randint(-200, 0)
+        self._projectile._x_position = random.randint(self._projectile._size[0], self._x_screen -
+                                                     self._projectile._size[0])
+        self._projectile._y_position = random.randint(-200, 0)
 
         self.running_projectiles.append(self._projectile)
 
@@ -84,19 +84,22 @@ class RunningObjects(AbstractGame):
 
         for (i, projectile_) in enumerate(self.running_projectiles):
             projectile_x_position, projectile_y_position = projectile_.get_position
-            projectile_.y_position = projectile_y_position + y_step
-            if projectile_.bottom > self._target.y_position:
+            projectile_._y_position = projectile_y_position + y_step
+            if projectile_.bottom > self._target._y_position:
 
                 new_projectile = False
                 if utils.collide_in(projectile_, self._target, 5/4):
-                    if self._target.type == projectile_.type:
-                        self._score += 10
-                    else:
-                        self._lives -= 1
-                        self._score += -100
-                        self._missed += 1
 
-                    new_projectile = True
+                    if pygame.sprite.spritecollide(self._target, pygame.sprite.Group(projectile_), False, pygame.sprite.collide_mask):
+
+                        if self._target.type == projectile_.type:
+                            self._score += 10
+                        else:
+                            self._lives -= 1
+                            self._score += -100
+                            self._missed += 1
+
+                        new_projectile = True
 
                 elif projectile_.top > self._y_screen:
                     if self._target.type == projectile_.type:
@@ -154,8 +157,8 @@ class RunningObjects(AbstractGame):
                     play, break_loop = self._escape_game(event)
 
                 self._keyboard_control(self._move_target)
-                self._target.x_position = max(0,
-                                              min(self._target.x_position,
+                self._target._x_position = max(0,
+                                              min(self._target._x_position,
                                                   self._screen_properties.x_screen - self._target.width)
                                               )
 
@@ -179,10 +182,10 @@ class RunningObjects(AbstractGame):
                 self._screen.fill(palette.BACKGROUND_COLOR)
                 self._update_background()
 
-                self._screen.blit(self._target.image, self._target.get_position)
+                self._screen.blit(self._target._image, self._target.get_position)
 
                 for projectile_ in self.running_projectiles:
-                    self._screen.blit(projectile_.image, projectile_.get_position)
+                    self._screen.blit(projectile_._image, projectile_.get_position)
 
                 # labels with lives and score
                 menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
