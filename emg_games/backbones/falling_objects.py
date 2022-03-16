@@ -4,7 +4,7 @@ import random
 
 from emg_games.backbones.abstract_game import AbstractGame
 from emg_games.backbones import utils
-from emg_games.backbones import Target
+from emg_games.backbones.components import Target
 from emg_games.gui.components import palette
 from emg_games.gui.scenes.utils import add_corner_button 
 
