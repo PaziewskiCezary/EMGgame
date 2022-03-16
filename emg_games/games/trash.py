@@ -2,8 +2,7 @@ import pygame
 import math
 
 from emg_games.backbones import utils
-from emg_games.backbones import Projectile
-from emg_games.backbones import Target
+from emg_games.backbones.components import Projectile, Target
 
 from emg_games.backbones.falling_objects import FallingObjects
 
