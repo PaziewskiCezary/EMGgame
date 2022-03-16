@@ -146,33 +146,18 @@ class RunningObjects(AbstractGame):
 
                 break_loop = False
 
-                for event in pygame.event.get():
-                    # menu_btn.on_click(event)
-                    if event.type == pygame.QUIT:
-                        self._kill()
-
-                    play, break_loop = self._escape_game(event)
-
                 self._keyboard_control(self._move_target)
                 self._target.x_position = max(0,
                                               min(self._target.x_position,
                                                   self._screen_properties.x_screen - self._target.width)
                                               )
 
-                if break_loop:
-                    break
-
                 if not self._player._use_keyboard:
                     self._muscle_control(self._move_target)
 
-                for event in pygame.event.get():
-                    play, break_loop = self._escape_game(event)
-
-                if break_loop:
-                    break
+                
 
                 break_loop, new_projectile = self._punctation()
-
                 if break_loop:
                     break
 
@@ -187,7 +172,17 @@ class RunningObjects(AbstractGame):
                 # labels with lives and score
                 
                 self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
-                # menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+                menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+                for event in pygame.event.get():
+                    menu_btn.on_click(event)
+                    if event.type == pygame.QUIT:
+                        self._kill()
+
+                    play, break_loop = self._escape_game(event)
+                    
+                if break_loop:
+                    break
+
                 self._update()
                 self._clock.tick(60)
 
