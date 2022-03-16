@@ -6,6 +6,8 @@ from emg_games.backbones.components import Projectile, Target
 
 from emg_games.backbones.falling_objects import FallingObjects
 
+from emg_games.backbones.components.image import Image
+
 
 class Trash(FallingObjects):
 
@@ -18,7 +20,7 @@ class Trash(FallingObjects):
 
         # TODO load this all in super __init__
         self._backgrounds = sorted([x for x in utils.get_backgrounds(class_name)])
-        self._backgrounds = [pygame.image.load(x) for x in self._backgrounds]
+        self._backgrounds = [Image(x) for x in self._backgrounds]
 
         self._targets = [Target(desired_width=self._x_screen * Target.percentage, img_path=target_path,
                                 target_type=target_type) for (target_type, target_path) in
@@ -40,5 +42,5 @@ class Trash(FallingObjects):
 
         idx = min(idx, len(self._backgrounds) - 1)
 
-        img = self._backgrounds[idx]
+        img = self._backgrounds[idx].image
         self._screen.blit(img, [0, 0])

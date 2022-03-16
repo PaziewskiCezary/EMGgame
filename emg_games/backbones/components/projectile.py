@@ -1,27 +1,41 @@
 import pygame
 
+from .image import Image
 
-class Projectile(pygame.sprite.Sprite):
+
+# class Projectile(pygame.sprite.Sprite):
+class Projectile(Image):
 
     percentage = 0.05
 
-    def __init__(self, position=(0, 0), *, img_path, projectile_type, desired_width, transparent=False):
-        pygame.sprite.Sprite.__init__(self)
-
+    def __init__(self, position=(0, 0), *, img_path, projectile_type, desired_width, max_height_ratio=400/1920, transparent=False):
+        # pygame.sprite.Sprite.__init__(self)
+        super(Projectile, self).__init__(img_path)
         self.x_position, self.y_position = position
         self.type = projectile_type
-        self.image = pygame.image.load(img_path).convert_alpha()
-        if transparent:
-            self.image.set_colorkey(self.image.get_at((0, 0)))
+        # self.image = pygame.image.load(img_path).convert_alpha()
+        # if transparent:
+        #     self.image.set_colorkey(self.image.get_at((0, 0)))
 
         original_width, original_height = self.image.get_size()
 
         scale = desired_width / original_width
 
-        final_width = int(original_width * scale)
-        final_height = int(original_height * scale)
 
-        self.image = pygame.transform.scale(self.image, (final_width, final_height))
+        new_width = int(original_width * scale)
+        new_height = int(original_height * scale)
+        max_height = pygame.display.get_surface().get_size()[1] * max_height_ratio
+        if new_height > max_height:
+            print(img_path)
+            print(new_width, new_height)
+            new_width *= max_height / new_height
+            new_height = max_height
+
+            print(new_width, new_height)
+
+            print('*'*8)
+
+        self.image = pygame.transform.scale(self.image, (new_width, new_height))
 
         self.size = self.image.get_size()
 
