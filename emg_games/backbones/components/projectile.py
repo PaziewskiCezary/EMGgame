@@ -2,7 +2,6 @@ import pygame
 
 from .image import Image
 
-
 # class Projectile(pygame.sprite.Sprite):
 class Projectile(Image):
 
@@ -28,7 +27,7 @@ class Projectile(Image):
             new_width *= max_height / new_height
             new_height = max_height
 
-        self.image = pygame.transform.scale(self.image, (new_width, new_height))
+        self.image = pygame.transform.smoothscale(self.image, (new_width, new_height))
 
         self.size = self.image.get_size()
 
