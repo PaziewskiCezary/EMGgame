@@ -371,8 +371,11 @@ class AbstractGame(ABC):
     def change_game(self):
         return True
 
-    def menu(self):
-
+    def menu(self, args=None):
+        if args != None:
+            if 'save_score' in args and args['save_score']:
+                self._save_score()
+                
         self._screen.fill(palette.PRIMARY_COLOR)
 
         pygame.display.set_caption(self.game_name)
