@@ -126,7 +126,7 @@ class FallingObjects(AbstractGame):
             while actual_projectile:
                 break_loop = False
                 for event in pygame.event.get():
-                    menu_btn.on_click(event)
+                    # menu_btn.on_click(event)
                     if event.type == pygame.QUIT:
                         self._kill()
                     play, break_loop = self._escape_game(event)
@@ -160,7 +160,7 @@ class FallingObjects(AbstractGame):
                 #self.exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
                 
                 self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
-                menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+                # menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
 
                 self._update()
                 self._clock.tick(60)
