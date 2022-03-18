@@ -10,24 +10,42 @@ class Projectile(pygame.sprite.Sprite):
 
         self._x_position, self._y_position = position
         self.type = projectile_type
-        self._image = pygame.image.load(img_path).convert()
+        self.image = pygame.image.load(img_path).convert_alpha()
+        self.image = self.add_outline_to_image(self.image)
         if transparent:
-            self._image.set_colorkey(self._image.get_at((0, 0)))
+            self.image.set_colorkey(self.image.get_at((0, 0)))
 
-        self.rect = self._image.get_rect(center=(self._x_position, self._y_position))
+        self.rect = self.image.get_rect(center=(self._x_position, self._y_position))
 
-        original_width, original_height = self._image.get_size()
+        original_width, original_height = self.image.get_size()
 
         scale = desired_width / original_width
 
         final_width = int(original_width * scale)
         final_height = int(original_height * scale)
 
-        self._image = pygame.transform.scale(self._image, (final_width, final_height))
+        self.image = pygame.transform.scale(self.image, (final_width, final_height))
 
-        self._size = self._image.get_size()
-        self._rect = self._image.get_rect(center=(self._x_position, self._y_position))
-        self._mask = pygame.mask.from_surface(self._image)
+        self._size = self.image.get_size()
+        self.rect = self.image.get_rect(center=(self._x_position, self._y_position))
+        self.mask = pygame.mask.from_surface(self.image)
+
+
+    def add_outline_to_image(self, image, thickness=1, color=(0, 0, 0),
+                             color_key: tuple = (0, 0, 255)):
+        mask = pygame.mask.from_surface(image)
+        mask_surf = mask.to_surface(setcolor=color)
+        mask_surf.set_colorkey((0, 0, 0))
+
+        new_img = pygame.Surface((image.get_width() + 2, image.get_height() + 2))
+        new_img.fill(color_key)
+
+        for i in -thickness, thickness:
+            new_img.blit(mask_surf, (i + thickness, thickness))
+            new_img.blit(mask_surf, (thickness, i + thickness))
+        new_img.blit(image, (thickness, thickness))
+
+        return new_img
 
     @property
     def get_position(self):
@@ -35,19 +53,19 @@ class Projectile(pygame.sprite.Sprite):
 
     @property
     def bottom(self):
-        return self._image.get_rect()[3] + self.get_position[1]
+        return self.image.get_rect()[3] + self.get_position[1]
 
     @property
     def top(self):
-        return self._image.get_rect()[1] + self.get_position[1]
+        return self.image.get_rect()[1] + self.get_position[1]
 
     @property
     def right(self):
-        return self._image.get_rect()[2] + self.get_position[0]
+        return self.image.get_rect()[2] + self.get_position[0]
 
     @property
     def left(self):
-        return self._image.get_rect()[0] + self.get_position[0]
+        return self.image.get_rect()[0] + self.get_position[0]
 
     @property
     def corners(self):

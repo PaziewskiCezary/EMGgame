@@ -69,6 +69,7 @@ class FallingObjects(AbstractGame):
         self._projectile._x_position = self._x_screen // 2 - self._projectile._size[1] // 2
         self._projectile._y_position = 100
 
+    # TODO this is logic not points
     def _punctation(self):
 
         new_projectile = False
@@ -80,7 +81,7 @@ class FallingObjects(AbstractGame):
 
         acceleration = 1.02 ** self._projectile_number
 
-        y_step = self._y_screen * self._speed_rate * acceleration
+        y_step = self._y_screen * self._speed_rate * acceleration * 10
         self._projectile._x_position, self._projectile._y_position = \
             projectile_x_position, projectile_y_position + y_step
         if self._projectile.bottom > target_y_position:
@@ -92,25 +93,33 @@ class FallingObjects(AbstractGame):
                     #                                pygame.sprite.collide_mask):
                     #     print(pygame.sprite.spritecollide(target_, pygame.sprite.Group(self._projectile), False,
                     #                                       pygame.sprite.collide_mask))
-
-                    if target_._mask.overlap(self._projectile._mask, self._projectile._size):
+                    print('*'*8)
+                    if pygame.sprite.collide_mask(target_, self._projectile):
+                    # if target_._mask.overlap(self._projectile._mask, self._projectile.rect.topleft):
                     # if self._projectile._mask.overlap(target_._mask, target_._size):
+                        import ipdb; ipdb.set_trace()
 
                         # print(pygame.surfarray.pixels2d(self._projectile._image))
-
-                        collision = True
                         if target_.type == self._projectile.type:
                             self._score += 100
-
                         else:
                             self._score += -10
                             self._missed += 1
 
-            if not collision:
-                self._lives -= 1
+                        print('collsion')
+                    else:
+                        print('no collsion')
 
-            new_projectile = True
-            actual_projectile = False
+                #         new_projectile = True
+                #         actual_projectile = False
+                #
+                #         return new_projectile, actual_projectile
+                # else:
+                #     self._lives -= 1
+
+
+        new_projectile = False
+        actual_projectile = True
 
         return new_projectile, actual_projectile
 
@@ -164,9 +173,9 @@ class FallingObjects(AbstractGame):
                 
 
                 for target_ in self._targets:
-                    self._screen.blit(target_._image, target_.get_position)
+                    self._screen.blit(target_.image, target_.get_position)
 
-                self._screen.blit(self._projectile._image, self._projectile.get_position)
+                self._screen.blit(self._projectile.image, self._projectile.get_position)
                 #self.exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
                 menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
 

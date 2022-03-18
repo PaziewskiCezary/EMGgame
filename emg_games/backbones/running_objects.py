@@ -182,10 +182,10 @@ class RunningObjects(AbstractGame):
                 self._screen.fill(palette.BACKGROUND_COLOR)
                 self._update_background()
 
-                self._screen.blit(self._target._image, self._target.get_position)
+                self._screen.blit(self._target.image, self._target.get_position)
 
                 for projectile_ in self.running_projectiles:
-                    self._screen.blit(projectile_._image, projectile_.get_position)
+                    self._screen.blit(projectile_.image, projectile_.get_position)
 
                 # labels with lives and score
                 menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')

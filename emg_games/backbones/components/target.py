@@ -12,9 +12,10 @@ class Target(pygame.sprite.Sprite):
         self._x_position, self._y_position = position
         self._facing = 0
         self.type = target_type
-        self._image = pygame.image.load(img_path).convert()
+        self._image = pygame.image.load(img_path).convert_alpha()
+        self._image = self.add_outline_to_image(self._image)
         if transparent:
-            self._image.set_colorkey(self._image.get_at((0, 0)))
+            self.image.set_colorkey(self.image.get_at((0, 0)))
 
         self.flippable = flippable
 
@@ -25,13 +26,29 @@ class Target(pygame.sprite.Sprite):
         final_width = int(original_width * scale)
         final_height = int(original_height * scale)
 
-        self._image = pygame.transform.scale(self._image, (final_width, final_height))
+        self._image = pygame.transform.scale(self.image, (final_width, final_height))
         if flippable:
-            self._image_fliped = pygame.transform.flip(self._image.copy(), True, False)
+            self._image_fliped = pygame.transform.flip(self.image.copy(), True, False)
 
         self._size = self.image.get_size()
-        self._rect = self._image.get_rect(center=(self._x_position, self._y_position))
-        self._mask = pygame.mask.from_surface(self._image)
+        self.rect = self.image.get_rect(center=(self._x_position, self._y_position))
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def add_outline_to_image(self, image, thickness=1, color=(0, 0, 0),
+                             color_key: tuple = (0, 0, 255)):
+        mask = pygame.mask.from_surface(image)
+        mask_surf = mask.to_surface(setcolor=color)
+        mask_surf.set_colorkey((0, 0, 0))
+
+        new_img = pygame.Surface((image.get_width() + 2, image.get_height() + 2))
+        new_img.fill(color_key)
+
+        for i in -thickness, thickness:
+            new_img.blit(mask_surf, (i + thickness, thickness))
+            new_img.blit(mask_surf, (thickness, i + thickness))
+        new_img.blit(image, (thickness, thickness))
+
+        return new_img
 
     @property
     def x_position(self):
