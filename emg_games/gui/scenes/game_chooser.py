@@ -16,8 +16,6 @@ def update():
 
 def choose_game(screen_properties, kill_game):
 
-    
-
     list_of_games = [obj for name, obj in inspect.getmembers(emg_games.games, inspect.isclass) if
                      issubclass(obj, emg_games.backbones.AbstractGame)]
 
@@ -39,19 +37,18 @@ def choose_game(screen_properties, kill_game):
     button_height = y_screen / (1.5 * number_of_rows + 0.5)
     button_dimension = [button_width, button_height]
 
-    names = [game.game_name for game in list_of_games]
+    names = [game.game_name.upper() for game in list_of_games]
     font_size = emg_games.backbones.utils.calc_font_size(names, button_width)
 
     # place buttons
     game_buttons = []
-    for index, game in enumerate(list_of_games):
+    for index, (game, name) in enumerate(zip(list_of_games, names)):
         i, j = index // number_of_columns, index % number_of_columns
         x_position = button_width + j * 1.5 * button_width
         y_position = button_height + i * 1.5 * button_height
 
-        game_name = list_of_games[index].game_name.upper()
-        game_button = Button(screen, game_name, (x_position, y_position), button_dimension,
-                             palette.PINK_RGB, palette.YELLOW_RGB, lambda idx=index: game_name,
+        game_button = Button(screen, name, (x_position, y_position), button_dimension,
+                             palette.PINK_RGB, palette.YELLOW_RGB, lambda idx=index: name,
                              font_size)
         game_buttons.append(game_button)
 

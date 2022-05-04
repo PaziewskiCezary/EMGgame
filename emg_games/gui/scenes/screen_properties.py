@@ -12,7 +12,8 @@ class ScreenProperties:
             auto_screen_resolution = (display_info.current_w, display_info.current_h)
             self.__screen = pygame.display.set_mode(auto_screen_resolution, pygame.FULLSCREEN)
         else:
-            self.__screen = pygame.display.set_mode((1040, 585))
+            scale = 60
+            self.__screen = pygame.display.set_mode((16 * scale, 9 * scale))
 
         self.__x_screen = self.__screen.get_width()
         self.__y_screen = self.__screen.get_height()

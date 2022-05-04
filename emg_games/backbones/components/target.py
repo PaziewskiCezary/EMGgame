@@ -25,7 +25,7 @@ class Target(pygame.sprite.Sprite):
         final_width = int(original_width * scale)
         final_height = int(original_height * scale)
 
-        self._image = pygame.transform.scale(self._image, (final_width, final_height))
+        self._image = pygame.transform.smoothscale(self._image, (final_width, final_height))
         if flippable:
             self._image_fliped = pygame.transform.flip(self._image.copy(), True, False)
 
