@@ -68,7 +68,7 @@ class RunningObjects(AbstractGame):
         self._projectile.y_position = random.randint(-200, 0)
 
         self.running_projectiles.append(self._projectile)
-
+        # print("number of projectiles w funkcji ", len(self.running_projectiles))
         self.time_since_new_projectile = time.time()
 
         self._projectile_number += 1
@@ -106,7 +106,6 @@ class RunningObjects(AbstractGame):
                     new_projectile = True
 
                 if new_projectile:
-                    self._new_projectiles += 1
                     self.running_projectiles.remove(projectile_)
 
                 if self._lives <= 0:
@@ -119,9 +118,6 @@ class RunningObjects(AbstractGame):
         super()._play()
         play = True
         self._set_targets()
-
-        
-        self._new_projectiles = 1
         
         self.running_projectiles = []
 
@@ -131,7 +127,10 @@ class RunningObjects(AbstractGame):
 
         while play and self._lives > 0:
 
+            self._new_projectiles = 1
+
             while self._new_projectiles:
+                # print("new projectiles ", self._new_projectiles)
                 self._set_new_projectile()
                 self._new_projectiles -= 1
 
@@ -140,7 +139,10 @@ class RunningObjects(AbstractGame):
 
             while self.running_projectiles:
 
+                # print("time przed ", time.time() - self.new_projectile_counter)
                 if time.time() - self.new_projectile_counter > 0:
+                    # print("time po if ", time.time() - self.new_projectile_counter)
+                    # print("number of projectile ", len(self.running_projectiles))
                     self._set_new_projectile()
                     self.new_projectile_counter = time.time() + 1  # + 3 ** self._projectile_number
 
@@ -154,8 +156,6 @@ class RunningObjects(AbstractGame):
 
                 if not self._player._use_keyboard:
                     self._muscle_control(self._move_target)
-
-                
 
                 break_loop, new_projectile = self._punctation()
                 if break_loop:
