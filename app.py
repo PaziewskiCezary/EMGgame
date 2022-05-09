@@ -16,6 +16,7 @@ environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 def main(args):
 
     screen_properties = ScreenProperties(args.full_screen)
+    # screen_properties = ScreenProperties(False)
 
     # options_screen(screen_properties=screen_properties)
 

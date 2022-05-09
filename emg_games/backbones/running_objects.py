@@ -69,7 +69,7 @@ class RunningObjects(AbstractGame):
 
         self.running_projectiles.append(self._projectile)
         # print("number of projectiles w funkcji ", len(self.running_projectiles))
-        self.time_since_new_projectile = time.time()
+        # self.time_since_new_projectile = time.time()
 
         self._projectile_number += 1
 
@@ -80,7 +80,7 @@ class RunningObjects(AbstractGame):
 
         acceleration = 1.02 ** self._projectile_number
 
-        y_step = self._y_screen * self._speed_rate * acceleration * 10  # tak jest ciekawiej na razie
+        y_step = self._y_screen * self._speed_rate * acceleration # * 10  # tak jest ciekawiej na razie
 
         for (i, projectile_) in enumerate(self.running_projectiles):
             projectile_x_position, projectile_y_position = projectile_.get_position
@@ -121,7 +121,7 @@ class RunningObjects(AbstractGame):
         
         self.running_projectiles = []
 
-        self.time_since_new_projectile = time.time()
+        # self.time_since_new_projectile = time.time()
 
         self.new_projectile_counter = time.time() + 10
 
@@ -144,7 +144,7 @@ class RunningObjects(AbstractGame):
                     # print("time po if ", time.time() - self.new_projectile_counter)
                     # print("number of projectile ", len(self.running_projectiles))
                     self._set_new_projectile()
-                    self.new_projectile_counter = time.time() + 1  # + 3 ** self._projectile_number
+                    self.new_projectile_counter = time.time() + 0.98**(1/self._projectile_number)  # 1  # + 3 ** self._projectile_number
 
                 break_loop = False
 
@@ -172,7 +172,9 @@ class RunningObjects(AbstractGame):
                 # labels with lives and score
                 
                 self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
-                menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right', func_args={'save_score': True})
+                menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen,
+                                             y_screen=self._y_screen, screen=self._screen, loc='right',
+                                             func_args={'save_score': True})
                 for event in pygame.event.get():
                     menu_btn.on_click(event)
                     if event.type == pygame.QUIT:
