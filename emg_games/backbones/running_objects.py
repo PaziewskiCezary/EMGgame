@@ -218,10 +218,10 @@ class RunningObjects(AbstractGame):
             axs[0, 1].set_title("do tej pory")
             axs[1, 1].plot(funkcja)
             axs[1, 1].set_title("funkcja")
-            plt.show()
+
         self._save_score()
 
         self._what_next()
-
+        plt.show()
     def _update_background(self):
         pass
