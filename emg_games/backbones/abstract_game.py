@@ -47,7 +47,7 @@ class AbstractGame(ABC):
         self._screen.fill(palette.PRIMARY_COLOR)
         # TODO move up
 
-        self._max_lives = 5
+        self._max_lives = 1
 
         self.main_game = main_game
 

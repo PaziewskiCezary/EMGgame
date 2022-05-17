@@ -69,8 +69,6 @@ class RunningObjects(AbstractGame):
         self._projectile.y_position = random.randint(-200, 0)
 
         self.running_projectiles.append(self._projectile)
-        # print("number of projectiles w funkcji ", len(self.running_projectiles))
-        # self.time_since_new_projectile = time.time()
 
         self._projectile_number += 1
 
