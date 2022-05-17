@@ -122,22 +122,11 @@ class RunningObjects(AbstractGame):
         
         self.running_projectiles = []
 
-        # self.time_since_new_projectile = time.time()
-
-        # self.new_projectile_counter = time.time()
-
-        i = 0
-        list_i = []
-        current_projectiles = []
-        all_projectiles = []
-        funkcja = []
-
         while play and self._lives > 0:
 
             self._new_projectiles = 1
 
             while self._new_projectiles:
-                # print("new projectiles ", self._new_projectiles)
                 self._set_new_projectile()
                 new_projectile_time = time.time()
                 self._new_projectiles -= 1
@@ -147,25 +136,12 @@ class RunningObjects(AbstractGame):
 
             while self.running_projectiles:
 
-                # print("time przed ", time.time() - self.new_projectile_counter)
-                i += 1
-                # if time.time() - self.new_projectile_counter > 0:
-                print("running projectiles ", len(self.running_projectiles))
-                print("all projectiles ", self._projectile_number)
-                print("number 5/9 ", self._projectile_number ** (4 / 7))
                 if (len(self.running_projectiles) <= self._projectile_number ** (4/7)) or \
                         (time.time() - new_projectile_time > 3):
                     list_i.append(i)
                     i = 0
-                    # print("time po if ", time.time() - self.new_projectile_counter)
-                    # print("number of projectile ", len(self.running_projectiles))
                     self._set_new_projectile()
                     new_projectile_time = time.time()
-                    current_projectiles.append(len(self.running_projectiles))
-                    all_projectiles.append(self._projectile_number)
-                    funkcja.append(self._projectile_number ** (4 / 7))
-                    # self.new_projectile_counter = time.time() + 1.02**(1/self._projectile_number)  # 1  # + 3 ** self._projectile_number
-                    # print(0.98 ** (1 / self._projectile_number))
 
                 break_loop = False
 
@@ -209,19 +185,9 @@ class RunningObjects(AbstractGame):
                 self._update()
                 self._clock.tick(60)
 
-            fig, axs = plt.subplots(2, 2, sharex=True, sharey=True)
-            axs[0, 0].plot(list_i)
-            axs[0, 0].set_title("ile minęło")
-            axs[1, 0].plot(current_projectiles)
-            axs[1, 0].set_title("obecnie")
-            axs[0, 1].plot(all_projectiles)
-            axs[0, 1].set_title("do tej pory")
-            axs[1, 1].plot(funkcja)
-            axs[1, 1].set_title("funkcja")
-
         self._save_score()
 
         self._what_next()
-        plt.show()
+
     def _update_background(self):
         pass
