@@ -47,7 +47,7 @@ class AbstractGame(ABC):
         self._screen.fill(palette.PRIMARY_COLOR)
         # TODO move up
 
-        self._max_lives = 1
+        self._max_lives = 3
 
         self.main_game = main_game
 
@@ -137,7 +137,8 @@ class AbstractGame(ABC):
 
     def _show_score(self):
 
-        exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+        exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen,
+                                     screen=self._screen, loc='right')
         self._update()
 
         path = self.get_scores_path
@@ -230,22 +231,23 @@ class AbstractGame(ABC):
         emoji_font = Path(__file__).parent / 'components/NotoEmoji-Regular.ttf'
         emoji_font = pygame.freetype.Font(emoji_font, emoji_font_size)
 
-        emoji_heart, emoji_heart = emoji_font.get_rect(emoji_text).size
+        width_emoji, _ = emoji_font.get_rect(emoji_text * self._lives).size
         width_score, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(score_text)
         width_lives, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(lives_text)
 
         pygame.draw.rect(self._screen, palette.PRIMARY_COLOR,
                          (0, 0, self._x_screen * 19/10, self._y_screen // 10), False)
 
-        text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, self._y_screen * 0.05, font_style=palette.FONT_STYLE,
-             font_size=font_size)
-        text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, self._y_screen * 0.05, font_style=palette.FONT_STYLE,
-             font_size=font_size)
+        text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, self._y_screen * 0.05,
+             font_style=palette.FONT_STYLE, font_size=font_size)
+        text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, self._y_screen * 0.05,
+             font_style=palette.FONT_STYLE, font_size=font_size)
 
         # place emojis
         lives_text = emoji_text * self._lives
         lives_text_rect = emoji_font.get_rect(lives_text)
-        lives_text_rect.center = self._x_screen // 2 + width_lives // 2 + 0.5 * self._lives * emoji_heart, self._y_screen * 0.05
+        lives_text_rect.center = self._x_screen // 2 + width_lives // 2 + width_emoji // 2, \
+                                 self._y_screen * 0.05
         emoji_font.render_to(self._screen, lives_text_rect, lives_text, emoji_color, size=emoji_font_size)
 
         #self._update()
