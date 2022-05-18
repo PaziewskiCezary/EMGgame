@@ -79,7 +79,7 @@ class RunningObjects(AbstractGame):
 
         acceleration = 1.01 ** self._projectile_number
 
-        y_step = self._y_screen * self._speed_rate * acceleration # * 10  # tak jest ciekawiej na razie
+        y_step = self._y_screen * self._speed_rate * acceleration
 
         for (i, projectile_) in enumerate(self.running_projectiles):
             projectile_x_position, projectile_y_position = projectile_.get_position
@@ -119,25 +119,22 @@ class RunningObjects(AbstractGame):
         self._set_targets()
         
         self.running_projectiles = []
+        min_time_between_projectiles = 7
+        power_of_projectiles = 3/5
 
         while play and self._lives > 0:
 
-            self._new_projectiles = 1
-
-            while self._new_projectiles:
-                self._set_new_projectile()
-                new_projectile_time = time.time()
-                self._new_projectiles -= 1
+            self._set_new_projectile()
+            new_projectile_time = time.time()
 
             if not self._lives:
                 play = False
 
             while self.running_projectiles:
 
-                if (len(self.running_projectiles) <= self._projectile_number ** (4/7)) or \
-                        (time.time() - new_projectile_time > 3):
-                    list_i.append(i)
-                    i = 0
+                if (len(self.running_projectiles) <= (self._projectile_number ** power_of_projectiles)) or \
+                        (time.time() - new_projectile_time > min_time_between_projectiles):
+
                     self._set_new_projectile()
                     new_projectile_time = time.time()
 
