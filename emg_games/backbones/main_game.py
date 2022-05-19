@@ -3,6 +3,9 @@ from emg_games.gui.scenes import ScreenProperties
 
 from emg_games.gui.scenes import choose_game
 
+from emg_games.amplifier import BipolarAmplifier, MonoAmplifier
+
+
 import gc
 
 
@@ -11,8 +14,9 @@ class MainGame:
 	def __init__(self, args):
 		self.full_screen = args.full_screen
 		self.screen_properties = ScreenProperties(self.full_screen)
-		self.amp_name = args.amp_name
 		self.args = args
+
+		self.amp = BipolarAmplifier(name=args.amp_name, channels=[0, 1])
 
 		self._new_player()
 
@@ -29,7 +33,7 @@ class MainGame:
 
 	def _new_player(self):
 
-		self.player = Player(screen_properties=self.screen_properties, amplifier=self.amp_name)
+		self.player = Player(screen_properties=self.screen_properties, amplifier=self.amp)
 		
 		self._new_game()
 

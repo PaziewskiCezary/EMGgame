@@ -5,7 +5,6 @@ from emg_games.gui.components.pygame_text import text
 from emg_games.backbones.components.calibration import Calibration
 from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
-from emg_games.amplifier import BipolarAmplifier, MonoAmplifier
 from emg_games.gui.scenes.utils import add_corner_button
 
 
@@ -26,18 +25,18 @@ class Player:
         self.__get_name()
         self._get_input_type()
 
-        if amplifier:
+        self.amp = amplifier
 
-            self.amp = BipolarAmplifier(name=amplifier, channels=[0, 1])
+        if self.amp and not self._use_keyboard:
 
-            calibrate = Calibration(self.__screen, self.amp, kill_game=self.kill)
+            calibrate = Calibration(self.__screen, amplifier, kill_game=self.kill)
             calibrate.calibrate(self)
 
     def __bool__(self):
         return self.name != '' and self.calibrate_values != (0, float('inf')) and self.__input_type is not None
 
     def kill(self):
-        if not self._use_keyboard:
+        if self.amp:
             self.amp.terminate()
         pygame.quit()
         exit()

@@ -53,6 +53,8 @@ class Calibration:
 
         self.__calibrate_value_max = self.__get_calib_samples()
         player._calibrate_value_max = self.__calibrate_value_max
+        print("MAX", player._calibrate_value_max)
+
 
         self.__check_calib(text_x_position, text_y_position, font_size)
         self.__screen.fill(palette.BACKGROUND_COLOR)

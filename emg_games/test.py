@@ -1,17 +1,12 @@
 from amplifier import MonoAmplifier, BipolarAmplifier
 
-# amp = MonoAmplifier(name='ddd', channels=[1])
-amp = BipolarAmplifier(name='ddd', channels=[0, 1])
-while True:
-    # import ipdb;
-    #
-    # ipdb.set_trace()
-    #
-    # print(*amp.data)
-    # # print()
-    # print(*amp.data)
-    # print()
-    pass
+amp = MonoAmplifier(name='ddd', channels=[1])
+# amp = BipolarAmplifier(name='ddd', channels=[0, 1])
+
+import time
+time.sleep(10)
+for i, x in enumerate(amp.data):
+    print(i, x)
 
 
 # class Amplifier:
