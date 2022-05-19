@@ -67,8 +67,7 @@ class Calibration:
         start_time_calibration_min = time.time()
 
         while time.time() - start_time_calibration_min <= calibration_time:
-            with self.__amp.lock:
-                signal = self.__amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
+            signal = self.__amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
             signal -= np.mean(signal)
             signal = np.abs(signal)
 

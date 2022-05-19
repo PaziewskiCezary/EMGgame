@@ -13,24 +13,24 @@ from emg_games.gui.scenes import choose_game
 environ['PYGAME_HIDE_SUPPORT_PROMPT'] = 'hide'
 
 
-def main(args):
-
-    screen_properties = ScreenProperties(args.full_screen)
-
-    # options_screen(screen_properties=screen_properties)
-
-    player = Player(screen_properties=screen_properties)
-    gaming = True
-    while gaming:
-        game = choose_game(screen_properties=screen_properties, kill_game=player.kill)
-
-        game = game(
-            full_screen=args.full_screen,
-            player=player)
-        gaming = game.menu()
-
-    if not player._use_keyboard:
-        player.amp.terminate()
+# def main(args):
+#
+#     screen_properties = ScreenProperties(args.full_screen)
+#
+#     # options_screen(screen_properties=screen_properties)
+#
+#     player = Player(screen_properties=screen_properties)
+#     gaming = True
+#     while gaming:
+#         game = choose_game(screen_properties=screen_properties, kill_game=player.kill)
+#
+#         game = game(
+#             full_screen=args.full_screen,
+#             player=player)
+#         gaming = game.menu()
+#
+#     if not player._use_keyboard:
+#         player.amp.terminate()
 
 
 if __name__ == '__main__':
@@ -38,6 +38,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='EMG game')
 
     parser.add_argument('--not-full', dest='full_screen', action='store_true', help='turn off full screen')
+    parser.add_argument('--name', dest='amp_name', action='store', type=str, required=False,
+                        help='name of streamer', default=None)
 
     args = parser.parse_args()
 

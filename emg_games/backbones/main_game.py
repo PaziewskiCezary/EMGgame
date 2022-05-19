@@ -6,11 +6,14 @@ from emg_games.gui.scenes import choose_game
 import gc
 
 
-class MainGame():
+class MainGame:
 
 	def __init__(self, args):
 		self.full_screen = args.full_screen
 		self.screen_properties = ScreenProperties(self.full_screen)
+		self.amp_name = args.amp_name
+		self.args = args
+
 		self._new_player()
 
 	def _new_game(self):
@@ -26,7 +29,7 @@ class MainGame():
 
 	def _new_player(self):
 
-		self.player = Player(screen_properties=self.screen_properties)
+		self.player = Player(screen_properties=self.screen_properties, amplifier=self.amp_name)
 		
 		self._new_game()
 

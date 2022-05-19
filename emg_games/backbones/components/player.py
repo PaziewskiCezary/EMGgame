@@ -5,13 +5,13 @@ from emg_games.gui.components.pygame_text import text
 from emg_games.backbones.components.calibration import Calibration
 from emg_games.gui.components import palette
 from emg_games.gui.components.button import Button
-from emg_games.amplifier import Amplifier
-from emg_games.gui.scenes.utils import add_corner_button 
+from emg_games.amplifier import BipolarAmplifier, MonoAmplifier
+from emg_games.gui.scenes.utils import add_corner_button
 
 
 class Player:
 
-    def __init__(self, screen_properties):
+    def __init__(self, screen_properties, amplifier=None):
 
         self.__name = ''
         self._calibrate_value_min = 0
@@ -26,9 +26,9 @@ class Player:
         self.__get_name()
         self._get_input_type()
 
-        if not self._use_keyboard:
+        if amplifier:
 
-            self.amp = Amplifier()
+            self.amp = BipolarAmplifier(name=amplifier, channels=[0, 1])
 
             calibrate = Calibration(self.__screen, self.amp, kill_game=self.kill)
             calibrate.calibrate(self)
