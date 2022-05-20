@@ -16,7 +16,7 @@ class MainGame:
 		self.screen_properties = ScreenProperties(self.full_screen)
 		self.args = args
 
-		self.amp = BipolarAmplifier(name=args.amp_name, channels=[0, 1])
+		self.amp = MonoAmplifier(name=args.amp_name, channels=[24])
 
 		self._new_player()
 

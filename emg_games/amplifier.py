@@ -1,13 +1,13 @@
 import time
 
 import numpy as np
+import scipy.signal as ss
 
 from abc import ABC, abstractmethod
 from multiprocessing import Process, Lock
 from multiprocessing.sharedctypes import Array
 
 from pylsl import StreamInlet, resolve_streams
-
 
 # from multiprocessing import Process, Lock
 # from multiprocessing.sharedctypes import Array
@@ -99,11 +99,11 @@ from pylsl import StreamInlet, resolve_streams
 
 
 class LSLAmplifier(ABC):
-    sleep_time = 0.25
+    sleep_time = 0.05
 
     def __init__(self, *, name, channels, size=2048):
 
-        streams = resolve_streams(wait_time=10)  # might not work
+        streams = resolve_streams(wait_time=6)  # might not work
         if not streams:
             raise ValueError('could not find streamer')
 
@@ -117,10 +117,27 @@ class LSLAmplifier(ABC):
 
         self.__data = Array('d', np.zeros(size))
 
+        Fs = stream.nominal_srate()
+        Fnyq = Fs / 2
+        Q = 30
+        self._b, self._a = ss.butter(3, [0.1 / Fnyq, 45 / Fnyq], 'bandpass')
+        self._bn, self._an = ss.iirnotch(50, Q, Fs)
+        self._bnn, self._ann = ss.iirnotch(100, Q, Fs)
+        self._filt = ss.lfilter_zi(self._b, self._a)
+        self._filtn = ss.lfilter_zi(self._bn, self._an)
+        self._filtnn = ss.lfilter_zi(self._bnn, self._ann)
+
+        self.f1 = open('/tmp/dane1', 'w')
+        self.f2 = open('/tmp/dane2', 'w')
+
         self.__lock = Lock()
         self.__process = Process(target=self.__run)
         self.__process.daemon = True
         self.__process.start()
+
+
+
+
         print('amplifier started')
 
     def get_data(self, size=None):
@@ -154,9 +171,19 @@ class LSLAmplifier(ABC):
             number_of_samples = len(sample)
             number_of_samples = min(number_of_samples, len(self.data))
 
+            for _, x in enumerate(sample):
+                self.f1.writelines([str(x), '\n'])
+
+            filtered_sample, self._filtn = ss.lfilter(self._bn, self._an, sample, zi=self._filtn)
+            filtered_sample, self._filtnn = ss.lfilter(self._bnn, self._ann, filtered_sample, zi=self._filtnn)
+            filtered_sample, self._filt = ss.lfilter(self._b, self._a, filtered_sample, zi=self._filt)
+
+            for _, x in enumerate(filtered_sample):
+                self.f2.writelines([str(x),  '\n'])
+
             with self.__lock:
                 self.__data[:-number_of_samples] = self.__data[number_of_samples:]
-                self.__data[-number_of_samples:] = Array('d', sample)[-number_of_samples:]
+                self.__data[-number_of_samples:] = Array('d', filtered_sample)[-number_of_samples:]
 
             time.sleep(self.sleep_time)
 

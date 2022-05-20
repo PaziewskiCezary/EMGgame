@@ -110,7 +110,7 @@ class FallingObjects(AbstractGame):
         
         new_projectile = True
         actual_projectile = None
-        
+
         while play and self._lives > 0:
             if new_projectile:
 
@@ -123,7 +123,9 @@ class FallingObjects(AbstractGame):
             if not self._lives:
                 play = False
 
+            print(1)
             while actual_projectile:
+                print(2)
                 break_loop = False
                 for event in pygame.event.get():
                     # menu_btn.on_click(event)
@@ -132,7 +134,7 @@ class FallingObjects(AbstractGame):
                     play, break_loop = self._escape_game(event)
 
                 self._keyboard_control(self._move_projectile)
-
+                print(3)
                 if break_loop:
                     break
 
@@ -144,26 +146,27 @@ class FallingObjects(AbstractGame):
 
                 if break_loop:
                     break
-
+                print(4)
                 new_projectile, actual_projectile = self._punctation()
 
                 # show stuff on screen
                 self._screen.fill(palette.BACKGROUND_COLOR)
-
+                print(5)
                 self._update_background()
                 
 
                 for target_ in self._targets:
                     self._screen.blit(target_.image, target_.get_position)
-
+                print(6)
                 self._screen.blit(self._projectile.image, self._projectile.get_position)
                 #self.exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
                 
                 self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
                 # menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
-
+                print(7)
                 self._update()
                 self._clock.tick(60)
+                print(8)
 
         self._score = self._score
         self._save_score()

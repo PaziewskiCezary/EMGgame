@@ -1,9 +1,10 @@
 from amplifier import MonoAmplifier, BipolarAmplifier
 
-amp = MonoAmplifier(name='ddd', channels=[1])
+amp = MonoAmplifier(name='dupa', channels=[25])
 # amp = BipolarAmplifier(name='ddd', channels=[0, 1])
 
 import time
+import ipdb; ipdb.set_trace()
 time.sleep(10)
 for i, x in enumerate(amp.data):
     print(i, x)

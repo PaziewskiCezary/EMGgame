@@ -11,3 +11,6 @@
 
 * [ ] image scaling
 * [ ] fix all images
+
+* [ ] zmianiana starowania -> kalibracje na nowo
+* [ ] tworzenie gier na poczaku a nie za kazdym razem

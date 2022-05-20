@@ -117,12 +117,11 @@ class AbstractGame(ABC):
 
     def _muscle_control(self, moving_function):
 
-        with self._player.amp.lock:
-            signal = self._player.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:] 
-            signal -= np.mean(signal)
-            signal = np.abs(signal)
-            move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
-            moving_function(move_value)
+        signal = self._player.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
+        signal -= np.mean(signal)
+        signal = np.abs(signal)
+        move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
+        moving_function(move_value)
 
     @staticmethod
     def _update():

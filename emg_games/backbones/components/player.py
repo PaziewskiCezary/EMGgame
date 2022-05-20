@@ -32,6 +32,8 @@ class Player:
             calibrate = Calibration(self.__screen, amplifier, kill_game=self.kill)
             calibrate.calibrate(self)
 
+        print('calibration done')
+
     def __bool__(self):
         return self.name != '' and self.calibrate_values != (0, float('inf')) and self.__input_type is not None
 
