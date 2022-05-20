@@ -56,7 +56,7 @@ class MainGame:
 		# 				player=self.player, main_game=self)
 		#
 		# gc.collect()
-		self.game.player = self.player
+		self.game._player = self.player
 		self.game.menu()
 
 	def _new_player(self):
