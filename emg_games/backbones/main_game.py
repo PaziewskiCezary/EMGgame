@@ -7,9 +7,13 @@ from emg_games.amplifier import BipolarAmplifier, MonoAmplifier
 
 import emg_games.games
 
+from emg_games.gui.components import palette, text
+
+import pygame
 
 import inspect
 
+from types import SimpleNamespace
 
 
 class MainGame:
@@ -19,7 +23,16 @@ class MainGame:
 		self.screen_properties = ScreenProperties(self.full_screen)
 		self.args = args
 
-		dummy_player = Player(screen_properties=self.screen_properties)
+		text(self.screen_properties.screen, palette.SECONDARY_COLOR, 'Ładownie gry', 2 * self.screen_properties.x_screen // 4,
+			self.screen_properties.y_screen // 2, font_size=30)
+
+		pygame.display.update()
+
+
+		# dummy_player = Player(screen_properties=self.screen_properties)
+		dummy_player = SimpleNamespace()
+		dummy_player.amp = None
+
 		self.list_of_games = {obj: obj(full_screen=self.full_screen, player=dummy_player, main_game=self)
 							  for name, obj
 							  in inspect.getmembers(emg_games.games, inspect.isclass)
