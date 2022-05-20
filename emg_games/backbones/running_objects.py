@@ -146,7 +146,7 @@ class RunningObjects(AbstractGame):
                                               )
 
                 if not self._player._use_keyboard:
-                    self._muscle_control(self._move_target)
+                    self._muscle_control(self._move_target, scale=2)
 
                 break_loop, new_projectile = self._punctation()
                 if break_loop:

@@ -115,12 +115,12 @@ class AbstractGame(ABC):
         if is_key_pressed(pygame.K_RIGHT, pygame.K_d):
             moving_function(MOVE_RIGHT)
 
-    def _muscle_control(self, moving_function):
+    def _muscle_control(self, moving_function, scale=10):
 
         signal = self._player.amp.data[-NUMBER_OF_MUSCLE_TENSION_SAMPLES:]
         signal -= np.mean(signal)
         signal = np.abs(signal)
-        move_value = self._muscle_move(np.mean(signal)) / 10  # comm why 10?
+        move_value = self._muscle_move(np.mean(signal)) / scale  # comm why 10?
         moving_function(move_value)
 
     @staticmethod
