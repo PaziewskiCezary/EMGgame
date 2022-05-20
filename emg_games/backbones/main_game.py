@@ -32,6 +32,9 @@ class MainGame:
 		# dummy_player = Player(screen_properties=self.screen_properties)
 		dummy_player = SimpleNamespace()
 		dummy_player.amp = None
+		dummy_player.calibrate_values = float('inf'), 0
+		dummy_player.name = 'dummy'
+		dummy_player._use_keyboard = True
 
 		self.list_of_games = {obj: obj(full_screen=self.full_screen, player=dummy_player, main_game=self)
 							  for name, obj
