@@ -25,7 +25,7 @@ class Image(Sprite):
         self.image = pygame.image.load(path)
         if disp_aspect == screen_aspect:
             new_size = tuple(int(dim / disp_scale * screen_scale) for dim in self.image.get_rect().size)
-            self.image = pygame.transform.scale(self.image, new_size)
+            self.image = pygame.transform.smoothscale(self.image, new_size)
 
         self.rect = self.image.get_rect()
         self.rect.x = 0

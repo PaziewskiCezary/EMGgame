@@ -47,7 +47,7 @@ class AbstractGame(ABC):
         self._screen.fill(palette.PRIMARY_COLOR)
         # TODO move up
 
-        self._max_lives = 1
+        self._max_lives = 3
 
         self.main_game = main_game
 
@@ -136,7 +136,11 @@ class AbstractGame(ABC):
 
     def _show_score(self):
 
-        exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+        exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen,
+                                     screen=self._screen, loc='right')
+
+        return_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen,
+                                     screen=self._screen, loc='menu')
         self._update()
 
         path = self.get_scores_path
@@ -159,9 +163,6 @@ class AbstractGame(ABC):
         subtitle_font_size = self._y_screen // 14
         points_font_size = self._y_screen // 16
 
-        return_btn = Button(self._screen, 'Menu', (x_button, y_button), (x_button * 2, y_button * 2),
-                            button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=self.menu,
-                            font_size=button_font_size)
         again_btn = Button(self._screen, 'Zagraj jeszcze raz!', (self._x_screen // 2, 7 * self._y_screen // 8),
                            (x_button * 7, y_button * 3),
                            button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=self._play,
@@ -182,6 +183,7 @@ class AbstractGame(ABC):
             while time.time() - start < seconds:
                 for event in pygame.event.get():
                     exit_btn.on_click(event)
+                    return_btn.on_click(event)
                     if event.type == pygame.KEYDOWN or event.type == pygame.MOUSEBUTTONUP:
                         return False
 
@@ -229,24 +231,23 @@ class AbstractGame(ABC):
         emoji_font = Path(__file__).parent / 'components/NotoEmoji-Regular.ttf'
         emoji_font = pygame.freetype.Font(emoji_font, emoji_font_size)
 
-        emoji_heart, emoji_heart = emoji_font.get_rect(emoji_text).size
+        width_emoji, _ = emoji_font.get_rect(emoji_text * self._lives).size
         width_score, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(score_text)
         width_lives, _ = pygame.font.SysFont(palette.FONT_STYLE, font_size).size(lives_text)
 
         pygame.draw.rect(self._screen, palette.PRIMARY_COLOR,
                          (0, 0, self._x_screen * 19/10, self._y_screen // 10), False)
 
-        MAGIC_NUMBER = 25  # why there was random 25  like 8 times!?!?!?
-
-        text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, MAGIC_NUMBER, font_style=palette.FONT_STYLE,
-             font_size=font_size)
-        text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, MAGIC_NUMBER, font_style=palette.FONT_STYLE,
-             font_size=font_size)
+        text(self._screen, palette.SECONDARY_COLOR, score_text, width_score / 2, self._y_screen * 0.05,
+             font_style=palette.FONT_STYLE, font_size=font_size)
+        text(self._screen, palette.SECONDARY_COLOR, lives_text, self._x_screen // 2, self._y_screen * 0.05,
+             font_style=palette.FONT_STYLE, font_size=font_size)
 
         # place emojis
         lives_text = emoji_text * self._lives
         lives_text_rect = emoji_font.get_rect(lives_text)
-        lives_text_rect.center = self._x_screen // 2 + width_lives // 2 + 0.5 * self._lives * emoji_heart, MAGIC_NUMBER
+        lives_text_rect.center = self._x_screen // 2 + width_lives // 2 + width_emoji // 2, \
+                                 self._y_screen * 0.05
         emoji_font.render_to(self._screen, lives_text_rect, lives_text, emoji_color, size=emoji_font_size)
 
         #self._update()
@@ -330,7 +331,7 @@ class AbstractGame(ABC):
         self._screen.fill(palette.PRIMARY_COLOR)
         
 
-        # menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='left')
+        menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='left')
         self._update()
 
         exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
@@ -341,8 +342,7 @@ class AbstractGame(ABC):
                                 return_btn = Button(self._screen, 'Wróć', (x_button, y_button), (x_button * 2, y_button * 2),
                                                     button_color=palette.SECONDARY_COLOR, label_color=palette.PRIMARY_COLOR, func=self.menu,
                                                     font_size=button_font_size)'''
-        MAGIC_NUMBER = 25
-        text(self._screen, palette.SECONDARY_COLOR, 'WYNIKI', self._x_screen // 2, self._y_screen // 10 - MAGIC_NUMBER,
+        text(self._screen, palette.SECONDARY_COLOR, 'WYNIKI', self._x_screen // 2, self._y_screen // 10 - self._y_screen * 0.05,
              font_size=48)
 
         y_offset = 55
@@ -360,7 +360,7 @@ class AbstractGame(ABC):
         while True:
             for event in pygame.event.get():
                 exit_btn.on_click(event)
-                # menu_btn.on_click(event)
+                menu_btn.on_click(event)
                 if event.type == pygame.QUIT:
                     self._kill()
                 if event.type == pygame.KEYDOWN:
@@ -370,8 +370,11 @@ class AbstractGame(ABC):
     def change_game(self):
         return True
 
-    def menu(self):
-
+    def menu(self, args=None):
+        if args != None:
+            if 'save_score' in args and args['save_score']:
+                self._save_score()
+                
         self._screen.fill(palette.PRIMARY_COLOR)
 
         pygame.display.set_caption(self.game_name)

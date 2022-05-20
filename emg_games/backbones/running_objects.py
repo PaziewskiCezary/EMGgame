@@ -69,8 +69,6 @@ class RunningObjects(AbstractGame):
 
         self.running_projectiles.append(self._projectile)
 
-        self.time_since_new_projectile = time.time()
-
         self._projectile_number += 1
 
     def _punctation(self):
@@ -78,9 +76,9 @@ class RunningObjects(AbstractGame):
         break_loop = False
         new_projectile = False
 
-        acceleration = 1.02 ** self._projectile_number
+        acceleration = 1.01 ** self._projectile_number
 
-        y_step = self._y_screen * self._speed_rate * acceleration * 10  # tak jest ciekawiej na razie
+        y_step = self._y_screen * self._speed_rate * acceleration
 
         for (i, projectile_) in enumerate(self.running_projectiles):
             projectile_x_position, projectile_y_position = projectile_.get_position
@@ -106,7 +104,6 @@ class RunningObjects(AbstractGame):
                     new_projectile = True
 
                 if new_projectile:
-                    self._new_projectiles += 1
                     self.running_projectiles.remove(projectile_)
 
                 if self._lives <= 0:
@@ -119,39 +116,28 @@ class RunningObjects(AbstractGame):
         super()._play()
         play = True
         self._set_targets()
-
-        
-        self._new_projectiles = 1
         
         self.running_projectiles = []
-
-        self.time_since_new_projectile = time.time()
-
-        self.new_projectile_counter = time.time() + 10
+        min_time_between_projectiles = 7
+        power_of_projectiles = 3/5
 
         while play and self._lives > 0:
 
-            while self._new_projectiles:
-                self._set_new_projectile()
-                self._new_projectiles -= 1
+            self._set_new_projectile()
+            new_projectile_time = time.time()
 
             if not self._lives:
                 play = False
 
             while self.running_projectiles:
 
-                if time.time() - self.new_projectile_counter > 0:
+                if (len(self.running_projectiles) <= (self._projectile_number ** power_of_projectiles)) or \
+                        (time.time() - new_projectile_time > min_time_between_projectiles):
+
                     self._set_new_projectile()
-                    self.new_projectile_counter = time.time() + 1  # + 3 ** self._projectile_number
+                    new_projectile_time = time.time()
 
                 break_loop = False
-
-                for event in pygame.event.get():
-                    # menu_btn.on_click(event)
-                    if event.type == pygame.QUIT:
-                        self._kill()
-
-                    play, break_loop = self._escape_game(event)
 
                 self._keyboard_control(self._move_target)
                 self._target.x_position = max(0,
@@ -159,20 +145,10 @@ class RunningObjects(AbstractGame):
                                                   self._screen_properties.x_screen - self._target.width)
                                               )
 
-                if break_loop:
-                    break
-
                 if not self._player._use_keyboard:
                     self._muscle_control(self._move_target)
 
-                for event in pygame.event.get():
-                    play, break_loop = self._escape_game(event)
-
-                if break_loop:
-                    break
-
                 break_loop, new_projectile = self._punctation()
-
                 if break_loop:
                     break
 
@@ -187,11 +163,22 @@ class RunningObjects(AbstractGame):
                 # labels with lives and score
                 
                 self._make_health_text(emoji_name=self.emoji_name, emoji_color=self.emoji_color)
-                # menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
+                menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen,
+                                             y_screen=self._y_screen, screen=self._screen, loc='right',
+                                             func_args={'save_score': True})
+                for event in pygame.event.get():
+                    menu_btn.on_click(event)
+                    if event.type == pygame.QUIT:
+                        self._kill()
+
+                    play, break_loop = self._escape_game(event)
+                    
+                if break_loop:
+                    break
+
                 self._update()
                 self._clock.tick(60)
 
-        self._score = self._score
         self._save_score()
 
         self._what_next()
