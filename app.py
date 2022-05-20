@@ -58,7 +58,7 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description='EMG game')
 
-    parser.add_argument('--not-full', dest='full_screen', action='store_true', help='turn off full screen')
+    parser.add_argument('--full', dest='full_screen', action='store_true', help='turn off full screen')
     parser.add_argument('--name', dest='amp_name', action='store', type=str, required=False,
                         help='name of streamer', default=None)
 

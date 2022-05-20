@@ -135,12 +135,14 @@ class AbstractGame(ABC):
         self._play()
 
     def _show_score(self):
+        self._screen.fill(palette.PRIMARY_COLOR)
+
+
+        return_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen,
+                                     screen=self._screen, loc='left')
 
         exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen,
                                      screen=self._screen, loc='right')
-
-        return_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen,
-                                     screen=self._screen, loc='menu')
         self._update()
 
         path = self.get_scores_path
@@ -155,8 +157,6 @@ class AbstractGame(ABC):
 
         place = np.argmax(index) + 1
 
-        self._screen.fill(palette.PRIMARY_COLOR)
-        self._update()
         x_button, y_button = self._x_screen // 20, self._y_screen // 20
         button_font_size = self._y_screen // 18
         title_font_size = self._y_screen // 12
@@ -329,10 +329,8 @@ class AbstractGame(ABC):
             scores, index = ['brak wyników'], [0]
 
         self._screen.fill(palette.PRIMARY_COLOR)
-        
 
         menu_btn = add_corner_button(func=self.menu, text="Menu", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='left')
-        self._update()
 
         exit_btn = add_corner_button(func=self._kill, text="Wyjdź", x_screen=self._x_screen, y_screen=self._y_screen, screen=self._screen, loc='right')
         self._update()
