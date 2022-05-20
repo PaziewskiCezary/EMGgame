@@ -23,9 +23,11 @@ class Player:
         self.__x_screen, self.__y_screen = self.__screen.get_size()
         self._use_keyboard = True
         self.__get_name()
+
+        self.amp = amplifier
         self._get_input_type()
 
-        self.amp = amplifier            
+
 
         print('calibration done')
 

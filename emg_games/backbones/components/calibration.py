@@ -88,7 +88,7 @@ class Calibration:
 
     def __check_calib(self, text_x_position, text_y_position, font_size):
 
-        minimum_difference_between_calibration_values = 50
+        minimum_difference_between_calibration_values = 15
 
         if self.__calibrate_value_min >= self.__calibrate_value_max or \
                 self.__calibrate_value_max - self.__calibrate_value_min < minimum_difference_between_calibration_values:
