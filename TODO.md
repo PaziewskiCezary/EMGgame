@@ -13,4 +13,5 @@
 * [ ] fix all images
 
 * [ ] zmianiana starowania -> kalibracje na nowo
+* [ ] przycisk wróć
 * [ ] tworzenie gier na poczaku a nie za kazdym razem
