@@ -14,7 +14,7 @@ def update():
     pygame.display.update()
 
 
-def choose_game(screen_properties, kill_game):
+def choose_game(screen, screen_properties, kill_game):
 
     list_of_games = [obj for name, obj in inspect.getmembers(emg_games.games, inspect.isclass) if
                      issubclass(obj, emg_games.backbones.AbstractGame)]
@@ -23,7 +23,7 @@ def choose_game(screen_properties, kill_game):
     x_screen = screen_properties.x_screen
     y_screen = screen_properties.y_screen
 
-    screen = pygame.display.set_mode(screen_size)
+    # screen = pygame.display.set_mode(screen_size)
 
     screen.fill(palette.BACKGROUND_COLOR)
 

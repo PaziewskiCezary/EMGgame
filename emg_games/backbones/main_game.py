@@ -22,7 +22,7 @@ class MainGame:
 
 	def _new_game(self):
 		
-		game = choose_game(screen_properties=self.screen_properties, kill_game=self.player.kill)
+		game = choose_game(self.screen_properties.screen, screen_properties=self.screen_properties, kill_game=self.player.kill)
 
 		self.game = game(
 						full_screen=self.full_screen,
