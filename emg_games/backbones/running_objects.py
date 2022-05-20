@@ -163,7 +163,7 @@ class RunningObjects(AbstractGame):
                     break
 
                 if not self._player._use_keyboard:
-                    self._muscle_control(self._move_target)
+                    self._muscle_control(self._move_target, scale=2)
 
                 for event in pygame.event.get():
                     play, break_loop = self._escape_game(event)
