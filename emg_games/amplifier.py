@@ -127,9 +127,6 @@ class LSLAmplifier(ABC):
         self._filtn = ss.lfilter_zi(self._bn, self._an)
         self._filtnn = ss.lfilter_zi(self._bnn, self._ann)
 
-        self.f1 = open('/tmp/dane1', 'w')
-        self.f2 = open('/tmp/dane2', 'w')
-
         self.__lock = Lock()
         self.__process = Process(target=self.__run)
         self.__process.daemon = True
@@ -171,15 +168,9 @@ class LSLAmplifier(ABC):
             number_of_samples = len(sample)
             number_of_samples = min(number_of_samples, len(self.data))
 
-            for _, x in enumerate(sample):
-                self.f1.writelines([str(x), '\n'])
-
             filtered_sample, self._filtn = ss.lfilter(self._bn, self._an, sample, zi=self._filtn)
             filtered_sample, self._filtnn = ss.lfilter(self._bnn, self._ann, filtered_sample, zi=self._filtnn)
             filtered_sample, self._filt = ss.lfilter(self._b, self._a, filtered_sample, zi=self._filt)
-
-            for _, x in enumerate(filtered_sample):
-                self.f2.writelines([str(x),  '\n'])
 
             with self.__lock:
                 self.__data[:-number_of_samples] = self.__data[number_of_samples:]

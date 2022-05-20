@@ -25,12 +25,7 @@ class Player:
         self.__get_name()
         self._get_input_type()
 
-        self.amp = amplifier
-
-        if self.amp and not self._use_keyboard:
-
-            calibrate = Calibration(self.__screen, amplifier, kill_game=self.kill)
-            calibrate.calibrate(self)
+        self.amp = amplifier            
 
         print('calibration done')
 
@@ -62,6 +57,10 @@ class Player:
     @staticmethod
     def __update():
         pygame.display.update()
+
+    def _make_calib(self):
+        calibrate = Calibration(self.__screen, self.amp, kill_game=self.kill)
+        calibrate.calibrate(self)
 
     def __get_name(self):
 
@@ -147,3 +146,7 @@ class Player:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.kill()
+
+        if self.amp and not self._use_keyboard:
+
+            self._make_calib()
